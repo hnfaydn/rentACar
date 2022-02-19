@@ -129,7 +129,11 @@ public class CarManager implements CarService {
 
 	@Override
 	public DataResult<List<CarListDto>> getAllSortedByDailyPrice(String sortType) {
-		
+
+            if (!checkIfSortTypeNotASCOrDESC(sortType).isSuccess()){
+                return new ErrorDataResult("Please enter a correct sort type (ASC or DESC)");
+            }
+
 			Sort sort = Sort.by(Sort.Direction.fromString(sortType),"dailyPrice");
 			List<Car> cars = this.carDao.findAll(sort);
 			List<CarListDto> carListDtos = cars.stream()
@@ -199,5 +203,15 @@ public class CarManager implements CarService {
             return new ErrorResult("Initial values are completely equal to update values, no need to update");
         }
         return new SuccessResult();
+    }
+
+    private Result checkIfSortTypeNotASCOrDESC(String sortType){
+        if(
+            sortType.equals("ASC") || sortType.equals("DESC")
+        ){
+            return new SuccessResult();
+
+        }
+        return new ErrorResult("Please enter a correct sort type (ASC or DESC)");
     }
 }
