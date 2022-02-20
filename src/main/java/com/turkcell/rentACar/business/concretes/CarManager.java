@@ -72,7 +72,7 @@ public class CarManager implements CarService {
     public Result update(int id, UpdateCarRequest updateCarRequest){
 
             if(!checkIfIdExist(id).isSuccess()) {
-                return new ErrorResult("There is no car with the following id to update : " + id);
+                return new ErrorResult(checkIfIdExist(id).getMessage());
             }
 
             Car car = this.carDao.getById(id);
