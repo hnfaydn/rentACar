@@ -47,7 +47,7 @@ public class BrandManager implements BrandService {
 	    Brand brand = this.modelMapperService.forRequest().map(createBrandRequest, Brand.class);
 
 		if(!checkIfNameNotDuplicated(brand.getName()).isSuccess()) {
-				return new ErrorDataResult(createBrandRequest,"There is data with same name " + brand.getName());
+				return new ErrorDataResult(createBrandRequest,checkIfNameNotDuplicated(brand.getName()).getMessage());
 		}
 
 		this.brandDao.save(brand);
@@ -61,7 +61,7 @@ public class BrandManager implements BrandService {
     public DataResult<BrandDto> getById(int id){
 
 		if(!checkIfIdExist(id).isSuccess()) {
-			return new ErrorDataResult("There is no data with following id : " + id);
+			return new ErrorDataResult(checkIfIdExist(id).getMessage());
 		}
 
 		Brand brand = this.brandDao.getById(id);
@@ -76,13 +76,13 @@ public class BrandManager implements BrandService {
 
 		
 		if(!checkIfIdExist(id).isSuccess()) {
-			return new ErrorResult("There is no data with following id : " + id);
+			return new ErrorResult(checkIfIdExist(id).getMessage());
 		}
 
 		Brand brand = this.brandDao.getById(id);
 
 		if(!checkIfNameNotDuplicated(updateBrandRequest.getName()).isSuccess()) {
-			return new ErrorResult("There is data with same name " + updateBrandRequest.getName());
+			return new ErrorResult(checkIfNameNotDuplicated(updateBrandRequest.getName()).getMessage());
 		}
 		String brandNameBeforeUpdate = this.brandDao.findById(id).getName();
 		updateBrandOperations(brand,updateBrandRequest);
@@ -96,7 +96,7 @@ public class BrandManager implements BrandService {
     public Result delete(int id){
 		
 		if(!checkIfIdExist(id).isSuccess()) {
-			return new ErrorResult("There is no data with following id : " + id);
+			return new ErrorResult(checkIfIdExist(id).getMessage());
 		}
 		String brandNameBeforeDeleted = this.brandDao.getById(id).getName();
 		this.brandDao.deleteById(id);
@@ -110,14 +110,14 @@ public class BrandManager implements BrandService {
     private Result checkIfNameNotDuplicated(String name){
 
         if (this.brandDao.existsByName(name)) {
-        	return new ErrorResult("This brand is already exist in system!");
+        	return new ErrorResult("This brand is already exist in system: "+name);
         }        
         return new SuccessResult();
     }
 
 	private Result checkIfIdExist(int id){
 		if (!this.brandDao.existsById(id)) {
-			return new ErrorResult("There is no brand with this id: "+ id);
+			return new ErrorResult("There is no brand with following id : " + id);
 		}
 		return new SuccessResult();
 	}

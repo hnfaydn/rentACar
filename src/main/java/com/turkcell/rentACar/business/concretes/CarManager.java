@@ -50,17 +50,17 @@ public class CarManager implements CarService {
            	Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
             if (!checkIfBrandIdExist(createCarRequest.getBrandId()).isSuccess()){
 
-                return new ErrorResult("There is no brand with following id : " +createCarRequest.getBrandId());
+                return new ErrorResult(checkIfBrandIdExist(createCarRequest.getBrandId()).getMessage());
             }
 
             if (!checkIfColorIdExist(createCarRequest.getColorId()).isSuccess()){
 
-                return new ErrorResult("There is no color with following id : " +createCarRequest.getColorId());
+                return new ErrorResult(checkIfColorIdExist(createCarRequest.getColorId()).getMessage());
             }
 
             if(!checkIfCarExist(car).isSuccess()) {
 
-                return new ErrorDataResult(createCarRequest,"This car is already exists");
+                return new ErrorDataResult(createCarRequest,checkIfCarExist(car).getMessage());
 
             }
 
@@ -81,7 +81,7 @@ public class CarManager implements CarService {
 
 
             if(!carAndRequestParameterIsNotEqual(car,updateCarRequest).isSuccess()){
-                return new ErrorResult("Initial values are completely equal to update values, no need to update!");
+                return new ErrorResult(carAndRequestParameterIsNotEqual(car,updateCarRequest).getMessage());
             }
             updateCarOperations(car, updateCarRequest);
             CarDto carDto = this.modelMapperService.forDto().map(car, CarDto.class);
@@ -96,7 +96,7 @@ public class CarManager implements CarService {
         
             if(!checkIfIdExist(id).isSuccess()) {
 
-                return new ErrorResult("There is no car with the following id to delete : " + id);
+                return new ErrorResult(checkIfIdExist(id).getMessage());
             }
 
             CarDto carDto = this.modelMapperService.forDto().map(this.carDao.getById(id), CarDto.class);
@@ -131,7 +131,7 @@ public class CarManager implements CarService {
 	public DataResult<List<CarListDto>> getAllSortedByDailyPrice(String sortType) {
 
             if (!checkIfSortTypeNotASCOrDESC(sortType).isSuccess()){
-                return new ErrorDataResult("Please enter a correct sort type (ASC or DESC)");
+                return new ErrorDataResult(checkIfSortTypeNotASCOrDESC(sortType).getMessage());
             }
 
 			Sort sort = Sort.by(Sort.Direction.fromString(sortType),"dailyPrice");
@@ -147,7 +147,7 @@ public class CarManager implements CarService {
     public DataResult<CarDto> getById(int id){
         
             if(!checkIfIdExist(id).isSuccess()){
-                return new ErrorDataResult(null,"There is no car with the following id: " + id);
+                return new ErrorDataResult(null,checkIfIdExist(id).getMessage());
             }
 
             Car car = this.carDao.getById(id);
@@ -158,10 +158,10 @@ public class CarManager implements CarService {
     private Result checkIfCarExist(Car car){
         if (
                 carDao.existsByDailyPrice(car.getDailyPrice()) &&
-                        carDao.existsByModelYear(car.getModelYear()) &&
-                        carDao.existsByDescription(car.getDescription()) &&
-                        carDao.existsByBrand_Id(car.getBrand().getId()) &&
-                        carDao.existsByColor_Id(car.getColor().getId())
+                carDao.existsByModelYear(car.getModelYear()) &&
+                carDao.existsByDescription(car.getDescription()) &&
+                carDao.existsByBrand_Id(car.getBrand().getId()) &&
+                carDao.existsByColor_Id(car.getColor().getId())
         ) {
              return new ErrorResult("This car is already exist!");
         }
@@ -175,7 +175,7 @@ public class CarManager implements CarService {
 
     private Result checkIfIdExist(int id){
         if (!this.carDao.existsById(id)) {
-            return new ErrorResult("There is no car with this id: " + id);
+            return new ErrorResult("There is no car with following id: " + id);
         }
         return new SuccessResult();
     }
