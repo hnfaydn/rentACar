@@ -2,7 +2,6 @@ package com.turkcell.rentACar.business.concretes;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.turkcell.rentACar.core.utilities.results.*;
 import com.turkcell.rentACar.dataAccess.abstracts.BrandDao;
 import com.turkcell.rentACar.dataAccess.abstracts.ColorDao;
@@ -18,7 +17,6 @@ import com.turkcell.rentACar.business.requests.UpdateCarRequest;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.dataAccess.abstracts.CarDao;
 import com.turkcell.rentACar.entities.concretes.Car;
-
 import lombok.AllArgsConstructor;
 
 @Service
@@ -103,8 +101,9 @@ public class CarManager implements CarService {
             this.carDao.deleteById(id);
             return new SuccessDataResult(carDto,"Data deleted");
 
-
     }
+
+
     @Override
 	public DataResult<List<CarListDto>> findByDailyPriceLessThanEqual(double dailyPrice) {
 		List<Car> cars = this.carDao.findByDailyPriceLessThanEqual(dailyPrice);
@@ -154,6 +153,7 @@ public class CarManager implements CarService {
             CarDto carDto = this.modelMapperService.forDto().map(car, CarDto.class);
             return new SuccessDataResult<CarDto>(carDto,"Data getted");
     }
+
 
     private Result checkIfCarExist(Car car){
         if (

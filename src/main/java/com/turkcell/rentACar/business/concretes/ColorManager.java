@@ -66,7 +66,6 @@ public class ColorManager implements ColorService {
 
     }
 
-
     @Override
     public Result update(int id, UpdateColorRequest updateColorRequest){
       

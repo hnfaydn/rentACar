@@ -17,7 +17,6 @@ import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.core.utilities.results.SuccessResult;
 import com.turkcell.rentACar.dataAccess.abstracts.BrandDao;
 import com.turkcell.rentACar.entities.concretes.Brand;
-
 import lombok.AllArgsConstructor;
 
 @Service
@@ -102,6 +101,7 @@ public class BrandManager implements BrandService {
 		this.brandDao.deleteById(id);
 		return new SuccessResult("Data deleted : " + brandNameBeforeDeleted );
     }
+
 
 	private void updateBrandOperations(Brand brand, UpdateBrandRequest updateBrandRequest){
 		brand.setName(updateBrandRequest.getName());
