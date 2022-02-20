@@ -196,8 +196,8 @@ public class CarManager implements CarService {
 
     private Result carAndRequestParameterIsNotEqual(Car car, UpdateCarRequest updateCarRequest){
         if(
-                car.getDailyPrice()==updateCarRequest.getDailyPrice()&&
-                        (car.getDescription()).equals(updateCarRequest.getDescription())
+                car.getDailyPrice()==updateCarRequest.getDailyPrice() &&
+                car.getDescription().equals(updateCarRequest.getDescription())
 
         ){
             return new ErrorResult("Initial values are completely equal to update values, no need to update");
