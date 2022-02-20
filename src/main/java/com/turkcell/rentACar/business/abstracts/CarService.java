@@ -8,6 +8,7 @@ import com.turkcell.rentACar.business.requests.CreateCarRequest;
 import com.turkcell.rentACar.business.requests.UpdateCarRequest;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
+import org.springframework.data.domain.Sort;
 
 public interface CarService {
 
@@ -25,5 +26,5 @@ public interface CarService {
     
     DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize);
     
-    DataResult<List<CarListDto>> getAllSortedByDailyPrice(String sortType);
+    DataResult<List<CarListDto>> getAllSortedByDailyPrice(Sort.Direction sortDirection);
 }

@@ -2,6 +2,7 @@ package com.turkcell.rentACar.api.controllers;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -59,8 +60,8 @@ public class CarsController {
     	return this.carService.getAllPaged(pageNo, pageSize);
     }
     @GetMapping("/getAllSortedByDailyPrice")
-    DataResult<List<CarListDto>> getAllSortedByDailyPrice(String sortType){
-    	return this.carService.getAllSortedByDailyPrice(sortType);
+    DataResult<List<CarListDto>> getAllSortedByDailyPrice(Sort.Direction sortDirection){
+    	return this.carService.getAllSortedByDailyPrice(sortDirection);
     }
 
 }

@@ -127,13 +127,9 @@ public class CarManager implements CarService {
 
 
 	@Override
-	public DataResult<List<CarListDto>> getAllSortedByDailyPrice(String sortType) {
+	public DataResult<List<CarListDto>> getAllSortedByDailyPrice(Sort.Direction sortDirection) {
 
-            if (!checkIfSortTypeNotASCOrDESC(sortType).isSuccess()){
-                return new ErrorDataResult(checkIfSortTypeNotASCOrDESC(sortType).getMessage());
-            }
-
-			Sort sort = Sort.by(Sort.Direction.fromString(sortType),"dailyPrice");
+			Sort sort = Sort.by(sortDirection,"dailyPrice");
 			List<Car> cars = this.carDao.findAll(sort);
 			List<CarListDto> carListDtos = cars.stream()
 	                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
@@ -205,13 +201,4 @@ public class CarManager implements CarService {
         return new SuccessResult();
     }
 
-    private Result checkIfSortTypeNotASCOrDESC(String sortType){
-        if(
-            sortType.equals("ASC") || sortType.equals("DESC")
-        ){
-            return new SuccessResult();
-
-        }
-        return new ErrorResult("Please enter a correct sort type (ASC or DESC)");
-    }
 }
