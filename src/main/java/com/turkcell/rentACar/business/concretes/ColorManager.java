@@ -39,6 +39,7 @@ public class ColorManager implements ColorService {
         return new SuccessDataResult<List<ColorListDto>>(colorListDtos,"Data listed");
     }
 
+
     @Override
     public Result add(CreateColorRequest createColorRequest){
         
@@ -53,6 +54,7 @@ public class ColorManager implements ColorService {
 
     }
 
+
     @Override
     public DataResult<ColorDto> getById(int id){
        
@@ -65,6 +67,7 @@ public class ColorManager implements ColorService {
         return new SuccessDataResult<ColorDto>(colorDto,"Data getted");
 
     }
+
 
     @Override
     public Result update(int id, UpdateColorRequest updateColorRequest){
@@ -86,6 +89,7 @@ public class ColorManager implements ColorService {
 
     }
 
+
     @Override
     public Result delete(int id){
 
@@ -97,6 +101,7 @@ public class ColorManager implements ColorService {
         return new SuccessResult("Data deleted : " + colorNameBeforeDeleted );
 
     }
+
 
     private void updateColorOperations(Color color, UpdateColorRequest updateColorRequest) {
         color.setName(updateColorRequest.getName());
