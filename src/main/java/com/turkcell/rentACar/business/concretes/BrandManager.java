@@ -31,6 +31,10 @@ public class BrandManager implements BrandService {
     public DataResult<List<BrandListDto>> getAll() {
         List<Brand> brands = brandDao.findAll();
 
+		if(!checkIfBrandListEmpty(brands).isSuccess()){
+			return new ErrorDataResult(checkIfBrandListEmpty(brands).getMessage());
+		}
+
         List<BrandListDto> brandListDtos = brands.stream()
 				.map(brand -> this.modelMapperService.forDto().map(brand, BrandListDto.class))
 				.collect(Collectors.toList());
@@ -136,4 +140,10 @@ public class BrandManager implements BrandService {
 		return new SuccessResult();
 	}
 
+	private Result checkIfBrandListEmpty(List<Brand> brands){
+		if(brands.isEmpty()){
+			return new ErrorDataResult("There is no Brand to list");
+		}
+		return new SuccessResult();
+	}
 }

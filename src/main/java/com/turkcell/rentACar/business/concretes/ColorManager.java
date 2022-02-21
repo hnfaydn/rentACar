@@ -3,6 +3,7 @@ package com.turkcell.rentACar.business.concretes;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.turkcell.rentACar.entities.concretes.Brand;
 import org.springframework.stereotype.Service;
 import com.turkcell.rentACar.business.abstracts.ColorService;
 import com.turkcell.rentACar.business.dtos.ColorDto;
@@ -31,6 +32,10 @@ public class ColorManager implements ColorService {
     @Override
     public DataResult<List<ColorListDto>> getAll() {
         List<Color> colors = this.colorDao.findAll();
+
+        if(!checkIfColorListEmpty(colors).isSuccess()){
+            return new ErrorDataResult(checkIfColorListEmpty(colors).getMessage());
+        }
 
         List<ColorListDto> colorListDtos = colors.stream()
                 .map(color -> this.modelMapperService.forDto()
@@ -134,6 +139,13 @@ public class ColorManager implements ColorService {
     private Result checkIfNameNotNull(String colorName) {
         if (colorName.isEmpty() || colorName.isBlank()) {
             return new ErrorResult("Color name can not empty or null!");
+        }
+        return new SuccessResult();
+    }
+
+    private Result checkIfColorListEmpty(List<Color> colors){
+        if(colors.isEmpty()){
+            return new ErrorDataResult("There is no Color to list");
         }
         return new SuccessResult();
     }

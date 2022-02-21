@@ -35,6 +35,10 @@ public class CarManager implements CarService {
 
         List<Car> cars = carDao.findAll();
 
+        if(!checkIfCarListEmpty(cars).isSuccess()){
+            return new ErrorDataResult(checkIfCarListEmpty(cars).getMessage());
+        }
+
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
@@ -48,8 +52,8 @@ public class CarManager implements CarService {
 
         Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
 
-        if (!carCreationParametersNotNull(car).isSuccess()) {
-            return new ErrorResult(carCreationParametersNotNull(car).getMessage());
+        if (!checkIfCarCreationParametersNotNull(car).isSuccess()) {
+            return new ErrorResult(checkIfCarCreationParametersNotNull(car).getMessage());
         }
 
 
@@ -74,8 +78,8 @@ public class CarManager implements CarService {
 
         Car car = this.carDao.getById(id);
 
-        if (!carUpdateParametersNotNull(updateCarRequest).isSuccess()) {
-            return new ErrorResult(carUpdateParametersNotNull(updateCarRequest).getMessage());
+        if (!checkIfCarUpdateParametersNotNull(updateCarRequest).isSuccess()) {
+            return new ErrorResult(checkIfCarUpdateParametersNotNull(updateCarRequest).getMessage());
         }
 
         if (!carAndRequestParameterIsNotEqual(car, updateCarRequest).isSuccess()) {
@@ -110,6 +114,10 @@ public class CarManager implements CarService {
 
         List<Car> cars = this.carDao.findByDailyPriceLessThanEqual(dailyPrice);
 
+        if(!checkIfCarListEmpty(cars).isSuccess()){
+            return new ErrorDataResult(checkIfCarListEmpty(cars).getMessage());
+        }
+
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
@@ -122,6 +130,11 @@ public class CarManager implements CarService {
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         List<Car> cars = this.carDao.findAll(pageable).getContent();
+
+        if(!checkIfCarListEmpty(cars).isSuccess()){
+            return new ErrorDataResult(checkIfCarListEmpty(cars).getMessage());
+        }
+
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
@@ -134,6 +147,11 @@ public class CarManager implements CarService {
 
         Sort sort = Sort.by(sortDirection, "dailyPrice");
         List<Car> cars = this.carDao.findAll(sort);
+
+        if(!checkIfCarListEmpty(cars).isSuccess()){
+            return new ErrorDataResult(checkIfCarListEmpty(cars).getMessage());
+        }
+
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
@@ -190,7 +208,7 @@ public class CarManager implements CarService {
         return new SuccessResult();
     }
 
-    private Result carCreationParametersNotNull(Car car) {
+    private Result checkIfCarCreationParametersNotNull(Car car) {
         Double dailyPrice = car.getDailyPrice();
         if (dailyPrice <= 0 || dailyPrice == null || dailyPrice.isNaN()) {
             return new ErrorResult("Daily price can not less than zero or equal to zero or null!");
@@ -216,7 +234,7 @@ public class CarManager implements CarService {
         return new SuccessResult();
     }
 
-    private Result carUpdateParametersNotNull(UpdateCarRequest updateCarRequest) {
+    private Result checkIfCarUpdateParametersNotNull(UpdateCarRequest updateCarRequest) {
         Double dailyPrice = updateCarRequest.getDailyPrice();
         if (dailyPrice <= 0 || dailyPrice == null || dailyPrice.isNaN()) {
             return new ErrorResult("Daily price can not less than zero or equal to zero or null!");
@@ -226,6 +244,13 @@ public class CarManager implements CarService {
             return new ErrorResult("Car description can not null or empty!");
         }
 
+        return new SuccessResult();
+    }
+
+    private Result checkIfCarListEmpty(List<Car> cars){
+        if(cars.isEmpty()){
+            return new ErrorDataResult("There is no Car to list");
+        }
         return new SuccessResult();
     }
 
