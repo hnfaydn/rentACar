@@ -2,6 +2,7 @@ package com.turkcell.rentACar.business.concretes;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import com.turkcell.rentACar.business.abstracts.ColorService;
 import com.turkcell.rentACar.business.dtos.ColorDto;
@@ -36,69 +37,77 @@ public class ColorManager implements ColorService {
                         .map(color, ColorListDto.class))
                 .collect(Collectors.toList());
 
-        return new SuccessDataResult<List<ColorListDto>>(colorListDtos,"Data listed");
+        return new SuccessDataResult<List<ColorListDto>>(colorListDtos, "Data listed");
     }
 
 
     @Override
-    public Result add(CreateColorRequest createColorRequest){
-        
-            Color color = this.modelMapperService.forRequest().map(createColorRequest, Color.class);
-            if(!checkIfNameNotDuplicated(color.getName()).isSuccess()) {
-                return new ErrorDataResult(createColorRequest,checkIfNameNotDuplicated(color.getName()).getMessage());
+    public Result add(CreateColorRequest createColorRequest) {
 
-            }
+        Color color = this.modelMapperService.forRequest().map(createColorRequest, Color.class);
+
+        if (!checkIfNameNotNull(color.getName()).isSuccess()) {
+            return new ErrorResult(checkIfNameNotNull(color.getName()).getMessage());
+        }
+
+        if (!checkIfNameNotDuplicated(color.getName()).isSuccess()) {
+            return new ErrorDataResult(createColorRequest, checkIfNameNotDuplicated(color.getName()).getMessage());
+
+        }
 
         this.colorDao.save(color);
-        return new SuccessDataResult(createColorRequest,"Data added : " + color.getName());
+        return new SuccessDataResult(createColorRequest, "Data added : " + color.getName());
 
     }
 
 
     @Override
-    public DataResult<ColorDto> getById(int id){
-       
-        if(!checkIfIdExist(id).isSuccess()) {
+    public DataResult<ColorDto> getById(int id) {
+
+        if (!checkIfIdExist(id).isSuccess()) {
             return new ErrorDataResult(checkIfIdExist(id).getMessage());
         }
 
         Color color = this.colorDao.findById(id);
         ColorDto colorDto = this.modelMapperService.forDto().map(color, ColorDto.class);
-        return new SuccessDataResult<ColorDto>(colorDto,"Data getted");
+        return new SuccessDataResult<ColorDto>(colorDto, "Data getted");
 
     }
 
 
     @Override
-    public Result update(int id, UpdateColorRequest updateColorRequest){
-      
-            
-        if(!checkIfIdExist(id).isSuccess()) {
+    public Result update(int id, UpdateColorRequest updateColorRequest) {
+
+        if (!checkIfIdExist(id).isSuccess()) {
             return new ErrorResult(checkIfIdExist(id).getMessage());
-		}
+        }
 
         Color color = this.colorDao.getById(id);
 
-        if(!checkIfNameNotDuplicated(updateColorRequest.getName()).isSuccess()) {
+        if (!checkIfNameNotNull(color.getName()).isSuccess()) {
+            return new ErrorResult(checkIfNameNotNull(color.getName()).getMessage());
+        }
+
+        if (!checkIfNameNotDuplicated(updateColorRequest.getName()).isSuccess()) {
             return new ErrorResult(checkIfNameNotDuplicated(updateColorRequest.getName()).getMessage());
         }
         String colorNameBeforeUpdate = this.colorDao.findById(id).getName();
         updateColorOperations(color, updateColorRequest);
         this.colorDao.save(color);
-        return new SuccessResult(colorNameBeforeUpdate +" updated to " +updateColorRequest.getName());
+        return new SuccessResult(colorNameBeforeUpdate + " updated to " + updateColorRequest.getName());
 
     }
 
 
     @Override
-    public Result delete(int id){
+    public Result delete(int id) {
 
-        if(!checkIfIdExist(id).isSuccess()) {
+        if (!checkIfIdExist(id).isSuccess()) {
             return new ErrorResult(checkIfIdExist(id).getMessage());
         }
         String colorNameBeforeDeleted = this.colorDao.getById(id).getName();
         this.colorDao.deleteById(id);
-        return new SuccessResult("Data deleted : " + colorNameBeforeDeleted );
+        return new SuccessResult("Data deleted : " + colorNameBeforeDeleted);
 
     }
 
@@ -107,19 +116,25 @@ public class ColorManager implements ColorService {
         color.setName(updateColorRequest.getName());
     }
 
-    private Result checkIfNameNotDuplicated(String name){
+    private Result checkIfNameNotDuplicated(String name) {
 
         if (this.colorDao.existsByName(name)) {
-           return new ErrorResult("This color is already exist in system: " + name);
+            return new ErrorResult("This color is already exist in system: " + name);
         }
         return new SuccessResult();
     }
 
-    private Result checkIfIdExist(int id){
+    private Result checkIfIdExist(int id) {
         if (!this.colorDao.existsById(id)) {
-             return new ErrorResult("There is no color with this id: " + id);
+            return new ErrorResult("There is no color with this id: " + id);
         }
         return new SuccessResult();
     }
 
+    private Result checkIfNameNotNull(String colorName) {
+        if (colorName.isEmpty() || colorName.isBlank()) {
+            return new ErrorResult("Color name cannot empty or null");
+        }
+        return new SuccessResult();
+    }
 }

@@ -45,14 +45,17 @@ public class BrandManager implements BrandService {
         
 	    Brand brand = this.modelMapperService.forRequest().map(createBrandRequest, Brand.class);
 
+		if(!checkIfNameNotNull(brand.getName()).isSuccess()){
+			return new ErrorResult(checkIfNameNotNull(brand.getName()).getMessage());
+		}
+
 		if(!checkIfNameNotDuplicated(brand.getName()).isSuccess()) {
 				return new ErrorDataResult(createBrandRequest,checkIfNameNotDuplicated(brand.getName()).getMessage());
 		}
 
 		this.brandDao.save(brand);
 		return new SuccessDataResult(createBrandRequest,"Data added : " + brand.getName());
-            
-		
+
     }
 
 
@@ -79,6 +82,10 @@ public class BrandManager implements BrandService {
 		}
 
 		Brand brand = this.brandDao.getById(id);
+
+		if(!checkIfNameNotNull(brand.getName()).isSuccess()){
+			return new ErrorResult(checkIfNameNotNull(brand.getName()).getMessage());
+		}
 
 		if(!checkIfNameNotDuplicated(updateBrandRequest.getName()).isSuccess()) {
 			return new ErrorResult(checkIfNameNotDuplicated(updateBrandRequest.getName()).getMessage());
@@ -118,6 +125,13 @@ public class BrandManager implements BrandService {
 	private Result checkIfIdExist(int id){
 		if (!this.brandDao.existsById(id)) {
 			return new ErrorResult("There is no brand with following id : " + id);
+		}
+		return new SuccessResult();
+	}
+
+	private Result checkIfNameNotNull(String brandName){
+		if(brandName.isEmpty() || brandName.isBlank()){
+			return new ErrorResult("Brand name cannot empty or null");
 		}
 		return new SuccessResult();
 	}
