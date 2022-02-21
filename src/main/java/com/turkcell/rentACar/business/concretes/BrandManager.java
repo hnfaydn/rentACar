@@ -83,8 +83,8 @@ public class BrandManager implements BrandService {
 
 		Brand brand = this.brandDao.getById(id);
 
-		if(!checkIfNameNotNull(brand.getName()).isSuccess()){
-			return new ErrorResult(checkIfNameNotNull(brand.getName()).getMessage());
+		if(!checkIfNameNotNull(updateBrandRequest.getName()).isSuccess()){
+			return new ErrorResult(checkIfNameNotNull(updateBrandRequest.getName()).getMessage());
 		}
 
 		if(!checkIfNameNotDuplicated(updateBrandRequest.getName()).isSuccess()) {

@@ -84,8 +84,8 @@ public class ColorManager implements ColorService {
 
         Color color = this.colorDao.getById(id);
 
-        if (!checkIfNameNotNull(color.getName()).isSuccess()) {
-            return new ErrorResult(checkIfNameNotNull(color.getName()).getMessage());
+        if (!checkIfNameNotNull(updateColorRequest.getName()).isSuccess()) {
+            return new ErrorResult(checkIfNameNotNull(updateColorRequest.getName()).getMessage());
         }
 
         if (!checkIfNameNotDuplicated(updateColorRequest.getName()).isSuccess()) {
