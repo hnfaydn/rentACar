@@ -156,11 +156,11 @@ public class CarManager implements CarService {
 
     private Result checkIfCarExist(Car car) {
         if (
-                carDao.existsByDailyPrice(car.getDailyPrice()) &&
-                        carDao.existsByModelYear(car.getModelYear()) &&
-                        carDao.existsByDescription(car.getDescription()) &&
-                        carDao.existsByBrand_Id(car.getBrand().getId()) &&
-                        carDao.existsByColor_Id(car.getColor().getId())
+                carDao.existsByDailyPrice(car.getDailyPrice())   &&
+                carDao.existsByModelYear(car.getModelYear())     &&
+                carDao.existsByDescription(car.getDescription()) &&
+                carDao.existsByBrand_Id(car.getBrand().getId())  &&
+                carDao.existsByColor_Id(car.getColor().getId())
         ) {
             return new ErrorResult("This car is already exist!");
         }
