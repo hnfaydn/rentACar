@@ -133,7 +133,7 @@ public class ColorManager implements ColorService {
 
     private Result checkIfNameNotNull(String colorName) {
         if (colorName.isEmpty() || colorName.isBlank()) {
-            return new ErrorResult("Color name cannot empty or null");
+            return new ErrorResult("Color name can not empty or null!");
         }
         return new SuccessResult();
     }

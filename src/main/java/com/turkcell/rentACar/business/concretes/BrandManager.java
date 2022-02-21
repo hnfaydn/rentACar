@@ -131,7 +131,7 @@ public class BrandManager implements BrandService {
 
 	private Result checkIfNameNotNull(String brandName){
 		if(brandName.isEmpty() || brandName.isBlank()){
-			return new ErrorResult("Brand name cannot empty or null");
+			return new ErrorResult("Brand name can not empty or null!");
 		}
 		return new SuccessResult();
 	}

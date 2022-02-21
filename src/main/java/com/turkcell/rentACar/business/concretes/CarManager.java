@@ -185,7 +185,7 @@ public class CarManager implements CarService {
              car.getDescription().equals(updateCarRequest.getDescription())
 
         ) {
-            return new ErrorResult("Initial values are completely equal to update values, no need to update");
+            return new ErrorResult("Initial values are completely equal to update values, no need to update!");
         }
         return new SuccessResult();
     }
@@ -193,16 +193,16 @@ public class CarManager implements CarService {
     private Result carCreationParametersNotNull(Car car) {
         Double dailyPrice = car.getDailyPrice();
         if (dailyPrice <= 0 || dailyPrice == null || dailyPrice.isNaN()) {
-            return new ErrorResult("Daily price can not less than zero or equal to zero or null");
+            return new ErrorResult("Daily price can not less than zero or equal to zero or null!");
         }
 
         Integer modelYear = car.getModelYear();
         if (modelYear <= 0 || modelYear == null) {
-            return new ErrorResult("Model year can not less than zero or equal to zero or null");
+            return new ErrorResult("Model year can not less than zero or equal to zero or null!");
         }
 
         if (car.getDescription().isEmpty() || car.getDescription().isBlank()) {
-            return new ErrorResult("Car description can not null or empty");
+            return new ErrorResult("Car description can not null or empty!");
         }
 
         if (!this.brandDao.existsById(car.getBrand().getId())) {
@@ -219,11 +219,11 @@ public class CarManager implements CarService {
     private Result carUpdateParametersNotNull(UpdateCarRequest updateCarRequest) {
         Double dailyPrice = updateCarRequest.getDailyPrice();
         if (dailyPrice <= 0 || dailyPrice == null || dailyPrice.isNaN()) {
-            return new ErrorResult("Daily price can not less than zero or equal to zero or null");
+            return new ErrorResult("Daily price can not less than zero or equal to zero or null!");
         }
 
         if (updateCarRequest.getDescription().isEmpty() || updateCarRequest.getDescription().isBlank()) {
-            return new ErrorResult("Car description can not null or empty");
+            return new ErrorResult("Car description can not null or empty!");
         }
 
         return new SuccessResult();
