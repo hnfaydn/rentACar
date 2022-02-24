@@ -112,6 +112,10 @@ public class CarManager implements CarService {
     @Override
     public DataResult<List<CarListDto>> findByDailyPriceLessThanEqual(double dailyPrice) {
 
+        if(!checkIfDailyPriceValid(dailyPrice).isSuccess()){
+            return new ErrorDataResult(checkIfDailyPriceValid(dailyPrice).getMessage());
+        }
+
         List<Car> cars = this.carDao.findByDailyPriceLessThanEqual(dailyPrice);
 
         if(!checkIfCarListEmpty(cars).isSuccess()){
@@ -127,6 +131,10 @@ public class CarManager implements CarService {
 
     @Override
     public DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize) {
+
+        if(!checkIfPageNoAndPageSizeValid(pageNo,pageSize).isSuccess()){
+            return new ErrorDataResult(checkIfPageNoAndPageSizeValid(pageNo,pageSize).getMessage());
+        }
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         List<Car> cars = this.carDao.findAll(pageable).getContent();
@@ -254,4 +262,23 @@ public class CarManager implements CarService {
         return new SuccessResult();
     }
 
+    private Result checkIfPageNoAndPageSizeValid(int pageNo, int pageSize){
+        if(pageNo<=0){
+            return new ErrorResult("Page No can not less than or equal to zero");
+        }
+
+        if(pageSize<=0){
+            return new ErrorResult("Page Size can not less than or equal to zero");
+        }
+
+        return new SuccessResult();
+    }
+
+    private Result checkIfDailyPriceValid(double dailyPrice){
+        if (dailyPrice<=0){
+            return new ErrorResult("Daily price can not less than or equal to zero");
+        }
+
+        return new SuccessResult();
+    }
 }
