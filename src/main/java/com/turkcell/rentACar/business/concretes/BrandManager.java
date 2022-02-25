@@ -46,7 +46,6 @@ public class BrandManager implements BrandService {
     @Override
     public Result add(CreateBrandRequest createBrandRequest){
 
-        
 	    Brand brand = this.modelMapperService.forRequest().map(createBrandRequest, Brand.class);
 
 		if(!checkIfNameNotNull(brand.getName()).isSuccess()){
@@ -78,7 +77,6 @@ public class BrandManager implements BrandService {
     @Override
     public Result update(int id, UpdateBrandRequest updateBrandRequest){
 
-		
 		if(!checkIfIdExist(id).isSuccess()) {
 			return new ErrorResult(checkIfIdExist(id).getMessage());
 		}
