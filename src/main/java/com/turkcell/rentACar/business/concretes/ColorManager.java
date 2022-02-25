@@ -42,7 +42,7 @@ public class ColorManager implements ColorService {
                         .map(color, ColorListDto.class))
                 .collect(Collectors.toList());
 
-        return new SuccessDataResult<List<ColorListDto>>(colorListDtos, "Data listed");
+        return new SuccessDataResult<>(colorListDtos, "Data listed");
     }
 
 
@@ -74,7 +74,7 @@ public class ColorManager implements ColorService {
 
         Color color = this.colorDao.findById(id);
         ColorDto colorDto = this.modelMapperService.forDto().map(color, ColorDto.class);
-        return new SuccessDataResult<ColorDto>(colorDto, "Data getted");
+        return new SuccessDataResult<>(colorDto, "Data getted");
     }
 
 
