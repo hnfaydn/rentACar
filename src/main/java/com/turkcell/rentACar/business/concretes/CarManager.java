@@ -43,7 +43,7 @@ public class CarManager implements CarService {
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
 
-        return new SuccessDataResult<List<CarListDto>>(carListDtos, "Data listed");
+        return new SuccessDataResult<>(carListDtos, "Data listed");
     }
 
 
