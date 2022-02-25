@@ -65,7 +65,6 @@ public class CarManager implements CarService {
 
         this.carDao.save(car);
         return new SuccessDataResult(createCarRequest, "Data added");
-
     }
 
 
@@ -105,7 +104,6 @@ public class CarManager implements CarService {
         CarDto carDto = this.modelMapperService.forDto().map(this.carDao.getById(id), CarDto.class);
         this.carDao.deleteById(id);
         return new SuccessDataResult(carDto, "Data deleted");
-
     }
 
 
@@ -125,7 +123,7 @@ public class CarManager implements CarService {
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
-        return new SuccessDataResult<List<CarListDto>>(carListDtos, "Data listed");
+        return new SuccessDataResult<>(carListDtos, "Data listed");
     }
 
 
@@ -146,7 +144,7 @@ public class CarManager implements CarService {
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
-        return new SuccessDataResult<List<CarListDto>>(carListDtos, "Data paged");
+        return new SuccessDataResult<>(carListDtos, "Data paged");
     }
 
 
@@ -163,7 +161,7 @@ public class CarManager implements CarService {
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
-        return new SuccessDataResult<List<CarListDto>>(carListDtos, "Data listed");
+        return new SuccessDataResult<>(carListDtos, "Data listed");
     }
 
 
@@ -176,7 +174,7 @@ public class CarManager implements CarService {
 
         Car car = this.carDao.getById(id);
         CarDto carDto = this.modelMapperService.forDto().map(car, CarDto.class);
-        return new SuccessDataResult<CarDto>(carDto, "Data getted");
+        return new SuccessDataResult<>(carDto, "Data getted");
     }
 
 

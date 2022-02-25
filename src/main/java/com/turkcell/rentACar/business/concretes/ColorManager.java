@@ -62,7 +62,6 @@ public class ColorManager implements ColorService {
 
         this.colorDao.save(color);
         return new SuccessDataResult(createColorRequest, "Data added : " + color.getName());
-
     }
 
 
@@ -76,7 +75,6 @@ public class ColorManager implements ColorService {
         Color color = this.colorDao.findById(id);
         ColorDto colorDto = this.modelMapperService.forDto().map(color, ColorDto.class);
         return new SuccessDataResult<ColorDto>(colorDto, "Data getted");
-
     }
 
 
@@ -100,7 +98,6 @@ public class ColorManager implements ColorService {
         updateColorOperations(color, updateColorRequest);
         this.colorDao.save(color);
         return new SuccessResult(colorNameBeforeUpdate + " updated to " + updateColorRequest.getName());
-
     }
 
 
@@ -113,7 +110,6 @@ public class ColorManager implements ColorService {
         String colorNameBeforeDeleted = this.colorDao.getById(id).getName();
         this.colorDao.deleteById(id);
         return new SuccessResult("Data deleted : " + colorNameBeforeDeleted);
-
     }
 
 
@@ -122,7 +118,6 @@ public class ColorManager implements ColorService {
     }
 
     private Result checkIfNameNotDuplicated(String name) {
-
         if (this.colorDao.existsByName(name)) {
             return new ErrorResult("This color is already exist in system: " + name);
         }

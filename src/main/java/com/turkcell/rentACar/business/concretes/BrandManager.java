@@ -59,7 +59,6 @@ public class BrandManager implements BrandService {
 
 		this.brandDao.save(brand);
 		return new SuccessDataResult(createBrandRequest,"Data added : " + brand.getName());
-
     }
 
 
@@ -73,7 +72,6 @@ public class BrandManager implements BrandService {
 		Brand brand = this.brandDao.getById(id);
 		BrandDto brandDto = this.modelMapperService.forDto().map(brand, BrandDto.class);
 		return new SuccessDataResult<BrandDto>(brandDto,"Data getted by id");
-
     }
 
 
@@ -119,7 +117,6 @@ public class BrandManager implements BrandService {
 	}
 
     private Result checkIfNameNotDuplicated(String name){
-
         if (this.brandDao.existsByName(name)) {
         	return new ErrorResult("This brand is already exist in system: "+name);
         }        
@@ -147,3 +144,4 @@ public class BrandManager implements BrandService {
 		return new SuccessResult();
 	}
 }
+
