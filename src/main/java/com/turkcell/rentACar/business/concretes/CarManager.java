@@ -56,11 +56,8 @@ public class CarManager implements CarService {
             return new ErrorResult(checkIfCarCreationParametersNotNull(car).getMessage());
         }
 
-
         if (!checkIfCarExist(car).isSuccess()) {
-
             return new ErrorDataResult(createCarRequest, checkIfCarExist(car).getMessage());
-
         }
 
         this.carDao.save(car);
@@ -97,7 +94,6 @@ public class CarManager implements CarService {
     public Result delete(int id) {
 
         if (!checkIfIdExist(id).isSuccess()) {
-
             return new ErrorResult(checkIfIdExist(id).getMessage());
         }
 
@@ -144,6 +140,7 @@ public class CarManager implements CarService {
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
+
         return new SuccessDataResult<>(carListDtos, "Data paged");
     }
 
@@ -161,6 +158,7 @@ public class CarManager implements CarService {
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
                 .collect(Collectors.toList());
+
         return new SuccessDataResult<>(carListDtos, "Data listed");
     }
 
