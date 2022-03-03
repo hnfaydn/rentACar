@@ -2,6 +2,9 @@ package com.turkcell.rentACar.business.concretes;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import com.turkcell.rentACar.business.abstracts.BrandService;
 import com.turkcell.rentACar.business.dtos.BrandDto;
@@ -27,13 +30,13 @@ public class BrandManager implements BrandService {
     private ModelMapperService modelMapperService;
 
 
-    @Override
-    public DataResult<List<BrandListDto>> getAll() {
+
+	@Override
+    public DataResult<List<BrandListDto>> getAll() throws BusinessException {
         List<Brand> brands = brandDao.findAll();
 
-		if(!checkIfBrandListEmpty(brands).isSuccess()){
-			return new ErrorDataResult(checkIfBrandListEmpty(brands).getMessage());
-		}
+		checkIfBrandListEmpty(brands);
+
 
         List<BrandListDto> brandListDtos = brands.stream()
 				.map(brand -> this.modelMapperService.forDto().map(brand, BrandListDto.class))
@@ -44,17 +47,13 @@ public class BrandManager implements BrandService {
 
 
     @Override
-    public Result add(CreateBrandRequest createBrandRequest){
+    public Result add(CreateBrandRequest createBrandRequest) throws BusinessException {
 
 	    Brand brand = this.modelMapperService.forRequest().map(createBrandRequest, Brand.class);
 
-		if(!checkIfNameNotNull(brand.getName()).isSuccess()){
-			return new ErrorResult(checkIfNameNotNull(brand.getName()).getMessage());
-		}
+		checkIfNameNotNull(brand.getName());
 
-		if(!checkIfNameNotDuplicated(brand.getName()).isSuccess()) {
-				return new ErrorDataResult(createBrandRequest,checkIfNameNotDuplicated(brand.getName()).getMessage());
-		}
+		checkIfNameNotDuplicated(brand.getName());
 
 		this.brandDao.save(brand);
 		return new SuccessDataResult(createBrandRequest,"Data added : " + brand.getName());
@@ -62,11 +61,10 @@ public class BrandManager implements BrandService {
 
 
     @Override
-    public DataResult<BrandDto> getById(int id){
+    public DataResult<BrandDto> getById(int id) throws BusinessException {
 
-		if(!checkIfIdExist(id).isSuccess()) {
-			return new ErrorDataResult(checkIfIdExist(id).getMessage());
-		}
+		checkIfIdExist(id);
+
 
 		Brand brand = this.brandDao.getById(id);
 		BrandDto brandDto = this.modelMapperService.forDto().map(brand, BrandDto.class);
@@ -75,21 +73,16 @@ public class BrandManager implements BrandService {
 
 
     @Override
-    public Result update(int id, UpdateBrandRequest updateBrandRequest){
+    public Result update(int id, UpdateBrandRequest updateBrandRequest) throws BusinessException {
 
-		if(!checkIfIdExist(id).isSuccess()) {
-			return new ErrorResult(checkIfIdExist(id).getMessage());
-		}
+		checkIfIdExist(id);
 
 		Brand brand = this.brandDao.getById(id);
 
-		if(!checkIfNameNotNull(updateBrandRequest.getName()).isSuccess()){
-			return new ErrorResult(checkIfNameNotNull(updateBrandRequest.getName()).getMessage());
-		}
+		checkIfNameNotNull(updateBrandRequest.getName());
 
-		if(!checkIfNameNotDuplicated(updateBrandRequest.getName()).isSuccess()) {
-			return new ErrorResult(checkIfNameNotDuplicated(updateBrandRequest.getName()).getMessage());
-		}
+		checkIfNameNotDuplicated(updateBrandRequest.getName());
+
 		String brandNameBeforeUpdate = this.brandDao.findById(id).getName();
 		updateBrandOperations(brand,updateBrandRequest);
 		this.brandDao.save(brand);
@@ -99,11 +92,10 @@ public class BrandManager implements BrandService {
 
 
     @Override
-    public Result delete(int id){
+    public Result delete(int id) throws BusinessException {
 		
-		if(!checkIfIdExist(id).isSuccess()) {
-			return new ErrorResult(checkIfIdExist(id).getMessage());
-		}
+		checkIfIdExist(id);
+
 		String brandNameBeforeDeleted = this.brandDao.getById(id).getName();
 		this.brandDao.deleteById(id);
 		return new SuccessResult("Data deleted : " + brandNameBeforeDeleted );
@@ -114,32 +106,32 @@ public class BrandManager implements BrandService {
 		brand.setName(updateBrandRequest.getName());
 	}
 
-    private Result checkIfNameNotDuplicated(String name){
+    private void checkIfNameNotDuplicated(String name) throws BusinessException {
         if (this.brandDao.existsByName(name)) {
-        	return new ErrorResult("This brand is already exist in system: "+name);
+        	throw new BusinessException("This brand is already exist in system: "+name);
         }        
-        return new SuccessResult();
+
     }
 
-	private Result checkIfIdExist(int id){
+	private void checkIfIdExist(int id) throws BusinessException {
 		if (!this.brandDao.existsById(id)) {
-			return new ErrorResult("There is no brand with following id : " + id);
+			throw new BusinessException("There is no brand with following id : " + id);
 		}
-		return new SuccessResult();
+
 	}
 
-	private Result checkIfNameNotNull(String brandName){
+	private void checkIfNameNotNull(String brandName) throws BusinessException {
 		if(brandName.isEmpty() || brandName.isBlank()){
-			return new ErrorResult("Brand name can not empty or null!");
+			throw new BusinessException("Brand name can not empty or null!");
 		}
-		return new SuccessResult();
+
 	}
 
-	private Result checkIfBrandListEmpty(List<Brand> brands){
+	private void checkIfBrandListEmpty(List<Brand> brands) throws BusinessException {
 		if(brands.isEmpty()){
-			return new ErrorDataResult("There is no Brand to list");
+			throw new BusinessException("There is no Brand to list");
 		}
-		return new SuccessResult();
+
 	}
 }
 

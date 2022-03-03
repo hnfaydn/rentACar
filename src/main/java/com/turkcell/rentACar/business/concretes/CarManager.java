@@ -3,6 +3,7 @@ package com.turkcell.rentACar.business.concretes;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.*;
 import com.turkcell.rentACar.dataAccess.abstracts.BrandDao;
 import com.turkcell.rentACar.dataAccess.abstracts.ColorDao;
@@ -31,13 +32,12 @@ public class CarManager implements CarService {
 
 
     @Override
-    public DataResult<List<CarListDto>> getAll() {
+    public DataResult<List<CarListDto>> getAll() throws BusinessException {
 
         List<Car> cars = carDao.findAll();
 
-        if(!checkIfCarListEmpty(cars).isSuccess()){
-            return new ErrorDataResult(checkIfCarListEmpty(cars).getMessage());
-        }
+        checkIfCarListEmpty(cars);
+
 
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
@@ -48,17 +48,13 @@ public class CarManager implements CarService {
 
 
     @Override
-    public Result add(CreateCarRequest createCarRequest) {
+    public Result add(CreateCarRequest createCarRequest) throws BusinessException {
 
         Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
 
-        if (!checkIfCarCreationParametersNotNull(car).isSuccess()) {
-            return new ErrorResult(checkIfCarCreationParametersNotNull(car).getMessage());
-        }
+        checkIfCarCreationParametersNotNull(car);
 
-        if (!checkIfCarExist(car).isSuccess()) {
-            return new ErrorDataResult(createCarRequest, checkIfCarExist(car).getMessage());
-        }
+        checkIfCarExist(car);
 
         this.carDao.save(car);
         return new SuccessDataResult(createCarRequest, "Data added");
@@ -66,23 +62,18 @@ public class CarManager implements CarService {
 
 
     @Override
-    public Result update(int id, UpdateCarRequest updateCarRequest) {
+    public Result update(int id, UpdateCarRequest updateCarRequest) throws BusinessException {
 
-        if (!checkIfIdExist(id).isSuccess()) {
-            return new ErrorResult(checkIfIdExist(id).getMessage());
-        }
+        checkIfIdExist(id);
 
         Car car = this.carDao.getById(id);
 
-        if (!checkIfCarUpdateParametersNotNull(updateCarRequest).isSuccess()) {
-            return new ErrorResult(checkIfCarUpdateParametersNotNull(updateCarRequest).getMessage());
-        }
+        checkIfCarUpdateParametersNotNull(updateCarRequest);
 
-        if (!carAndRequestParameterIsNotEqual(car, updateCarRequest).isSuccess()) {
-            return new ErrorResult(carAndRequestParameterIsNotEqual(car, updateCarRequest).getMessage());
-        }
+        carAndRequestParameterIsNotEqual(car, updateCarRequest);
 
         updateCarOperations(car, updateCarRequest);
+
         CarDto carDto = this.modelMapperService.forDto().map(car, CarDto.class);
         this.carDao.save(car);
 
@@ -91,11 +82,9 @@ public class CarManager implements CarService {
 
 
     @Override
-    public Result delete(int id) {
+    public Result delete(int id) throws BusinessException {
 
-        if (!checkIfIdExist(id).isSuccess()) {
-            return new ErrorResult(checkIfIdExist(id).getMessage());
-        }
+        checkIfIdExist(id);
 
         CarDto carDto = this.modelMapperService.forDto().map(this.carDao.getById(id), CarDto.class);
         this.carDao.deleteById(id);
@@ -104,17 +93,13 @@ public class CarManager implements CarService {
 
 
     @Override
-    public DataResult<List<CarListDto>> findByDailyPriceLessThanEqual(double dailyPrice) {
+    public DataResult<List<CarListDto>> findByDailyPriceLessThanEqual(double dailyPrice) throws BusinessException {
 
-        if(!checkIfDailyPriceValid(dailyPrice).isSuccess()){
-            return new ErrorDataResult(checkIfDailyPriceValid(dailyPrice).getMessage());
-        }
+        checkIfDailyPriceValid(dailyPrice);
 
         List<Car> cars = this.carDao.findByDailyPriceLessThanEqual(dailyPrice);
 
-        if(!checkIfCarListEmpty(cars).isSuccess()){
-            return new ErrorDataResult(checkIfCarListEmpty(cars).getMessage());
-        }
+        checkIfCarListEmpty(cars);
 
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
@@ -124,18 +109,14 @@ public class CarManager implements CarService {
 
 
     @Override
-    public DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize) {
+    public DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize) throws BusinessException {
 
-        if(!checkIfPageNoAndPageSizeValid(pageNo,pageSize).isSuccess()){
-            return new ErrorDataResult(checkIfPageNoAndPageSizeValid(pageNo,pageSize).getMessage());
-        }
+        checkIfPageNoAndPageSizeValid(pageNo,pageSize);
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         List<Car> cars = this.carDao.findAll(pageable).getContent();
 
-        if(!checkIfCarListEmpty(cars).isSuccess()){
-            return new ErrorDataResult(checkIfCarListEmpty(cars).getMessage());
-        }
+        checkIfCarListEmpty(cars);
 
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
@@ -146,14 +127,12 @@ public class CarManager implements CarService {
 
 
     @Override
-    public DataResult<List<CarListDto>> getAllSortedByDailyPrice(Sort.Direction sortDirection) {
+    public DataResult<List<CarListDto>> getAllSortedByDailyPrice(Sort.Direction sortDirection) throws BusinessException {
 
         Sort sort = Sort.by(sortDirection, "dailyPrice");
         List<Car> cars = this.carDao.findAll(sort);
 
-        if(!checkIfCarListEmpty(cars).isSuccess()){
-            return new ErrorDataResult(checkIfCarListEmpty(cars).getMessage());
-        }
+        checkIfCarListEmpty(cars);
 
         List<CarListDto> carListDtos = cars.stream()
                 .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
@@ -164,11 +143,9 @@ public class CarManager implements CarService {
 
 
     @Override
-    public DataResult<CarDto> getById(int id) {
+    public DataResult<CarDto> getById(int id) throws BusinessException {
 
-        if (!checkIfIdExist(id).isSuccess()) {
-            return new ErrorDataResult(null, checkIfIdExist(id).getMessage());
-        }
+        checkIfIdExist(id);
 
         Car car = this.carDao.getById(id);
         CarDto carDto = this.modelMapperService.forDto().map(car, CarDto.class);
@@ -176,17 +153,17 @@ public class CarManager implements CarService {
     }
 
 
-    private Result checkIfCarExist(Car car) {
+    private void checkIfCarExist(Car car) throws BusinessException {
         if (
                 carDao.existsByDailyPrice(car.getDailyPrice())   &&
                 carDao.existsByModelYear(car.getModelYear())     &&
                 carDao.existsByDescription(car.getDescription()) &&
-                carDao.existsByBrand_Id(car.getBrand().getId())  &&
-                carDao.existsByColor_Id(car.getColor().getId())
+                carDao.existsByBrand_BrandId(car.getBrand().getBrandId())  &&
+                carDao.existsByColor_ColorId(car.getColor().getColorId())
         ) {
-            return new ErrorResult("This car is already exist!");
+            throw new BusinessException("This car is already exist!");
         }
-        return new SuccessResult();
+
     }
 
     private void updateCarOperations(Car car, UpdateCarRequest updateCarRequest) {
@@ -194,87 +171,83 @@ public class CarManager implements CarService {
         car.setDescription(updateCarRequest.getDescription());
     }
 
-    private Result checkIfIdExist(int id) {
+    private void checkIfIdExist(int id) throws BusinessException {
         if (!this.carDao.existsById(id)) {
-            return new ErrorResult("There is no car with following id: " + id);
+            throw new BusinessException("There is no car with following id: " + id);
         }
-        return new SuccessResult();
+
     }
 
-    private Result carAndRequestParameterIsNotEqual(Car car, UpdateCarRequest updateCarRequest) {
+    private void carAndRequestParameterIsNotEqual(Car car, UpdateCarRequest updateCarRequest) throws BusinessException {
         if (
              car.getDailyPrice() == updateCarRequest.getDailyPrice() &&
              car.getDescription().equals(updateCarRequest.getDescription())
 
         ) {
-            return new ErrorResult("Initial values are completely equal to update values, no need to update!");
+            throw new BusinessException("Initial values are completely equal to update values, no need to update!");
         }
-        return new SuccessResult();
+
     }
 
-    private Result checkIfCarCreationParametersNotNull(Car car) {
+    private void checkIfCarCreationParametersNotNull(Car car) throws BusinessException {
         Double dailyPrice = car.getDailyPrice();
         if (dailyPrice <= 0 || dailyPrice == null || dailyPrice.isNaN()) {
-            return new ErrorResult("Daily price can not less than zero or equal to zero or null!");
+            throw new BusinessException("Daily price can not less than zero or equal to zero or null!");
         }
 
         Integer modelYear = car.getModelYear();
         if (modelYear <= 0 || modelYear == null) {
-            return new ErrorResult("Model year can not less than zero or equal to zero or null!");
+            throw new BusinessException("Model year can not less than zero or equal to zero or null!");
         }
 
         if (car.getDescription().isEmpty() || car.getDescription().isBlank()) {
-            return new ErrorResult("Car description can not null or empty!");
+            throw new BusinessException("Car description can not null or empty!");
         }
 
-        if (!this.brandDao.existsById(car.getBrand().getId())) {
-            return new ErrorResult("There is no brand with following id: " + car.getBrand().getId());
+        if (!this.brandDao.existsById(car.getBrand().getBrandId())) {
+            throw new BusinessException("There is no brand with following id: " + car.getBrand().getBrandId());
         }
 
-        if (!this.colorDao.existsById(car.getColor().getId())) {
-            return new ErrorResult("There is no color with following id: " + car.getColor().getId());
+        if (!this.colorDao.existsById(car.getColor().getColorId())) {
+            throw new BusinessException("There is no color with following id: " + car.getColor().getColorId());
         }
 
-        return new SuccessResult();
+
     }
 
-    private Result checkIfCarUpdateParametersNotNull(UpdateCarRequest updateCarRequest) {
+    private void checkIfCarUpdateParametersNotNull(UpdateCarRequest updateCarRequest) throws BusinessException {
         Double dailyPrice = updateCarRequest.getDailyPrice();
         if (dailyPrice <= 0 || dailyPrice == null || dailyPrice.isNaN()) {
-            return new ErrorResult("Daily price can not less than zero or equal to zero or null!");
+            throw new BusinessException("Daily price can not less than zero or equal to zero or null!");
         }
 
         if (updateCarRequest.getDescription().isEmpty() || updateCarRequest.getDescription().isBlank()) {
-            return new ErrorResult("Car description can not null or empty!");
+            throw new BusinessException("Car description can not null or empty!");
         }
 
-        return new SuccessResult();
     }
 
-    private Result checkIfCarListEmpty(List<Car> cars){
+    private void checkIfCarListEmpty(List<Car> cars) throws BusinessException {
         if(cars.isEmpty()){
-            return new ErrorDataResult("There is no Car to list");
+            throw new BusinessException("There is no Car to list");
         }
-        return new SuccessResult();
     }
 
-    private Result checkIfPageNoAndPageSizeValid(int pageNo, int pageSize){
+    private void checkIfPageNoAndPageSizeValid(int pageNo, int pageSize) throws BusinessException {
         if(pageNo<=0){
-            return new ErrorResult("Page No can not less than or equal to zero");
+            throw new BusinessException("Page No can not less than or equal to zero");
         }
 
         if(pageSize<=0){
-            return new ErrorResult("Page Size can not less than or equal to zero");
+            throw new BusinessException("Page Size can not less than or equal to zero");
         }
 
-        return new SuccessResult();
     }
 
-    private Result checkIfDailyPriceValid(double dailyPrice){
+    private void checkIfDailyPriceValid(double dailyPrice) throws BusinessException {
         if (dailyPrice<=0){
-            return new ErrorResult("Daily price can not less than or equal to zero");
+            throw new BusinessException("Daily price can not less than or equal to zero");
         }
 
-        return new SuccessResult();
     }
 }

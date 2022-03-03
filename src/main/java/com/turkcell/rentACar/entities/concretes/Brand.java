@@ -13,13 +13,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "brands")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "lazy"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Brand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private int brandId;
 
     @Column(name = "name")
     private String name;

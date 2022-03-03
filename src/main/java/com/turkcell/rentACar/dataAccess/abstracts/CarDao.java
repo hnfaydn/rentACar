@@ -18,9 +18,9 @@ public interface CarDao extends JpaRepository<Car, Integer> {
 
     boolean existsByDescription(String description);
 
-    boolean existsByBrand_Id(int brandId);
+    boolean existsByBrand_BrandId(int brandId);
 
-    boolean existsByColor_Id(int colorId);
+    boolean existsByColor_ColorId(int colorId);
     
     List<Car> findByDailyPriceLessThanEqual(double dailyPrice);
     
