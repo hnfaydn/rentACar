@@ -22,41 +22,40 @@ import java.util.Map;
 @RestControllerAdvice
 public class RentACarApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(RentACarApplication.class, args);
-	}
-	
-	@Bean
-	public ModelMapper getModelMapper(){
+    public static void main(String[] args) {
+        SpringApplication.run(RentACarApplication.class, args);
+    }
 
-		return new ModelMapper();
-	}
+    @Bean
+    public ModelMapper getModelMapper() {
+
+        return new ModelMapper();
+    }
 
 
-	@ExceptionHandler
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	public ErrorDataResult<Object> handleValidationExceptions(MethodArgumentNotValidException methodArgumentNotValidException){
+    @ExceptionHandler
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public ErrorDataResult<Object> handleValidationExceptions(MethodArgumentNotValidException methodArgumentNotValidException) {
 
-		Map<String, String> validationErrors = new HashMap<>();
+        Map<String, String> validationErrors = new HashMap<>();
 
-		for (FieldError fieldError: methodArgumentNotValidException.getBindingResult().getFieldErrors()) {
+        for (FieldError fieldError : methodArgumentNotValidException.getBindingResult().getFieldErrors()) {
+            validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
 
-			validationErrors.put(fieldError.getField(),fieldError.getDefaultMessage());
-		}
+        ErrorDataResult<Object> errorDataResult = new ErrorDataResult<>(validationErrors, "Validation Error: ");
 
-		ErrorDataResult<Object> errorDataResult = new ErrorDataResult<>(validationErrors,"Validation Error: ");
+        return errorDataResult;
+    }
 
-		return errorDataResult;
-	}
+    @ExceptionHandler
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public ErrorDataResult<Object> handleBusinessExceptions(BusinessException businessException) {
+        String businessError = businessException.getMessage();
 
-	@ExceptionHandler
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	public ErrorDataResult<Object> handleBusinessExceptions(BusinessException businessException){
-		String businessError = businessException.getMessage();
+        ErrorDataResult<Object> errorDataResult = new ErrorDataResult<>(businessError, "Business Error");
 
-		ErrorDataResult<Object> errorDataResult = new ErrorDataResult<>(businessError,"Business Error");
-
-		return errorDataResult;
-	}
+        return errorDataResult;
+    }
 
 }
