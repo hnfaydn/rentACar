@@ -15,35 +15,38 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "cars")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","Lazy"})
 public class Car {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "car_id")
     private int carId;
 
 
-    @Column(name = "daily_price")
+    @Column(name = "car_daily_price")
     private double dailyPrice;
 
-    @Column(name = "model_year")
+    @Column(name = "car_model_year")
     private int modelYear;
 
 
-    @Column(name = "description")
+    @Column(name = "car_description")
     private String description;
 
+    @OneToMany(mappedBy = "car",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<CarMaintenance> carMaintenances;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id")
     private Brand brand;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "color_id")
     private Color color;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private CarMaintenance carMaintenance;
+
 
 }

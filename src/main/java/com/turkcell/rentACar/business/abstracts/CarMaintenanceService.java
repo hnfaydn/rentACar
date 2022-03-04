@@ -1,5 +1,6 @@
 package com.turkcell.rentACar.business.abstracts;
 
+
 import com.turkcell.rentACar.business.dtos.CarMaintenanceDto;
 import com.turkcell.rentACar.business.dtos.CarMaintenanceListDto;
 import com.turkcell.rentACar.business.requests.CreateCarMaintenanceRequest;
@@ -16,9 +17,9 @@ public interface CarMaintenanceService {
 
     Result add(CreateCarMaintenanceRequest createCarMaintenanceRequest) throws BusinessException;
 
+    DataResult<CarMaintenanceDto> getById(int id) throws BusinessException;
+
     Result update(int id, UpdateCarMaintenanceRequest updateCarMaintenanceRequest) throws BusinessException;
 
     Result delete(int id) throws BusinessException;
-
-    DataResult<CarMaintenanceDto> getById(int id) throws BusinessException;
 }

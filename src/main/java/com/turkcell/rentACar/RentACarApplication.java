@@ -28,6 +28,7 @@ public class RentACarApplication {
 	
 	@Bean
 	public ModelMapper getModelMapper(){
+
 		return new ModelMapper();
 	}
 
@@ -41,7 +42,6 @@ public class RentACarApplication {
 		for (FieldError fieldError: methodArgumentNotValidException.getBindingResult().getFieldErrors()) {
 
 			validationErrors.put(fieldError.getField(),fieldError.getDefaultMessage());
-
 		}
 
 		ErrorDataResult<Object> errorDataResult = new ErrorDataResult<>(validationErrors,"Validation Error: ");

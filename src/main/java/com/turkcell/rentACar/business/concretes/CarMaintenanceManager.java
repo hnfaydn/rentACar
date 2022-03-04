@@ -10,6 +10,8 @@ import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
+import com.turkcell.rentACar.core.utilities.results.SuccessResult;
+import com.turkcell.rentACar.dataAccess.abstracts.CarDao;
 import com.turkcell.rentACar.dataAccess.abstracts.CarMaintenanceDao;
 import com.turkcell.rentACar.entities.concretes.CarMaintenance;
 import lombok.AllArgsConstructor;
@@ -27,50 +29,44 @@ public class CarMaintenanceManager implements CarMaintenanceService {
 
     @Override
     public DataResult<List<CarMaintenanceListDto>> getAll() throws BusinessException {
+
         List<CarMaintenance> carMaintenances = carMaintenanceDao.findAll();
 
         List<CarMaintenanceListDto> carMaintenanceListDtos = carMaintenances.stream()
-                .map(carMaintenance -> this.modelMapperService.forDto().map(carMaintenance,CarMaintenanceListDto.class))
-                .collect(Collectors.toList());
+                .map(carMaintenance -> this.modelMapperService.forDto().map(carMaintenance, CarMaintenanceListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult<>(carMaintenanceListDtos,"Data listed");
+
+
+        return new SuccessDataResult<>(carMaintenanceListDtos, "Data Listed");
     }
 
     @Override
     public Result add(CreateCarMaintenanceRequest createCarMaintenanceRequest) throws BusinessException {
+
         CarMaintenance carMaintenance = this.modelMapperService.forRequest().map(createCarMaintenanceRequest, CarMaintenance.class);
 
         this.carMaintenanceDao.save(carMaintenance);
+        return new SuccessDataResult(createCarMaintenanceRequest, "Data added");
+    }
 
-        return new SuccessDataResult<>(createCarMaintenanceRequest,"Data added");
+    @Override
+    public DataResult<CarMaintenanceDto> getById(int id) throws BusinessException {
+        CarMaintenance carMaintenance = this.carMaintenanceDao.getById(id);
+
+        CarMaintenanceDto carMaintenanceDto = this.modelMapperService.forDto().map(carMaintenance, CarMaintenanceDto.class);
+        return new SuccessDataResult(carMaintenanceDto,"Data getted by following id: "+id);
     }
 
     @Override
     public Result update(int id, UpdateCarMaintenanceRequest updateCarMaintenanceRequest) throws BusinessException {
-
-        CarMaintenance carMaintenance = this.carMaintenanceDao.getById(id);
-
-        CarMaintenanceDto carMaintenanceDto = this.modelMapperService.forDto().map(carMaintenance, CarMaintenanceDto.class);
-        this.carMaintenanceDao.save(carMaintenance);
-
-        return new SuccessDataResult(carMaintenanceDto, "Data updated, new data: ");
+        return null;
     }
 
     @Override
     public Result delete(int id) throws BusinessException {
 
-        CarMaintenanceDto carMaintenanceDto = this.modelMapperService.forDto().map(this.carMaintenanceDao.getById(id), CarMaintenanceDto.class);
         this.carMaintenanceDao.deleteById(id);
 
-        return new SuccessDataResult(carMaintenanceDto, "Data deleted");
-    }
-
-    @Override
-    public DataResult<CarMaintenanceDto> getById(int id) throws BusinessException {
-        CarMaintenance carMaintenance= this.carMaintenanceDao.getById(id);
-
-        CarMaintenanceDto carMaintenanceDto = this.modelMapperService.forDto().map(carMaintenance, CarMaintenanceDto.class);
-
-        return new SuccessDataResult<>(carMaintenanceDto,"Data getted" );
+        return new SuccessResult("Data Deleted");
     }
 }

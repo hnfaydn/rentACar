@@ -1,9 +1,10 @@
 package com.turkcell.rentACar.business.dtos;
 
-import com.turkcell.rentACar.entities.concretes.Car;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -11,11 +12,10 @@ import lombok.NoArgsConstructor;
 public class CarMaintenanceListDto {
 
     private int carMaintenanceId;
-    private String description;
-    private String returnDate;
 
-    private int carId;
+    private String carMaintenanceDescription;
+    private Date returnDate;
 
-
+    private int carCarId;
 
 }

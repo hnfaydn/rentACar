@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+@RequestMapping("/api/carMaintenances")
 @RestController
-@RequestMapping("/api/carMaintenance")
 @AllArgsConstructor
 public class CarMaintenancesController {
 
@@ -30,6 +31,11 @@ public class CarMaintenancesController {
         return this.carMaintenanceService.add(createCarMaintenanceRequest);
     }
 
+    @GetMapping("/getbyid")
+    public DataResult<CarMaintenanceDto> getById(@RequestParam int id) throws BusinessException{
+        return this.carMaintenanceService.getById(id);
+    }
+
     @PutMapping("/update")
     public Result update(@RequestParam int id,@RequestBody UpdateCarMaintenanceRequest updateCarMaintenanceRequest) throws BusinessException{
         return this.carMaintenanceService.update(id,updateCarMaintenanceRequest);
@@ -38,10 +44,5 @@ public class CarMaintenancesController {
     @PostMapping("/delete")
     public Result delete(@RequestParam int id) throws BusinessException{
         return this.carMaintenanceService.delete(id);
-    }
-
-    @GetMapping("/getbyid")
-    public DataResult<CarMaintenanceDto> getById(@RequestParam int id) throws BusinessException{
-        return this.carMaintenanceService.getById(id);
     }
 }

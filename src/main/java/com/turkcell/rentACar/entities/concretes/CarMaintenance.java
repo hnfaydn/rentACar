@@ -1,34 +1,34 @@
 package com.turkcell.rentACar.entities.concretes;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.Date;
+import java.util.List;
+import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "car_maintenances")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","Lazy"})
 public class CarMaintenance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "car_maintenance_id")
     private int carMaintenanceId;
 
-    @Column(name="description")
-    private String description;
+    @Column(name = "car_maintenance_description")
+    private String carMaintenanceDescription;
 
-    @Column(name="return_date")
-    private String returnDate;
+    @Column(name = "return_date")
+    private Date returnDate;
 
-
-
-    @OneToMany(mappedBy = "carMaintenance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Car> cars;
+    @ManyToOne
+    @JoinColumn(name="car_id")
+    private Car car;
 }
