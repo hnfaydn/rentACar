@@ -3,6 +3,8 @@ package com.turkcell.rentACar.business.concretes;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.turkcell.rentACar.business.abstracts.BrandService;
+import com.turkcell.rentACar.business.abstracts.ColorService;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.*;
 import com.turkcell.rentACar.dataAccess.abstracts.BrandDao;
@@ -26,8 +28,8 @@ import lombok.AllArgsConstructor;
 public class CarManager implements CarService {
 
     private CarDao carDao;
-    private BrandDao brandDao;
-    private ColorDao colorDao;
+    private BrandService brandService;
+    private ColorService colorService;
     private ModelMapperService modelMapperService;
 
 
@@ -204,11 +206,11 @@ public class CarManager implements CarService {
             throw new BusinessException("Car description can not null or empty!");
         }
 
-        if (!this.brandDao.existsById(car.getBrand().getBrandId())) {
+        if (this.brandService.getById(car.getBrand().getBrandId())==null) {
             throw new BusinessException("There is no brand with following id: " + car.getBrand().getBrandId());
         }
 
-        if (!this.colorDao.existsById(car.getColor().getColorId())) {
+        if (this.colorService.getById(car.getColor().getColorId())==null) {
             throw new BusinessException("There is no color with following id: " + car.getColor().getColorId());
         }
 

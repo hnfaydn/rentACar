@@ -11,7 +11,6 @@ import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.core.utilities.results.SuccessResult;
-import com.turkcell.rentACar.dataAccess.abstracts.CarDao;
 import com.turkcell.rentACar.dataAccess.abstracts.CarMaintenanceDao;
 import com.turkcell.rentACar.entities.concretes.CarMaintenance;
 import lombok.AllArgsConstructor;
