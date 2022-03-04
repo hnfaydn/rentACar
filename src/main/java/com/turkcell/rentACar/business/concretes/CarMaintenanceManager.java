@@ -26,6 +26,7 @@ public class CarMaintenanceManager implements CarMaintenanceService {
     private CarMaintenanceDao carMaintenanceDao;
     private ModelMapperService modelMapperService;
 
+
     @Override
     public DataResult<List<CarMaintenanceListDto>> getAll() throws BusinessException {
 
@@ -33,8 +34,6 @@ public class CarMaintenanceManager implements CarMaintenanceService {
 
         List<CarMaintenanceListDto> carMaintenanceListDtos = carMaintenances.stream()
                 .map(carMaintenance -> this.modelMapperService.forDto().map(carMaintenance, CarMaintenanceListDto.class)).collect(Collectors.toList());
-
-
 
         return new SuccessDataResult<>(carMaintenanceListDtos, "Data Listed");
     }
@@ -53,7 +52,7 @@ public class CarMaintenanceManager implements CarMaintenanceService {
         CarMaintenance carMaintenance = this.carMaintenanceDao.getById(id);
 
         CarMaintenanceDto carMaintenanceDto = this.modelMapperService.forDto().map(carMaintenance, CarMaintenanceDto.class);
-        return new SuccessDataResult(carMaintenanceDto,"Data getted by following id: "+id);
+        return new SuccessDataResult(carMaintenanceDto, "Data getted by following id: " + id);
     }
 
     @Override

@@ -37,11 +37,7 @@ public class ColorManager implements ColorService {
 
         checkIfColorListEmpty(colors);
 
-
-        List<ColorListDto> colorListDtos = colors.stream()
-                .map(color -> this.modelMapperService.forDto()
-                        .map(color, ColorListDto.class))
-                .collect(Collectors.toList());
+        List<ColorListDto> colorListDtos = colors.stream().map(color -> this.modelMapperService.forDto().map(color, ColorListDto.class)).collect(Collectors.toList());
 
         return new SuccessDataResult<>(colorListDtos, "Data listed");
     }
@@ -59,7 +55,6 @@ public class ColorManager implements ColorService {
         this.colorDao.save(color);
         return new SuccessDataResult(createColorRequest, "Data added : " + color.getName());
     }
-
 
 
     @Override
@@ -88,6 +83,7 @@ public class ColorManager implements ColorService {
         String colorNameBeforeUpdate = this.colorDao.findById(id).getName();
 
         updateColorOperations(color, updateColorRequest);
+
         this.colorDao.save(color);
         return new SuccessResult(colorNameBeforeUpdate + " updated to " + updateColorRequest.getName());
     }
@@ -95,7 +91,6 @@ public class ColorManager implements ColorService {
 
     @Override
     public Result delete(int id) throws BusinessException {
-
         checkIfIdExist(id);
 
         String colorNameBeforeDeleted = this.colorDao.getById(id).getName();
@@ -112,27 +107,24 @@ public class ColorManager implements ColorService {
         if (this.colorDao.existsByName(name)) {
             throw new BusinessException("This color is already exist in system: " + name);
         }
-
     }
 
     private void checkIfIdExist(int id) throws BusinessException {
         if (!this.colorDao.existsById(id)) {
             throw new BusinessException("There is no color with this id: " + id);
         }
-
     }
 
     private void checkIfNameNotNull(String colorName) throws BusinessException {
         if (colorName.isEmpty() || colorName.isBlank()) {
             throw new BusinessException("Color name can not empty or null!");
         }
-
     }
 
     private void checkIfColorListEmpty(List<Color> colors) throws BusinessException {
-        if(colors.isEmpty()){
+        if (colors.isEmpty()) {
             throw new BusinessException("There is no Color to list");
         }
-
     }
+
 }

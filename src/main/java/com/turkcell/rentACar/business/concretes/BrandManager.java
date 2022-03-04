@@ -30,13 +30,11 @@ public class BrandManager implements BrandService {
     private ModelMapperService modelMapperService;
 
 
-
 	@Override
     public DataResult<List<BrandListDto>> getAll() throws BusinessException {
         List<Brand> brands = brandDao.findAll();
 
 		checkIfBrandListEmpty(brands);
-
 
         List<BrandListDto> brandListDtos = brands.stream()
 				.map(brand -> this.modelMapperService.forDto().map(brand, BrandListDto.class))
@@ -64,7 +62,6 @@ public class BrandManager implements BrandService {
     public DataResult<BrandDto> getById(int id) throws BusinessException {
 
 		checkIfIdExist(id);
-
 
 		Brand brand = this.brandDao.getById(id);
 		BrandDto brandDto = this.modelMapperService.forDto().map(brand, BrandDto.class);
@@ -109,29 +106,25 @@ public class BrandManager implements BrandService {
     private void checkIfNameNotDuplicated(String name) throws BusinessException {
         if (this.brandDao.existsByName(name)) {
         	throw new BusinessException("This brand is already exist in system: "+name);
-        }        
-
+        }
     }
 
 	private void checkIfIdExist(int id) throws BusinessException {
 		if (!this.brandDao.existsById(id)) {
 			throw new BusinessException("There is no brand with following id : " + id);
 		}
-
 	}
 
 	private void checkIfNameNotNull(String brandName) throws BusinessException {
 		if(brandName.isEmpty() || brandName.isBlank()){
 			throw new BusinessException("Brand name can not empty or null!");
 		}
-
 	}
 
 	private void checkIfBrandListEmpty(List<Brand> brands) throws BusinessException {
 		if(brands.isEmpty()){
 			throw new BusinessException("There is no Brand to list");
 		}
-
 	}
 }
 

@@ -113,7 +113,7 @@ public class CarManager implements CarService {
     @Override
     public DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize) throws BusinessException {
 
-        checkIfPageNoAndPageSizeValid(pageNo,pageSize);
+        checkIfPageNoAndPageSizeValid(pageNo, pageSize);
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         List<Car> cars = this.carDao.findAll(pageable).getContent();
@@ -157,11 +157,11 @@ public class CarManager implements CarService {
 
     private void checkIfCarExist(Car car) throws BusinessException {
         if (
-                carDao.existsByDailyPrice(car.getDailyPrice())   &&
-                carDao.existsByModelYear(car.getModelYear())     &&
-                carDao.existsByDescription(car.getDescription()) &&
-                carDao.existsByBrand_BrandId(car.getBrand().getBrandId())  &&
-                carDao.existsByColor_ColorId(car.getColor().getColorId())
+                carDao.existsByDailyPrice(car.getDailyPrice()) &&
+                        carDao.existsByModelYear(car.getModelYear()) &&
+                        carDao.existsByDescription(car.getDescription()) &&
+                        carDao.existsByBrand_BrandId(car.getBrand().getBrandId()) &&
+                        carDao.existsByColor_ColorId(car.getColor().getColorId())
         ) {
             throw new BusinessException("This car is already exist!");
         }
@@ -182,8 +182,8 @@ public class CarManager implements CarService {
 
     private void carAndRequestParameterIsNotEqual(Car car, UpdateCarRequest updateCarRequest) throws BusinessException {
         if (
-             car.getDailyPrice() == updateCarRequest.getDailyPrice() &&
-             car.getDescription().equals(updateCarRequest.getDescription())
+                car.getDailyPrice() == updateCarRequest.getDailyPrice() &&
+                        car.getDescription().equals(updateCarRequest.getDescription())
 
         ) {
             throw new BusinessException("Initial values are completely equal to update values, no need to update!");
@@ -206,14 +206,13 @@ public class CarManager implements CarService {
             throw new BusinessException("Car description can not null or empty!");
         }
 
-        if (this.brandService.getById(car.getBrand().getBrandId())==null) {
+        if (this.brandService.getById(car.getBrand().getBrandId()) == null) {
             throw new BusinessException("There is no brand with following id: " + car.getBrand().getBrandId());
         }
 
-        if (this.colorService.getById(car.getColor().getColorId())==null) {
+        if (this.colorService.getById(car.getColor().getColorId()) == null) {
             throw new BusinessException("There is no color with following id: " + car.getColor().getColorId());
         }
-
 
     }
 
@@ -230,24 +229,24 @@ public class CarManager implements CarService {
     }
 
     private void checkIfCarListEmpty(List<Car> cars) throws BusinessException {
-        if(cars.isEmpty()){
+        if (cars.isEmpty()) {
             throw new BusinessException("There is no Car to list");
         }
     }
 
     private void checkIfPageNoAndPageSizeValid(int pageNo, int pageSize) throws BusinessException {
-        if(pageNo<=0){
+        if (pageNo <= 0) {
             throw new BusinessException("Page No can not less than or equal to zero");
         }
 
-        if(pageSize<=0){
+        if (pageSize <= 0) {
             throw new BusinessException("Page Size can not less than or equal to zero");
         }
 
     }
 
     private void checkIfDailyPriceValid(double dailyPrice) throws BusinessException {
-        if (dailyPrice<=0){
+        if (dailyPrice <= 0) {
             throw new BusinessException("Daily price can not less than or equal to zero");
         }
 
