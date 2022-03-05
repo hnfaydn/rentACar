@@ -57,7 +57,14 @@ public class CarMaintenanceManager implements CarMaintenanceService {
 
     @Override
     public Result update(int id, UpdateCarMaintenanceRequest updateCarMaintenanceRequest) throws BusinessException {
-        return null;
+
+        CarMaintenance carMaintenance = this.carMaintenanceDao.getById(id);
+
+        updateCarMaintenanceOperations(carMaintenance,updateCarMaintenanceRequest);
+        CarMaintenanceDto carMaintenanceDto = this.modelMapperService.forDto().map(carMaintenance, CarMaintenanceDto.class);
+
+        this.carMaintenanceDao.save(carMaintenance);
+        return new SuccessDataResult(carMaintenanceDto, "Data updated, new data: ");
     }
 
     @Override
@@ -66,5 +73,10 @@ public class CarMaintenanceManager implements CarMaintenanceService {
         this.carMaintenanceDao.deleteById(id);
 
         return new SuccessResult("Data Deleted");
+    }
+
+    private void updateCarMaintenanceOperations(CarMaintenance carMaintenance,UpdateCarMaintenanceRequest updateCarMaintenanceRequest){
+        carMaintenance.setCarMaintenanceDescription(updateCarMaintenanceRequest.getCarMaintenanceDescription());
+        carMaintenance.setReturnDate(updateCarMaintenanceRequest.getReturnDate());
     }
 }
