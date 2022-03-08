@@ -1,4 +1,4 @@
-package com.turkcell.rentACar.business.requests;
+package com.turkcell.rentACar.business.requests.brandRequests;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +13,6 @@ import javax.validation.constraints.Size;
 public class UpdateBrandRequest {
 
     @NotNull
-    @Size(min = 3,max = 50)
+    @Size(min = 3, max = 50)
     private String name;
 }

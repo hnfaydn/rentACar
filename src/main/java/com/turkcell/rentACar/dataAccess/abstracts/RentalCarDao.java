@@ -1,13 +1,13 @@
 package com.turkcell.rentACar.dataAccess.abstracts;
 
-import com.turkcell.rentACar.entities.concretes.CarMaintenance;
+import com.turkcell.rentACar.entities.concretes.RentalCar;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface CarMaintenanceDao extends JpaRepository<CarMaintenance, Integer> {
+public interface RentalCarDao extends JpaRepository<RentalCar, Integer> {
 
-    List<CarMaintenance> getByCar_CarId(int carId);
+    List<RentalCar> getByCar_CarId(int carId);
 }

@@ -1,8 +1,9 @@
-package com.turkcell.rentACar.business.requests;
+package com.turkcell.rentACar.business.requests.carRequests;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -21,7 +22,7 @@ public class CreateCarRequest {
     private int modelYear;
 
     @NotNull
-    @Size(min=10)
+    @Size(min = 10)
     private String description;
 
     @NotNull

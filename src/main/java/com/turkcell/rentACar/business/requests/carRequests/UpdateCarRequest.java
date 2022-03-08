@@ -1,4 +1,4 @@
-package com.turkcell.rentACar.business.requests;
+package com.turkcell.rentACar.business.requests.carRequests;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +18,7 @@ public class UpdateCarRequest {
     private double dailyPrice;
 
     @NotNull
-    @Size(min=10)
+    @Size(min = 10)
     private String description;
 
 }

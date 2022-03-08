@@ -1,35 +1,35 @@
 package com.turkcell.rentACar.business.concretes;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
-import com.turkcell.rentACar.entities.concretes.Brand;
-import lombok.SneakyThrows;
-import org.springframework.stereotype.Service;
 import com.turkcell.rentACar.business.abstracts.ColorService;
-import com.turkcell.rentACar.business.dtos.ColorDto;
-import com.turkcell.rentACar.business.dtos.ColorListDto;
-import com.turkcell.rentACar.business.requests.CreateColorRequest;
-import com.turkcell.rentACar.business.requests.UpdateColorRequest;
+import com.turkcell.rentACar.business.dtos.colorDtos.ColorDto;
+import com.turkcell.rentACar.business.dtos.colorDtos.ColorListDto;
+import com.turkcell.rentACar.business.requests.colorRequests.CreateColorRequest;
+import com.turkcell.rentACar.business.requests.colorRequests.UpdateColorRequest;
+import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
-import com.turkcell.rentACar.core.utilities.results.ErrorDataResult;
-import com.turkcell.rentACar.core.utilities.results.ErrorResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.core.utilities.results.SuccessResult;
 import com.turkcell.rentACar.dataAccess.abstracts.ColorDao;
 import com.turkcell.rentACar.entities.concretes.Color;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class ColorManager implements ColorService {
 
-    private ColorDao colorDao;
-    private ModelMapperService modelMapperService;
+    private final ColorDao colorDao;
+    private final ModelMapperService modelMapperService;
 
+    @Autowired
+    public ColorManager(ColorDao colorDao, ModelMapperService modelMapperService) {
+        this.colorDao = colorDao;
+        this.modelMapperService = modelMapperService;
+    }
 
     @Override
     public DataResult<List<ColorListDto>> getAll() throws BusinessException {

@@ -1,12 +1,12 @@
 package com.turkcell.rentACar.entities.concretes;
 
-import java.util.Date;
-import java.util.List;
-import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.time.LocalDate;
 
 
 @Entity
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "car_maintenances")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler","Lazy"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "Lazy"})
 public class CarMaintenance {
 
     @Id
@@ -26,9 +26,9 @@ public class CarMaintenance {
     private String carMaintenanceDescription;
 
     @Column(name = "return_date")
-    private Date returnDate;
+    private LocalDate returnDate;
 
     @ManyToOne
-    @JoinColumn(name="car_id")
+    @JoinColumn(name = "car_id")
     private Car car;
 }

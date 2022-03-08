@@ -1,26 +1,29 @@
 package com.turkcell.rentACar.api.controllers;
 
 import com.turkcell.rentACar.business.abstracts.BrandService;
-import com.turkcell.rentACar.business.dtos.BrandDto;
-import com.turkcell.rentACar.business.dtos.BrandListDto;
-import com.turkcell.rentACar.business.requests.CreateBrandRequest;
-import com.turkcell.rentACar.business.requests.UpdateBrandRequest;
+import com.turkcell.rentACar.business.dtos.brandDtos.BrandDto;
+import com.turkcell.rentACar.business.dtos.brandDtos.BrandListDto;
+import com.turkcell.rentACar.business.requests.brandRequests.CreateBrandRequest;
+import com.turkcell.rentACar.business.requests.brandRequests.UpdateBrandRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
-
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/brands")
-@AllArgsConstructor
 public class BrandsController {
 
-    private BrandService brandService;
+    private final BrandService brandService;
 
+    @Autowired
+    public BrandsController(BrandService brandService) {
+        this.brandService = brandService;
+    }
 
     @GetMapping("/getall")
     public DataResult<List<BrandListDto>> getAll() throws BusinessException {
@@ -29,10 +32,8 @@ public class BrandsController {
 
 
     @PostMapping("/add")
-    public Result add(@RequestBody CreateBrandRequest createBrandRequest) throws BusinessException {
-
-       return this.brandService.add(createBrandRequest);
-
+    public Result add(@RequestBody @Valid CreateBrandRequest createBrandRequest) throws BusinessException {
+        return this.brandService.add(createBrandRequest);
     }
 
     @GetMapping("/getbyid")
@@ -43,12 +44,12 @@ public class BrandsController {
 
     @PostMapping("/delete")
     public Result delete(@RequestParam int id) throws BusinessException {
-       return this.brandService.delete(id);
+        return this.brandService.delete(id);
     }
 
     @PutMapping("/update")
-    public Result update(@RequestParam int id, @RequestBody UpdateBrandRequest updateBrandRequest) throws BusinessException {
-       return this.brandService.update(id, updateBrandRequest);
+    public Result update(@RequestParam int id, @RequestBody @Valid UpdateBrandRequest updateBrandRequest) throws BusinessException {
+        return this.brandService.update(id, updateBrandRequest);
     }
 
 }

@@ -1,37 +1,44 @@
 package com.turkcell.rentACar.business.concretes;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.turkcell.rentACar.business.abstracts.BrandService;
+import com.turkcell.rentACar.business.abstracts.CarService;
 import com.turkcell.rentACar.business.abstracts.ColorService;
+import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
+import com.turkcell.rentACar.business.dtos.carDtos.CarListDto;
+import com.turkcell.rentACar.business.requests.carRequests.CreateCarRequest;
+import com.turkcell.rentACar.business.requests.carRequests.UpdateCarRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
-import com.turkcell.rentACar.core.utilities.results.*;
-import com.turkcell.rentACar.dataAccess.abstracts.BrandDao;
-import com.turkcell.rentACar.dataAccess.abstracts.ColorDao;
+import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
+import com.turkcell.rentACar.core.utilities.results.DataResult;
+import com.turkcell.rentACar.core.utilities.results.Result;
+import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
+import com.turkcell.rentACar.dataAccess.abstracts.CarDao;
+import com.turkcell.rentACar.entities.concretes.Car;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import com.turkcell.rentACar.business.abstracts.CarService;
-import com.turkcell.rentACar.business.dtos.CarDto;
-import com.turkcell.rentACar.business.dtos.CarListDto;
-import com.turkcell.rentACar.business.requests.CreateCarRequest;
-import com.turkcell.rentACar.business.requests.UpdateCarRequest;
-import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
-import com.turkcell.rentACar.dataAccess.abstracts.CarDao;
-import com.turkcell.rentACar.entities.concretes.Car;
-import lombok.AllArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class CarManager implements CarService {
 
-    private CarDao carDao;
-    private BrandService brandService;
-    private ColorService colorService;
-    private ModelMapperService modelMapperService;
+    private final CarDao carDao;
+    private final BrandService brandService;
+    private final ColorService colorService;
+    private final ModelMapperService modelMapperService;
 
+
+    @Autowired
+    public CarManager(CarDao carDao, BrandService brandService, ColorService colorService, ModelMapperService modelMapperService) {
+        this.carDao = carDao;
+        this.brandService = brandService;
+        this.colorService = colorService;
+        this.modelMapperService = modelMapperService;
+    }
 
     @Override
     public DataResult<List<CarListDto>> getAll() throws BusinessException {
@@ -41,9 +48,7 @@ public class CarManager implements CarService {
         checkIfCarListEmpty(cars);
 
 
-        List<CarListDto> carListDtos = cars.stream()
-                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
-                .collect(Collectors.toList());
+        List<CarListDto> carListDtos = cars.stream().map(car -> this.modelMapperService.forDto().map(car, CarListDto.class)).collect(Collectors.toList());
 
         return new SuccessDataResult<>(carListDtos, "Data listed");
     }
@@ -51,7 +56,6 @@ public class CarManager implements CarService {
 
     @Override
     public Result add(CreateCarRequest createCarRequest) throws BusinessException {
-
         Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
 
         checkIfCarCreationParametersNotNull(car);
@@ -103,9 +107,7 @@ public class CarManager implements CarService {
 
         checkIfCarListEmpty(cars);
 
-        List<CarListDto> carListDtos = cars.stream()
-                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
-                .collect(Collectors.toList());
+        List<CarListDto> carListDtos = cars.stream().map(car -> this.modelMapperService.forDto().map(car, CarListDto.class)).collect(Collectors.toList());
         return new SuccessDataResult<>(carListDtos, "Data listed");
     }
 
@@ -120,9 +122,7 @@ public class CarManager implements CarService {
 
         checkIfCarListEmpty(cars);
 
-        List<CarListDto> carListDtos = cars.stream()
-                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
-                .collect(Collectors.toList());
+        List<CarListDto> carListDtos = cars.stream().map(car -> this.modelMapperService.forDto().map(car, CarListDto.class)).collect(Collectors.toList());
 
         return new SuccessDataResult<>(carListDtos, "Data paged");
     }
@@ -136,9 +136,7 @@ public class CarManager implements CarService {
 
         checkIfCarListEmpty(cars);
 
-        List<CarListDto> carListDtos = cars.stream()
-                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
-                .collect(Collectors.toList());
+        List<CarListDto> carListDtos = cars.stream().map(car -> this.modelMapperService.forDto().map(car, CarListDto.class)).collect(Collectors.toList());
 
         return new SuccessDataResult<>(carListDtos, "Data listed");
     }
@@ -156,13 +154,7 @@ public class CarManager implements CarService {
 
 
     private void checkIfCarExist(Car car) throws BusinessException {
-        if (
-                carDao.existsByDailyPrice(car.getDailyPrice()) &&
-                        carDao.existsByModelYear(car.getModelYear()) &&
-                        carDao.existsByDescription(car.getDescription()) &&
-                        carDao.existsByBrand_BrandId(car.getBrand().getBrandId()) &&
-                        carDao.existsByColor_ColorId(car.getColor().getColorId())
-        ) {
+        if (carDao.existsByDailyPrice(car.getDailyPrice()) && carDao.existsByModelYear(car.getModelYear()) && carDao.existsByDescription(car.getDescription()) && carDao.existsByBrand_BrandId(car.getBrand().getBrandId()) && carDao.existsByColor_ColorId(car.getColor().getColorId())) {
             throw new BusinessException("This car is already exist!");
         }
 
@@ -181,9 +173,7 @@ public class CarManager implements CarService {
     }
 
     private void carAndRequestParameterIsNotEqual(Car car, UpdateCarRequest updateCarRequest) throws BusinessException {
-        if (
-                car.getDailyPrice() == updateCarRequest.getDailyPrice() &&
-                        car.getDescription().equals(updateCarRequest.getDescription())
+        if (car.getDailyPrice() == updateCarRequest.getDailyPrice() && car.getDescription().equals(updateCarRequest.getDescription())
 
         ) {
             throw new BusinessException("Initial values are completely equal to update values, no need to update!");
@@ -193,7 +183,7 @@ public class CarManager implements CarService {
 
     private void checkIfCarCreationParametersNotNull(Car car) throws BusinessException {
         Double dailyPrice = car.getDailyPrice();
-        if (dailyPrice <= 0 || dailyPrice == null || dailyPrice.isNaN()) {
+        if (dailyPrice < 0 || dailyPrice == null || dailyPrice.isNaN()) {
             throw new BusinessException("Daily price can not less than zero or equal to zero or null!");
         }
 

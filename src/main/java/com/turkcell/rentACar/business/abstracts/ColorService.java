@@ -1,14 +1,14 @@
 package com.turkcell.rentACar.business.abstracts;
 
-import java.util.List;
-
-import com.turkcell.rentACar.business.dtos.ColorDto;
-import com.turkcell.rentACar.business.dtos.ColorListDto;
-import com.turkcell.rentACar.business.requests.CreateColorRequest;
-import com.turkcell.rentACar.business.requests.UpdateColorRequest;
+import com.turkcell.rentACar.business.dtos.colorDtos.ColorDto;
+import com.turkcell.rentACar.business.dtos.colorDtos.ColorListDto;
+import com.turkcell.rentACar.business.requests.colorRequests.CreateColorRequest;
+import com.turkcell.rentACar.business.requests.colorRequests.UpdateColorRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
+
+import java.util.List;
 
 public interface ColorService {
 

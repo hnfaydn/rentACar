@@ -1,32 +1,31 @@
 package com.turkcell.rentACar.api.controllers;
 
-import java.util.List;
-
-import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
-import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import com.turkcell.rentACar.business.abstracts.CarService;
-import com.turkcell.rentACar.business.dtos.CarDto;
-import com.turkcell.rentACar.business.dtos.CarListDto;
-import com.turkcell.rentACar.business.requests.CreateCarRequest;
-import com.turkcell.rentACar.business.requests.UpdateCarRequest;
+import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
+import com.turkcell.rentACar.business.dtos.carDtos.CarListDto;
+import com.turkcell.rentACar.business.requests.carRequests.CreateCarRequest;
+import com.turkcell.rentACar.business.requests.carRequests.UpdateCarRequest;
+import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.*;
 
-import lombok.AllArgsConstructor;
+import javax.validation.Valid;
+import java.util.List;
 
-@RequestMapping("/api/cars")
+
 @RestController
-@AllArgsConstructor
+@RequestMapping("/api/cars")
 public class CarsController {
 
-    private CarService carService;
+    private final CarService carService;
+
+    @Autowired
+    public CarsController(CarService carService) {
+        this.carService = carService;
+    }
 
     @GetMapping("/getall")
     public DataResult<List<CarListDto>> getAll() throws BusinessException {
@@ -34,7 +33,7 @@ public class CarsController {
     }
 
     @PostMapping("/add")
-    public Result add(@RequestBody CreateCarRequest createCarRequest) throws BusinessException {
+    public Result add(@RequestBody @Valid CreateCarRequest createCarRequest) throws BusinessException {
         return this.carService.add(createCarRequest);
     }
 
@@ -49,20 +48,23 @@ public class CarsController {
     }
 
     @PutMapping("/update")
-    public Result update(@RequestParam int id, @RequestBody UpdateCarRequest updateCarRequest) throws BusinessException {
+    public Result update(@RequestParam int id, @RequestBody @Valid UpdateCarRequest updateCarRequest) throws BusinessException {
         return this.carService.update(id, updateCarRequest);
     }
+
     @GetMapping("/findByDailyPriceLessThanEqual")
     DataResult<List<CarListDto>> findByDailyPriceLessThanEqual(double dailyPrice) throws BusinessException {
-    	return this.carService.findByDailyPriceLessThanEqual(dailyPrice);
+        return this.carService.findByDailyPriceLessThanEqual(dailyPrice);
     }
+
     @GetMapping("/getAllPaged")
     DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize) throws BusinessException {
-    	return this.carService.getAllPaged(pageNo, pageSize);
+        return this.carService.getAllPaged(pageNo, pageSize);
     }
+
     @GetMapping("/getAllSortedByDailyPrice")
     DataResult<List<CarListDto>> getAllSortedByDailyPrice(Sort.Direction sortDirection) throws BusinessException {
-    	return this.carService.getAllSortedByDailyPrice(sortDirection);
+        return this.carService.getAllSortedByDailyPrice(sortDirection);
     }
 
 }

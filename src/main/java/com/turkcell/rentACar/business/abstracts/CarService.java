@@ -1,15 +1,15 @@
 package com.turkcell.rentACar.business.abstracts;
 
-import java.util.List;
-
-import com.turkcell.rentACar.business.dtos.CarDto;
-import com.turkcell.rentACar.business.dtos.CarListDto;
-import com.turkcell.rentACar.business.requests.CreateCarRequest;
-import com.turkcell.rentACar.business.requests.UpdateCarRequest;
+import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
+import com.turkcell.rentACar.business.dtos.carDtos.CarListDto;
+import com.turkcell.rentACar.business.requests.carRequests.CreateCarRequest;
+import com.turkcell.rentACar.business.requests.carRequests.UpdateCarRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import org.springframework.data.domain.Sort;
+
+import java.util.List;
 
 public interface CarService {
 
@@ -22,10 +22,10 @@ public interface CarService {
     Result delete(int id) throws BusinessException;
 
     DataResult<CarDto> getById(int id) throws BusinessException;
-    
+
     DataResult<List<CarListDto>> findByDailyPriceLessThanEqual(double dailyPrice) throws BusinessException;
-    
+
     DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize) throws BusinessException;
-    
+
     DataResult<List<CarListDto>> getAllSortedByDailyPrice(Sort.Direction sortDirection) throws BusinessException;
 }

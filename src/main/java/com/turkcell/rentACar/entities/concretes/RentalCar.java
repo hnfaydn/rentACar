@@ -6,25 +6,28 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
+import java.time.LocalDate;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "colors")
+@Table(name = "rental_cars")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "Lazy"})
-public class Color {
+public class RentalCar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "color_id")
-    private int colorId;
+    @Column(name = "rental_car_id")
+    private int rentalCarId;
 
-    @Column(name = "color_name")
-    private String name;
+    @Column(name = "rent_date")
+    private LocalDate rentDate;
 
-    @OneToMany(mappedBy = "color", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Car> cars;
+    @Column(name = "return_date")
+    private LocalDate returnDate;
 
+    @ManyToOne
+    @JoinColumn(name = "car_id")
+    private Car car;
 }
