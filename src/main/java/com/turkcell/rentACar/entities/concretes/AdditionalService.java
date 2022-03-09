@@ -6,35 +6,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "rental_cars")
+@Table(name = "additional_services")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "Lazy"})
-public class RentalCar {
+public class AdditionalService {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rental_car_id")
-    private int rentalCarId;
+    @Column(name = "additional_service_id")
+    private int additionalServiceId;
 
-    @Column(name = "rent_date")
-    private LocalDate rentDate;
+    @Column(name = "additional_service_name")
+    private String name;
 
-    @Column(name = "return_date")
-    private LocalDate returnDate;
+    @Column(name = "additional_service_dailyPrice")
+    private double dailyPrice;
 
-    @Column(name = "rental_car_location")
-    private String location;
-
-    @ManyToOne
-    @JoinColumn(name = "car_id")
-    private Car car;
-
-    @OneToMany(mappedBy = "rentalCar", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<OrderedAdditionalService> orderedAdditionalServices;
 }

@@ -30,6 +30,9 @@ public class Car {
     @Column(name = "car_description")
     private String description;
 
+    @Column(name = "car_current_location")
+    private String currentLocation;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     private Brand brand;

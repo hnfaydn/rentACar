@@ -35,7 +35,6 @@ public class ColorManager implements ColorService {
     public DataResult<List<ColorListDto>> getAll() throws BusinessException {
         List<Color> colors = this.colorDao.findAll();
 
-        checkIfColorListEmpty(colors);
 
         List<ColorListDto> colorListDtos = colors.stream().map(color -> this.modelMapperService.forDto().map(color, ColorListDto.class)).collect(Collectors.toList());
 
@@ -48,7 +47,6 @@ public class ColorManager implements ColorService {
 
         Color color = this.modelMapperService.forRequest().map(createColorRequest, Color.class);
 
-        checkIfNameNotNull(color.getName());
 
         checkIfNameNotDuplicated(color.getName());
 
@@ -60,7 +58,7 @@ public class ColorManager implements ColorService {
     @Override
     public DataResult<ColorDto> getById(int id) throws BusinessException {
 
-        checkIfIdExist(id);
+        checkIfIdExists(id);
 
         Color color = this.colorDao.findById(id);
         ColorDto colorDto = this.modelMapperService.forDto().map(color, ColorDto.class);
@@ -71,12 +69,12 @@ public class ColorManager implements ColorService {
     @Override
     public Result update(int id, UpdateColorRequest updateColorRequest) throws BusinessException {
 
-        checkIfIdExist(id);
+        checkIfIdExists(id);
 
 
         Color color = this.colorDao.getById(id);
 
-        checkIfNameNotNull(updateColorRequest.getName());
+
 
         checkIfNameNotDuplicated(updateColorRequest.getName());
 
@@ -91,7 +89,7 @@ public class ColorManager implements ColorService {
 
     @Override
     public Result delete(int id) throws BusinessException {
-        checkIfIdExist(id);
+        checkIfIdExists(id);
 
         String colorNameBeforeDeleted = this.colorDao.getById(id).getName();
         this.colorDao.deleteById(id);
@@ -109,22 +107,12 @@ public class ColorManager implements ColorService {
         }
     }
 
-    private void checkIfIdExist(int id) throws BusinessException {
+    private void checkIfIdExists(int id) throws BusinessException {
         if (!this.colorDao.existsById(id)) {
             throw new BusinessException("There is no color with this id: " + id);
         }
     }
 
-    private void checkIfNameNotNull(String colorName) throws BusinessException {
-        if (colorName.isEmpty() || colorName.isBlank()) {
-            throw new BusinessException("Color name can not empty or null!");
-        }
-    }
 
-    private void checkIfColorListEmpty(List<Color> colors) throws BusinessException {
-        if (colors.isEmpty()) {
-            throw new BusinessException("There is no Color to list");
-        }
-    }
 
 }

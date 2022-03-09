@@ -35,8 +35,7 @@ public class RentalCarManager implements RentalCarService {
     private final ModelMapperService modelMapperService;
 
     @Autowired
-    @Lazy
-    public RentalCarManager(RentalCarDao rentalCarDao, CarMaintenanceService carMaintenanceService, ModelMapperService modelMapperService, CarService carService) {
+    public RentalCarManager(RentalCarDao rentalCarDao,@Lazy CarMaintenanceService carMaintenanceService, ModelMapperService modelMapperService, CarService carService) {
         this.rentalCarDao = rentalCarDao;
         this.carMaintenanceService = carMaintenanceService;
         this.modelMapperService = modelMapperService;
@@ -48,7 +47,6 @@ public class RentalCarManager implements RentalCarService {
 
         List<RentalCar> rentalCars = this.rentalCarDao.findAll();
 
-        checkIfRentalCarListEmpty(rentalCars);
 
         List<RentalCarListDto> rentalCarListDtos = rentalCars.stream().map(rentalCar -> this.modelMapperService.forDto().map(rentalCar, RentalCarListDto.class)).collect(Collectors.toList());
 
@@ -58,7 +56,7 @@ public class RentalCarManager implements RentalCarService {
     @Override
     public Result add(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
 
-        checkIfCarExist(createRentalCarRequest);
+        checkIfCarExists(createRentalCarRequest);
         checkIfRentalDatesCorrect(createRentalCarRequest);
         checkIfCarInMaintenance(createRentalCarRequest);
         checkIfCarUnderRental(createRentalCarRequest);
@@ -72,7 +70,7 @@ public class RentalCarManager implements RentalCarService {
 
     @Override
     public DataResult<RentalCarDto> getById(int id) throws BusinessException {
-        checkIfIdExist(id);
+        checkIfIdExists(id);
         RentalCar rentalCar = this.rentalCarDao.getById(id);
 
         RentalCarDto rentalCarDto = this.modelMapperService.forDto().map(rentalCar, RentalCarDto.class);
@@ -82,7 +80,7 @@ public class RentalCarManager implements RentalCarService {
 
     @Override
     public Result update(int id, UpdateRentalCarRequest updateRentalCarRequest) throws BusinessException {
-        checkIfIdExist(id);
+        checkIfIdExists(id);
         RentalCar rentalCar = this.rentalCarDao.getById(id);
 
         checkIfUpdateParametersNotEqual(rentalCar, updateRentalCarRequest);
@@ -100,7 +98,7 @@ public class RentalCarManager implements RentalCarService {
     @Override
     public Result delete(int id) throws BusinessException {
 
-        checkIfIdExist(id);
+        checkIfIdExists(id);
         this.rentalCarDao.deleteById(id);
         return new SuccessResult("Data Deleted");
     }
@@ -138,7 +136,7 @@ public class RentalCarManager implements RentalCarService {
         }
     }
 
-    private void checkIfCarExist(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
+    private void checkIfCarExists(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
         DataResult<CarDto> carDtoDataResult = this.carService.getById(createRentalCarRequest.getCarCarId());
 
         if (carDtoDataResult == null) {
@@ -154,7 +152,7 @@ public class RentalCarManager implements RentalCarService {
         }
     }
 
-    private void checkIfIdExist(int id) throws BusinessException {
+    private void checkIfIdExists(int id) throws BusinessException {
         if (!this.rentalCarDao.existsById(id)) {
             throw new BusinessException("There is no rental car with following id" + id);
         }
@@ -169,12 +167,6 @@ public class RentalCarManager implements RentalCarService {
     private void updateRentalCarOperations(RentalCar rentalCar, UpdateRentalCarRequest updateRentalCarRequest) {
         rentalCar.setRentDate(updateRentalCarRequest.getRentDate());
         rentalCar.setReturnDate(updateRentalCarRequest.getReturnDate());
-    }
-
-    private void checkIfRentalCarListEmpty(List<RentalCar> rentalCars) throws BusinessException {
-        if (rentalCars.isEmpty()) {
-            throw new BusinessException("There is no Rental Car to list");
-        }
     }
 
     private void checkIfCarUnderRental(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {

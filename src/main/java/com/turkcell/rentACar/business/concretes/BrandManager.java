@@ -35,8 +35,6 @@ public class BrandManager implements BrandService {
     public DataResult<List<BrandListDto>> getAll() throws BusinessException {
         List<Brand> brands = brandDao.findAll();
 
-        checkIfBrandListEmpty(brands);
-
         List<BrandListDto> brandListDtos = brands.stream()
                 .map(brand -> this.modelMapperService.forDto().map(brand, BrandListDto.class))
                 .collect(Collectors.toList());
@@ -50,7 +48,6 @@ public class BrandManager implements BrandService {
 
         Brand brand = this.modelMapperService.forRequest().map(createBrandRequest, Brand.class);
 
-        checkIfNameNotNull(brand.getName());
 
         checkIfNameNotDuplicated(brand.getName());
 
@@ -62,7 +59,7 @@ public class BrandManager implements BrandService {
     @Override
     public DataResult<BrandDto> getById(int id) throws BusinessException {
 
-        checkIfIdExist(id);
+        checkIfBrandExists(id);
 
         Brand brand = this.brandDao.getById(id);
         BrandDto brandDto = this.modelMapperService.forDto().map(brand, BrandDto.class);
@@ -73,11 +70,9 @@ public class BrandManager implements BrandService {
     @Override
     public Result update(int id, UpdateBrandRequest updateBrandRequest) throws BusinessException {
 
-        checkIfIdExist(id);
+        checkIfBrandExists(id);
 
         Brand brand = this.brandDao.getById(id);
-
-        checkIfNameNotNull(updateBrandRequest.getName());
 
         checkIfNameNotDuplicated(updateBrandRequest.getName());
 
@@ -92,7 +87,7 @@ public class BrandManager implements BrandService {
     @Override
     public Result delete(int id) throws BusinessException {
 
-        checkIfIdExist(id);
+        checkIfBrandExists(id);
 
         String brandNameBeforeDeleted = this.brandDao.getById(id).getName();
         this.brandDao.deleteById(id);
@@ -110,22 +105,11 @@ public class BrandManager implements BrandService {
         }
     }
 
-    private void checkIfIdExist(int id) throws BusinessException {
+    private void checkIfBrandExists(int id) throws BusinessException {
         if (!this.brandDao.existsById(id)) {
             throw new BusinessException("There is no brand with following id : " + id);
         }
     }
 
-    private void checkIfNameNotNull(String brandName) throws BusinessException {
-        if (brandName.isEmpty() || brandName.isBlank()) {
-            throw new BusinessException("Brand name can not empty or null!");
-        }
-    }
-
-    private void checkIfBrandListEmpty(List<Brand> brands) throws BusinessException {
-        if (brands.isEmpty()) {
-            throw new BusinessException("There is no Brand to list");
-        }
-    }
 }
 
