@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,12 +61,14 @@ public class RentalCarManager implements RentalCarService {
         checkIfCarExist(createRentalCarRequest);
         checkIfRentalDatesCorrect(createRentalCarRequest);
         checkIfCarInMaintenance(createRentalCarRequest);
+        checkIfCarUnderRental(createRentalCarRequest);
 
         RentalCar rentalCar = this.modelMapperService.forRequest().map(createRentalCarRequest, RentalCar.class);
         rentalCar.setRentalCarId(0);
         this.rentalCarDao.save(rentalCar);
         return new SuccessDataResult(createRentalCarRequest, "Data added");
     }
+
 
     @Override
     public DataResult<RentalCarDto> getById(int id) throws BusinessException {
@@ -83,12 +86,16 @@ public class RentalCarManager implements RentalCarService {
         RentalCar rentalCar = this.rentalCarDao.getById(id);
 
         checkIfUpdateParametersNotEqual(rentalCar, updateRentalCarRequest);
+        checkIfRentalUpdateDatesCorrect(updateRentalCarRequest);
+        checkIfRentDateAndMaintenanceUpdateDateValid(rentalCar,updateRentalCarRequest);
         updateRentalCarOperations(rentalCar, updateRentalCarRequest);
 
         RentalCarDto rentalCarDto = this.modelMapperService.forDto().map(rentalCar, RentalCarDto.class);
         this.rentalCarDao.save(rentalCar);
         return new SuccessDataResult(rentalCarDto, "Data updated, new data: ");
     }
+
+
 
     @Override
     public Result delete(int id) throws BusinessException {
@@ -170,4 +177,52 @@ public class RentalCarManager implements RentalCarService {
         }
     }
 
+    private void checkIfCarUnderRental(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
+        List<RentalCar> rentalCars = this.rentalCarDao.findAllByCar_CarId(createRentalCarRequest.getCarCarId());
+
+        if(!rentalCars.isEmpty()) {
+
+            for (RentalCar rentalCar:rentalCars) {
+                if(rentalCar.getReturnDate()==null){
+                    throw new BusinessException("This car is still under rental and return date unestimated");
+                }
+            }
+
+            List<RentalCar> sortedRentalCars =
+                    rentalCars.stream().sorted(Comparator.comparing(RentalCar::getReturnDate).reversed()).collect(Collectors.toList());
+
+            if(createRentalCarRequest.getRentDate().isBefore(sortedRentalCars.get(0).getReturnDate())){
+                throw new BusinessException("This car is under rental from "+sortedRentalCars.get(0).getRentDate()+" to "+sortedRentalCars.get(0).getReturnDate());
+            }
+        }
+    }
+
+    private void checkIfRentDateAndMaintenanceUpdateDateValid(RentalCar rentalCar, UpdateRentalCarRequest updateRentalCarRequest) throws BusinessException {
+
+        List<CarMaintenanceListDto> carMaintenanceListDtos = this.carMaintenanceService.getAllCarMaintenancesByCarId(rentalCar.getCar().getCarId());
+
+        if(carMaintenanceListDtos != null){
+
+            for (CarMaintenanceListDto carMaintenanceListDto: carMaintenanceListDtos)
+            {
+                if(carMaintenanceListDto.getReturnDate()==null){
+                    throw new BusinessException("Car is under maintenance and return date is not estimated");
+                }
+
+                if(updateRentalCarRequest.getRentDate().isBefore(carMaintenanceListDto.getReturnDate()) &&
+                    updateRentalCarRequest.getReturnDate().isAfter(carMaintenanceListDto.getReturnDate())){
+                    throw new BusinessException("Rental update is not possible! This car is under maintenance until:  " +carMaintenanceListDto.getReturnDate() );
+                }
+            }
+        }
+
+    }
+
+    private void checkIfRentalUpdateDatesCorrect(UpdateRentalCarRequest updateRentalCarRequest) throws BusinessException {
+        if (updateRentalCarRequest.getReturnDate() != null) {
+            if (updateRentalCarRequest.getReturnDate().isBefore(updateRentalCarRequest.getRentDate())) {
+                throw new BusinessException("Return date can not before rent date");
+            }
+        }
+    }
 }

@@ -10,4 +10,6 @@ import java.util.List;
 public interface RentalCarDao extends JpaRepository<RentalCar, Integer> {
 
     List<RentalCar> getByCar_CarId(int carId);
+
+    List<RentalCar> findAllByCar_CarId(int carId);
 }

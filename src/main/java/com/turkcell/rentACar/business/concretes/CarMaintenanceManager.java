@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +53,7 @@ public class CarMaintenanceManager implements CarMaintenanceService {
                 .map(carMaintenance -> this.modelMapperService.forDto().map(carMaintenance, CarMaintenanceListDto.class))
                 .collect(Collectors.toList());
 
+
         return new SuccessDataResult<>(carMaintenanceListDtos, "Data Listed");
     }
 
@@ -59,14 +62,16 @@ public class CarMaintenanceManager implements CarMaintenanceService {
     public Result add(CreateCarMaintenanceRequest createCarMaintenanceRequest) throws BusinessException {
 
         checkIfCarExist(createCarMaintenanceRequest);
-
         checkIfCarIsRental(createCarMaintenanceRequest);
+        checkIfCarUnderMaintenance(createCarMaintenanceRequest);
 
         CarMaintenance carMaintenance = this.modelMapperService.forRequest().map(createCarMaintenanceRequest, CarMaintenance.class);
         carMaintenance.setCarMaintenanceId(0);
         this.carMaintenanceDao.save(carMaintenance);
         return new SuccessDataResult(createCarMaintenanceRequest, "Data added");
     }
+
+
 
 
     @Override
@@ -87,8 +92,9 @@ public class CarMaintenanceManager implements CarMaintenanceService {
 
         CarMaintenance carMaintenance = this.carMaintenanceDao.getById(id);
 
+        checkIfReturnDateBeforeLocalDateNow(updateCarMaintenanceRequest);
         checkIfUpdateParametersNotEqual(carMaintenance, updateCarMaintenanceRequest);
-
+        checkIfMaintenanceUpdateDateAndRentDateValid(carMaintenance,updateCarMaintenanceRequest);
         updateCarMaintenanceOperations(carMaintenance, updateCarMaintenanceRequest);
 
         CarMaintenanceDto carMaintenanceDto = this.modelMapperService.forDto().map(carMaintenance, CarMaintenanceDto.class);
@@ -96,6 +102,8 @@ public class CarMaintenanceManager implements CarMaintenanceService {
         this.carMaintenanceDao.save(carMaintenance);
         return new SuccessDataResult(carMaintenanceDto, "Data updated, new data: ");
     }
+
+
 
 
     @Override
@@ -150,10 +158,11 @@ public class CarMaintenanceManager implements CarMaintenanceService {
                 }
 
                 if (
-                        createCarMaintenanceRequest.getReturnDate().isEqual(rentalCarListDto.getRentDate()) ||
-                                createCarMaintenanceRequest.getReturnDate().isAfter(rentalCarListDto.getRentDate()) ||
-                                createCarMaintenanceRequest.getReturnDate().isEqual(rentalCarListDto.getReturnDate()) ||
-                                createCarMaintenanceRequest.getReturnDate().isBefore(rentalCarListDto.getReturnDate())
+                        (createCarMaintenanceRequest.getReturnDate().isEqual(rentalCarListDto.getRentDate()) ||
+                         createCarMaintenanceRequest.getReturnDate().isAfter(rentalCarListDto.getRentDate()))
+                         &&
+                        (createCarMaintenanceRequest.getReturnDate().isEqual(rentalCarListDto.getReturnDate()) ||
+                         createCarMaintenanceRequest.getReturnDate().isBefore(rentalCarListDto.getReturnDate()))
                 ) {
                     throw new BusinessException("Maintenance is not possible! This car is rented from " + rentalCarListDto.getRentDate() + " to " + rentalCarListDto.getReturnDate());
                 }
@@ -179,6 +188,54 @@ public class CarMaintenanceManager implements CarMaintenanceService {
     private void checkIfCarMaintenanceListEmpty(List<CarMaintenance> carMaintenances) throws BusinessException {
         if (carMaintenances.isEmpty()) {
             throw new BusinessException("There is no Car Maintenance to list");
+        }
+    }
+
+    private void checkIfCarUnderMaintenance(CreateCarMaintenanceRequest createCarMaintenanceRequest) throws BusinessException {
+
+        List<CarMaintenance> carMaintenances = this.carMaintenanceDao.findAllByCar_CarId(createCarMaintenanceRequest.getCarCarId());
+
+        if(!carMaintenances.isEmpty()){
+
+        for (CarMaintenance carMaintenance: carMaintenances) {
+
+            if(carMaintenance.getReturnDate()==null){
+                throw new BusinessException("This car is still under maintenance and return date unestimated");
+            }
+        }
+
+        List<CarMaintenance> sortedCarMaintenances =
+                carMaintenances.stream().sorted(Comparator.comparing(CarMaintenance::getReturnDate).reversed()).collect(Collectors.toList());
+
+        if(LocalDate.now().isBefore(sortedCarMaintenances.get(0).getReturnDate())) {
+            throw new BusinessException("This car is under maintenance until: " +sortedCarMaintenances.get(0).getReturnDate());
+        }
+    }
+    }
+
+    private void checkIfReturnDateBeforeLocalDateNow(UpdateCarMaintenanceRequest updateCarMaintenanceRequest) throws BusinessException {
+
+        if(updateCarMaintenanceRequest.getReturnDate().isBefore(LocalDate.now())){
+            throw new BusinessException("Return date cannot before current day");
+        }
+    }
+
+    private void checkIfMaintenanceUpdateDateAndRentDateValid(CarMaintenance carMaintenance,UpdateCarMaintenanceRequest updateCarMaintenanceRequest) throws BusinessException {
+
+        List<RentalCarListDto> rentalCarListDtos = this.rentalCarService.getAllRentalCarsByCarId(carMaintenance.getCar().getCarId());
+
+        if (rentalCarListDtos != null) {
+
+            for (RentalCarListDto rentalCarListDto : rentalCarListDtos) {
+                if (rentalCarListDto.getReturnDate() == null) {
+                    throw new BusinessException("Car is under rental and return date is not estimated");
+                }
+
+                if (updateCarMaintenanceRequest.getReturnDate().isAfter(rentalCarListDto.getRentDate()) &&
+                    updateCarMaintenanceRequest.getReturnDate().isBefore(rentalCarListDto.getReturnDate())) {
+                        throw new BusinessException("Maintenance update is not possible! This car is rented from " + rentalCarListDto.getRentDate() + " to " + rentalCarListDto.getReturnDate());
+                }
+            }
         }
     }
 }
