@@ -42,14 +42,14 @@ public class BrandsController {
         return this.brandService.getById(id);
     }
 
-    @PostMapping("/delete/{id}")
-    public Result delete(@RequestParam int id) throws BusinessException {
-        return this.brandService.delete(id);
-    }
-
     @PutMapping("/update/{id}")
     public Result update(@RequestParam int id, @RequestBody @Valid UpdateBrandRequest updateBrandRequest) throws BusinessException {
         return this.brandService.update(id, updateBrandRequest);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public Result delete(@RequestParam int id) throws BusinessException {
+        return this.brandService.delete(id);
     }
 
 }

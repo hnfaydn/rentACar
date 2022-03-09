@@ -42,11 +42,6 @@ public class CarsController {
         return this.carService.getById(id);
     }
 
-    @PostMapping("/delete/{id}")
-    public Result delete(@RequestParam int id) throws BusinessException {
-        return this.carService.delete(id);
-    }
-
     @PutMapping("/update/{id}")
     public Result update(@RequestParam int id, @RequestBody @Valid UpdateCarRequest updateCarRequest) throws BusinessException {
         return this.carService.update(id, updateCarRequest);
@@ -67,4 +62,8 @@ public class CarsController {
         return this.carService.getAllSortedByDailyPrice(sortDirection);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public Result delete(@RequestParam int id) throws BusinessException {
+        return this.carService.delete(id);
+    }
 }

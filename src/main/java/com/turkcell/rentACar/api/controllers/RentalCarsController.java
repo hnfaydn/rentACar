@@ -45,7 +45,7 @@ public class RentalCarsController {
         return this.rentalCarService.update(id, updateRentalCarRequest);
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public Result delete(@RequestParam int id) throws BusinessException {
         return this.rentalCarService.delete(id);
     }

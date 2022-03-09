@@ -40,14 +40,14 @@ public class ColorsController {
         return this.colorService.getById(id);
     }
 
-    @PostMapping("/delete/{id}")
-    public Result delete(@RequestParam int id) throws BusinessException {
-        return this.colorService.delete(id);
-    }
-
     @PutMapping("/update/{id}")
     public Result update(@RequestParam int id, @RequestBody @Valid UpdateColorRequest updateColorRequest) throws BusinessException {
         return this.colorService.update(id, updateColorRequest);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public Result delete(@RequestParam int id) throws BusinessException {
+        return this.colorService.delete(id);
     }
 
 

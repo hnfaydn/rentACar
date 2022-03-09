@@ -46,7 +46,7 @@ public class CarMaintenancesController {
         return this.carMaintenanceService.update(id, updateCarMaintenanceRequest);
     }
 
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public Result delete(@RequestParam int id) throws BusinessException {
         return this.carMaintenanceService.delete(id);
     }
