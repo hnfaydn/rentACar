@@ -128,7 +128,7 @@ public class RentalCarManager implements RentalCarService {
 
             for (CarMaintenanceListDto carMaintenanceListDto : carMaintenanceListDtos) {
                 if (carMaintenanceListDto.getReturnDate() == null) {
-                    throw new BusinessException("Car is in maintenance and return date is not estimated");
+                    throw new BusinessException("Car is under maintenance and return date is not estimated");
                 }
 
                 if (createRentalCarRequest.getRentDate().isBefore(carMaintenanceListDto.getReturnDate()) || createRentalCarRequest.getRentDate().isEqual(carMaintenanceListDto.getReturnDate()) || createRentalCarRequest.getReturnDate().isBefore(carMaintenanceListDto.getReturnDate()) || createRentalCarRequest.getReturnDate().isEqual(carMaintenanceListDto.getReturnDate())) {
