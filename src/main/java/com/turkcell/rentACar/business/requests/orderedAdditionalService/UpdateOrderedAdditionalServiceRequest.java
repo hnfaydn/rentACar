@@ -11,5 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 public class UpdateOrderedAdditionalServiceRequest {
 
+
     private List<Integer> additionalServices;
 }

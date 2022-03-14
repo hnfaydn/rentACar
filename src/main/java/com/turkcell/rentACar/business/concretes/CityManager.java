@@ -47,7 +47,9 @@ public class CityManager implements CityService {
 
         City city = this.modelMapperService.forRequest().map(createCityRequest, City.class);
 
+        checkIfCityIdNotDuplicated(city.getCityId());
         checkIfNameNotDuplicated(city.getCityName());
+
 
         this.cityDao.save(city);
 
@@ -62,10 +64,8 @@ public class CityManager implements CityService {
         City city = this.cityDao.getById(id);
         CityDto cityDto = this.modelMapperService.forDto().map(city, CityDto.class);
 
-        return new SuccessDataResult(cityDto, "Data Brought Successfully by following Id:" +id);
+        return new SuccessDataResult(cityDto, "Data Brought Successfully by following Id: " +id);
     }
-
-
 
     @Override
     public Result update(int id, UpdateCityRequest updateCityRequest) throws BusinessException {
@@ -94,10 +94,23 @@ public class CityManager implements CityService {
         return new SuccessDataResult(cityDto,"Data Deleted: ");
     }
 
+    @Override
+    public boolean cityExistsById(int id) {
+
+       return this.cityDao.existsById(id);
+    }
+
     private void checkIfNameNotDuplicated(String cityName) throws BusinessException {
 
-        if(this.cityDao.existsByName(cityName)){
-            throw new BusinessException("This city is already exists.");
+        if(this.cityDao.existsByCityName(cityName)){
+            throw new BusinessException("This city name is already exists.");
+        }
+    }
+
+    private void checkIfCityIdNotDuplicated(int cityId) throws BusinessException {
+
+        if(this.cityDao.existsByCityId(cityId)){
+            throw new BusinessException("This city id is already exists.");
         }
     }
 

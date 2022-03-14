@@ -1,8 +1,10 @@
 package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.AdditionalServiceService;
+import com.turkcell.rentACar.business.abstracts.OrderedAdditionalServiceService;
 import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceDto;
 import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceListDto;
+import com.turkcell.rentACar.business.dtos.orderedAdditionalServiceDtos.OrderedAdditionalServiceListDto;
 import com.turkcell.rentACar.business.requests.additionalServiceRequests.CreateAdditionalServiceRequest;
 import com.turkcell.rentACar.business.requests.additionalServiceRequests.UpdateAdditionalServiceRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
@@ -12,9 +14,11 @@ import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.dataAccess.abstracts.AdditionalServiceDao;
 import com.turkcell.rentACar.entities.concretes.AdditionalService;
+import com.turkcell.rentACar.entities.concretes.OrderedAdditionalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,14 +26,17 @@ import java.util.stream.Collectors;
 public class AdditionalServiceManager implements AdditionalServiceService {
 
     private AdditionalServiceDao additionalServiceDao;
+    private OrderedAdditionalServiceService orderedAdditionalServiceService;
     private ModelMapperService modelMapperService;
 
     @Autowired
     public AdditionalServiceManager(AdditionalServiceDao additionalServiceDao,
-                                    ModelMapperService modelMapperService) {
+                                    ModelMapperService modelMapperService,
+                                    OrderedAdditionalServiceService orderedAdditionalServiceService) {
 
         this.additionalServiceDao = additionalServiceDao;
         this.modelMapperService = modelMapperService;
+        this.orderedAdditionalServiceService=orderedAdditionalServiceService;
     }
 
     @Override
@@ -86,6 +93,7 @@ public class AdditionalServiceManager implements AdditionalServiceService {
     public Result delete(int id) throws BusinessException {
 
         checkIfIdExists(id);
+        checkIfOrderedAdditionalServiceHasDeletedAdditionalServiceId(id);
 
         AdditionalServiceDto additionalServiceDto =
                 this.modelMapperService.forDto().map(this.additionalServiceDao.getById(id), AdditionalServiceDto.class);
@@ -120,5 +128,22 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 
         additionalService.setAdditionalServiceName(updateAdditionalServiceRequest.getAdditionalServiceName());
         additionalService.setAdditionalServiceDailyPrice(updateAdditionalServiceRequest.getAdditionalServiceDailyPrice());
+    }
+
+    private void checkIfOrderedAdditionalServiceHasDeletedAdditionalServiceId(int id) throws BusinessException {
+
+        List<OrderedAdditionalService> orderedAdditionalServices = this.orderedAdditionalServiceService.getAllOrderedAdditionalServices();
+
+        List<Integer> orderedAdditionalServiceIds = new ArrayList<>();
+        for (OrderedAdditionalService orderedAdditionalService : orderedAdditionalServices
+             ) {
+            if (orderedAdditionalService.getAdditionalServices().contains(this.additionalServiceDao.getById(id))){
+                orderedAdditionalServiceIds.add(orderedAdditionalService.getOrderedAdditionalServiceId());
+            }
+        }
+
+        if(!orderedAdditionalServiceIds.isEmpty()){
+            throw new BusinessException("This Additional Service is Ordered by following order Ids: "+orderedAdditionalServiceIds.toString());
+        }
     }
 }

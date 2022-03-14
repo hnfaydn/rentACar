@@ -19,7 +19,7 @@ public class RentalCarListDto {
 
     private int carCarId;
 
-    private int orderedAdditionalServiceId;
+    private Integer orderedAdditionalServiceId;
 
     private OrderedAdditionalServiceDto orderedAdditionalServices;
 }

@@ -1,9 +1,6 @@
 package com.turkcell.rentACar.business.concretes;
 
-import com.turkcell.rentACar.business.abstracts.CarMaintenanceService;
-import com.turkcell.rentACar.business.abstracts.CarService;
-import com.turkcell.rentACar.business.abstracts.OrderedAdditionalServiceService;
-import com.turkcell.rentACar.business.abstracts.RentalCarService;
+import com.turkcell.rentACar.business.abstracts.*;
 import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
 import com.turkcell.rentACar.business.dtos.carMaintenanceDtos.CarMaintenanceListDto;
 import com.turkcell.rentACar.business.dtos.rentalCarDtos.RentalCarDto;
@@ -35,21 +32,21 @@ public class RentalCarManager implements RentalCarService {
     private final CarService carService;
     private final ModelMapperService modelMapperService;
     private OrderedAdditionalServiceService orderedAdditionalServiceService;
-    private OrderedAdditionalServiceDao orderedAdditionalServiceDao;
+    private CityService cityService;
 
     @Autowired
     public RentalCarManager(RentalCarDao rentalCarDao,
                             @Lazy CarMaintenanceService carMaintenanceService,
                             OrderedAdditionalServiceService orderedAdditionalServiceService,
                             ModelMapperService modelMapperService, CarService carService,
-                            OrderedAdditionalServiceDao orderedAdditionalServiceDao
+                            CityService cityService
     ) {
         this.rentalCarDao = rentalCarDao;
         this.carMaintenanceService = carMaintenanceService;
         this.modelMapperService = modelMapperService;
         this.carService = carService;
         this.orderedAdditionalServiceService = orderedAdditionalServiceService;
-        this.orderedAdditionalServiceDao = orderedAdditionalServiceDao;
+        this.cityService = cityService;
     }
 
     @Override
@@ -69,6 +66,8 @@ public class RentalCarManager implements RentalCarService {
 
         checkIfCarIsExists(createRentalCarRequest.getCarCarId());
         checkIfRentalDatesCorrect(createRentalCarRequest);
+        checkIfRentalCarCityIdsExists(createRentalCarRequest.getRentCityId(),createRentalCarRequest.getReturnCityId());
+        checkIfOrderedAdditionalServiceIdNotValidOrZero(createRentalCarRequest);
         checkIfCarInMaintenance(createRentalCarRequest);
         checkIfCarUnderRental(createRentalCarRequest);
 
@@ -79,6 +78,8 @@ public class RentalCarManager implements RentalCarService {
 
         return new SuccessDataResult(createRentalCarRequest, "Data added");
     }
+
+
 
     @Override
     public DataResult<RentalCarDto> getById(int id) throws BusinessException {
@@ -137,6 +138,14 @@ public class RentalCarManager implements RentalCarService {
                         .map(rentalCar, RentalCarListDto.class)).collect(Collectors.toList());
 
         return rentalCarListDtos;
+    }
+
+    @Override
+    public void rentalCarOrderedAdditionalServiceIdSetOperation(int orderedAdditionalServiceId) {
+
+        if(this.rentalCarDao.findRentalCarByOrderedAdditionalService_OrderedAdditionalServiceId(orderedAdditionalServiceId)!=null){
+            this.rentalCarDao.findRentalCarByOrderedAdditionalService_OrderedAdditionalServiceId(orderedAdditionalServiceId).setOrderedAdditionalService(null);
+        }
     }
 
     private void checkIfCarInMaintenance(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
@@ -252,6 +261,28 @@ public class RentalCarManager implements RentalCarService {
             if (updateRentalCarRequest.getReturnDate().isBefore(updateRentalCarRequest.getRentDate())) {
                 throw new BusinessException("Return date can not before rent date");
             }
+        }
+    }
+
+    private void checkIfRentalCarCityIdsExists(int rentCity,int returnCity) throws BusinessException {
+
+        if(!this.cityService.cityExistsById(rentCity)){
+            throw new BusinessException("There is no rent city with following id: " +rentCity);
+        }
+
+        if(!this.cityService.cityExistsById(returnCity)){
+            throw new BusinessException("There is no return city with following id: " +returnCity);
+        }
+    }
+
+    private void checkIfOrderedAdditionalServiceIdNotValidOrZero(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
+
+        if (createRentalCarRequest.getOrderedAdditionalServiceId()<0){
+            throw new BusinessException("Ordered Additional Service can not less than zero");
+        }
+
+        if(createRentalCarRequest.getOrderedAdditionalServiceId()==0){
+            createRentalCarRequest.setOrderedAdditionalServiceId(null);
         }
     }
 }

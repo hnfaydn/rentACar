@@ -25,4 +25,6 @@ public interface OrderedAdditionalServiceService {
 
     OrderedAdditionalService updateRentalCarOrderedAdditionalService(int id, List<Integer> additionalServices) throws BusinessException;
 
+    List<OrderedAdditionalService> getAllOrderedAdditionalServices();
+
 }

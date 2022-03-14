@@ -41,7 +41,7 @@ public class RentalCar {
     @JoinColumn(name = "car_id")
     private Car car;
 
-    @OneToOne
+    @OneToOne()
     private OrderedAdditionalService orderedAdditionalService;
 
 }

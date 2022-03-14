@@ -23,4 +23,6 @@ public interface RentalCarService {
     Result delete(int id) throws BusinessException;
 
     List<RentalCarListDto> getAllRentalCarsByCarId(int carId) throws BusinessException;
+
+    void rentalCarOrderedAdditionalServiceIdSetOperation(int orderedAdditionalServiceId);
 }
