@@ -1,5 +1,4 @@
-package com.turkcell.rentACar.business.dtos.additinalServiceDtos;
-
+package com.turkcell.rentACar.business.dtos.additionalServiceDtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AdditionalServiceDto {
 
+    private String additionalServiceName;
 
-    private String name;
-    private double dailyPrice;
+    private double additionalServiceDailyPrice;
 }

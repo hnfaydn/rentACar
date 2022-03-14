@@ -33,28 +33,26 @@ public class BrandManager implements BrandService {
 
     @Override
     public DataResult<List<BrandListDto>> getAll() throws BusinessException {
-        List<Brand> brands = brandDao.findAll();
+
+        List<Brand> brands = this.brandDao.findAll();
 
         List<BrandListDto> brandListDtos = brands.stream()
-                .map(brand -> this.modelMapperService.forDto().map(brand, BrandListDto.class))
-                .collect(Collectors.toList());
+                .map(brand -> this.modelMapperService.forDto().map(brand, BrandListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult<>(brandListDtos, "Data listed");
+        return new SuccessDataResult<>(brandListDtos, "Data listed Successfully: ");
     }
-
 
     @Override
     public Result add(CreateBrandRequest createBrandRequest) throws BusinessException {
 
         Brand brand = this.modelMapperService.forRequest().map(createBrandRequest, Brand.class);
 
-
         checkIfNameNotDuplicated(brand.getName());
 
         this.brandDao.save(brand);
+
         return new SuccessDataResult(createBrandRequest, "Data added : " + brand.getName());
     }
-
 
     @Override
     public DataResult<BrandDto> getById(int id) throws BusinessException {
@@ -63,9 +61,9 @@ public class BrandManager implements BrandService {
 
         Brand brand = this.brandDao.getById(id);
         BrandDto brandDto = this.modelMapperService.forDto().map(brand, BrandDto.class);
-        return new SuccessDataResult<>(brandDto, "Data getted by id");
-    }
 
+        return new SuccessDataResult(brandDto, "Data Brought Successfully by following Id:" +id);
+    }
 
     @Override
     public Result update(int id, UpdateBrandRequest updateBrandRequest) throws BusinessException {
@@ -75,37 +73,40 @@ public class BrandManager implements BrandService {
         Brand brand = this.brandDao.getById(id);
 
         checkIfNameNotDuplicated(updateBrandRequest.getName());
-
         String brandNameBeforeUpdate = this.brandDao.findById(id).getName();
         updateBrandOperations(brand, updateBrandRequest);
+
         this.brandDao.save(brand);
 
-        return new SuccessResult(brandNameBeforeUpdate + " updated to " + updateBrandRequest.getName());
+        return new SuccessResult(brandNameBeforeUpdate + " Data updated, new data: " + updateBrandRequest.getName());
     }
-
 
     @Override
     public Result delete(int id) throws BusinessException {
 
         checkIfBrandExists(id);
 
-        String brandNameBeforeDeleted = this.brandDao.getById(id).getName();
+        BrandDto brandDto = this.modelMapperService.forDto().map(this.brandDao.getById(id),BrandDto.class);
         this.brandDao.deleteById(id);
-        return new SuccessResult("Data deleted : " + brandNameBeforeDeleted);
+
+        return new SuccessDataResult(brandDto,"Data deleted: ");
     }
 
 
     private void updateBrandOperations(Brand brand, UpdateBrandRequest updateBrandRequest) {
+
         brand.setName(updateBrandRequest.getName());
     }
 
     private void checkIfNameNotDuplicated(String name) throws BusinessException {
+
         if (this.brandDao.existsByName(name)) {
             throw new BusinessException("This brand is already exist in system: " + name);
         }
     }
 
     private void checkIfBrandExists(int id) throws BusinessException {
+
         if (!this.brandDao.existsById(id)) {
             throw new BusinessException("There is no brand with following id : " + id);
         }

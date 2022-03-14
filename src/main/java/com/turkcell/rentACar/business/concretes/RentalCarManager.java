@@ -2,6 +2,7 @@ package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.CarMaintenanceService;
 import com.turkcell.rentACar.business.abstracts.CarService;
+import com.turkcell.rentACar.business.abstracts.OrderedAdditionalServiceService;
 import com.turkcell.rentACar.business.abstracts.RentalCarService;
 import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
 import com.turkcell.rentACar.business.dtos.carMaintenanceDtos.CarMaintenanceListDto;
@@ -15,6 +16,7 @@ import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.core.utilities.results.SuccessResult;
+import com.turkcell.rentACar.dataAccess.abstracts.OrderedAdditionalServiceDao;
 import com.turkcell.rentACar.dataAccess.abstracts.RentalCarDao;
 import com.turkcell.rentACar.entities.concretes.RentalCar;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,20 +28,28 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-
 public class RentalCarManager implements RentalCarService {
 
     private final RentalCarDao rentalCarDao;
     private final CarMaintenanceService carMaintenanceService;
     private final CarService carService;
     private final ModelMapperService modelMapperService;
+    private OrderedAdditionalServiceService orderedAdditionalServiceService;
+    private OrderedAdditionalServiceDao orderedAdditionalServiceDao;
 
     @Autowired
-    public RentalCarManager(RentalCarDao rentalCarDao,@Lazy CarMaintenanceService carMaintenanceService, ModelMapperService modelMapperService, CarService carService) {
+    public RentalCarManager(RentalCarDao rentalCarDao,
+                            @Lazy CarMaintenanceService carMaintenanceService,
+                            OrderedAdditionalServiceService orderedAdditionalServiceService,
+                            ModelMapperService modelMapperService, CarService carService,
+                            OrderedAdditionalServiceDao orderedAdditionalServiceDao
+    ) {
         this.rentalCarDao = rentalCarDao;
         this.carMaintenanceService = carMaintenanceService;
         this.modelMapperService = modelMapperService;
         this.carService = carService;
+        this.orderedAdditionalServiceService = orderedAdditionalServiceService;
+        this.orderedAdditionalServiceDao = orderedAdditionalServiceDao;
     }
 
     @Override
@@ -48,7 +58,8 @@ public class RentalCarManager implements RentalCarService {
         List<RentalCar> rentalCars = this.rentalCarDao.findAll();
 
 
-        List<RentalCarListDto> rentalCarListDtos = rentalCars.stream().map(rentalCar -> this.modelMapperService.forDto().map(rentalCar, RentalCarListDto.class)).collect(Collectors.toList());
+        List<RentalCarListDto> rentalCarListDtos = rentalCars.stream()
+                .map(rentalCar -> this.modelMapperService.forDto().map(rentalCar, RentalCarListDto.class)).collect(Collectors.toList());
 
         return new SuccessDataResult<>(rentalCarListDtos, "Data Listed");
     }
@@ -56,23 +67,25 @@ public class RentalCarManager implements RentalCarService {
     @Override
     public Result add(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
 
-        checkIfCarExists(createRentalCarRequest);
+        checkIfCarIsExists(createRentalCarRequest.getCarCarId());
         checkIfRentalDatesCorrect(createRentalCarRequest);
         checkIfCarInMaintenance(createRentalCarRequest);
         checkIfCarUnderRental(createRentalCarRequest);
 
         RentalCar rentalCar = this.modelMapperService.forRequest().map(createRentalCarRequest, RentalCar.class);
         rentalCar.setRentalCarId(0);
+
         this.rentalCarDao.save(rentalCar);
+
         return new SuccessDataResult(createRentalCarRequest, "Data added");
     }
 
-
     @Override
     public DataResult<RentalCarDto> getById(int id) throws BusinessException {
-        checkIfIdExists(id);
-        RentalCar rentalCar = this.rentalCarDao.getById(id);
 
+        checkIfIdExists(id);
+
+        RentalCar rentalCar = this.rentalCarDao.getById(id);
         RentalCarDto rentalCarDto = this.modelMapperService.forDto().map(rentalCar, RentalCarDto.class);
 
         return new SuccessDataResult(rentalCarDto, "Data getted by following id: " + id);
@@ -80,26 +93,33 @@ public class RentalCarManager implements RentalCarService {
 
     @Override
     public Result update(int id, UpdateRentalCarRequest updateRentalCarRequest) throws BusinessException {
+
         checkIfIdExists(id);
+
         RentalCar rentalCar = this.rentalCarDao.getById(id);
 
+        checkIfCarIsExists(rentalCar.getCar().getCarId());
         checkIfUpdateParametersNotEqual(rentalCar, updateRentalCarRequest);
         checkIfRentalUpdateDatesCorrect(updateRentalCarRequest);
-        checkIfRentDateAndMaintenanceUpdateDateValid(rentalCar,updateRentalCarRequest);
+        checkIfRentDateAndMaintenanceUpdateDateValid(rentalCar, updateRentalCarRequest);
+
         updateRentalCarOperations(rentalCar, updateRentalCarRequest);
 
         RentalCarDto rentalCarDto = this.modelMapperService.forDto().map(rentalCar, RentalCarDto.class);
+        rentalCar.setRentalCarId(rentalCar.getRentalCarId());
+
         this.rentalCarDao.save(rentalCar);
+
         return new SuccessDataResult(rentalCarDto, "Data updated, new data: ");
     }
-
-
 
     @Override
     public Result delete(int id) throws BusinessException {
 
         checkIfIdExists(id);
+
         this.rentalCarDao.deleteById(id);
+
         return new SuccessResult("Data Deleted");
     }
 
@@ -111,13 +131,18 @@ public class RentalCarManager implements RentalCarService {
         if (rentalCars.isEmpty()) {
             return null;
         }
-        List<RentalCarListDto> rentalCarListDtos = rentalCars.stream().map(rentalCar -> this.modelMapperService.forDto().map(rentalCar, RentalCarListDto.class)).collect(Collectors.toList());
+
+        List<RentalCarListDto> rentalCarListDtos =
+                rentalCars.stream().map(rentalCar -> this.modelMapperService.forDto()
+                        .map(rentalCar, RentalCarListDto.class)).collect(Collectors.toList());
 
         return rentalCarListDtos;
     }
 
     private void checkIfCarInMaintenance(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
-        List<CarMaintenanceListDto> carMaintenanceListDtos = this.carMaintenanceService.getAllCarMaintenancesByCarId(createRentalCarRequest.getCarCarId());
+
+        List<CarMaintenanceListDto> carMaintenanceListDtos =
+                this.carMaintenanceService.getAllCarMaintenancesByCarId(createRentalCarRequest.getCarCarId());
 
         if (carMaintenanceListDtos != null) {
             if (carMaintenanceListDtos.isEmpty()) {
@@ -129,22 +154,27 @@ public class RentalCarManager implements RentalCarService {
                     throw new BusinessException("Car is under maintenance and return date is not estimated");
                 }
 
-                if (createRentalCarRequest.getRentDate().isBefore(carMaintenanceListDto.getReturnDate()) || createRentalCarRequest.getRentDate().isEqual(carMaintenanceListDto.getReturnDate()) || createRentalCarRequest.getReturnDate().isBefore(carMaintenanceListDto.getReturnDate()) || createRentalCarRequest.getReturnDate().isEqual(carMaintenanceListDto.getReturnDate())) {
+                if (createRentalCarRequest.getRentDate().isBefore(carMaintenanceListDto.getReturnDate()) ||
+                        createRentalCarRequest.getRentDate().isEqual(carMaintenanceListDto.getReturnDate()) ||
+                        createRentalCarRequest.getReturnDate().isBefore(carMaintenanceListDto.getReturnDate()) ||
+                        createRentalCarRequest.getReturnDate().isEqual(carMaintenanceListDto.getReturnDate())) {
                     throw new BusinessException("This car is under maintenance until:" + carMaintenanceListDto.getReturnDate());
                 }
             }
         }
     }
 
-    private void checkIfCarExists(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
-        DataResult<CarDto> carDtoDataResult = this.carService.getById(createRentalCarRequest.getCarCarId());
+    private void checkIfCarIsExists(int carId) throws BusinessException {
+
+        DataResult<CarDto> carDtoDataResult = this.carService.getById(carId);
 
         if (carDtoDataResult == null) {
-            throw new BusinessException("There is no car with following id: " + createRentalCarRequest.getCarCarId());
+            throw new BusinessException("There is no car with following id: " + carId);
         }
     }
 
     private void checkIfRentalDatesCorrect(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
+
         if (createRentalCarRequest.getReturnDate() != null) {
             if (createRentalCarRequest.getReturnDate().isBefore(createRentalCarRequest.getRentDate())) {
                 throw new BusinessException("Return date can not before rent date");
@@ -153,29 +183,37 @@ public class RentalCarManager implements RentalCarService {
     }
 
     private void checkIfIdExists(int id) throws BusinessException {
+
         if (!this.rentalCarDao.existsById(id)) {
             throw new BusinessException("There is no rental car with following id" + id);
         }
     }
 
     private void checkIfUpdateParametersNotEqual(RentalCar rentalCar, UpdateRentalCarRequest updateRentalCarRequest) throws BusinessException {
+
         if (updateRentalCarRequest.getRentDate().isEqual(rentalCar.getRentDate()) && updateRentalCarRequest.getReturnDate().isEqual(rentalCar.getReturnDate())) {
             throw new BusinessException("Initial values are completely equal to update values, no need to update!");
         }
     }
 
-    private void updateRentalCarOperations(RentalCar rentalCar, UpdateRentalCarRequest updateRentalCarRequest) {
+    private void updateRentalCarOperations(RentalCar rentalCar, UpdateRentalCarRequest updateRentalCarRequest) throws BusinessException {
+
         rentalCar.setRentDate(updateRentalCarRequest.getRentDate());
         rentalCar.setReturnDate(updateRentalCarRequest.getReturnDate());
+
+        rentalCar.setOrderedAdditionalService(
+                this.orderedAdditionalServiceService.updateRentalCarOrderedAdditionalService(rentalCar.getOrderedAdditionalService().getOrderedAdditionalServiceId(),
+                        updateRentalCarRequest.getAdditionalServices()));
     }
 
     private void checkIfCarUnderRental(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
+
         List<RentalCar> rentalCars = this.rentalCarDao.findAllByCar_CarId(createRentalCarRequest.getCarCarId());
 
-        if(!rentalCars.isEmpty()) {
+        if (!rentalCars.isEmpty()) {
 
-            for (RentalCar rentalCar:rentalCars) {
-                if(rentalCar.getReturnDate()==null){
+            for (RentalCar rentalCar : rentalCars) {
+                if (rentalCar.getReturnDate() == null) {
                     throw new BusinessException("This car is still under rental and return date unestimated");
                 }
             }
@@ -183,8 +221,8 @@ public class RentalCarManager implements RentalCarService {
             List<RentalCar> sortedRentalCars =
                     rentalCars.stream().sorted(Comparator.comparing(RentalCar::getReturnDate).reversed()).collect(Collectors.toList());
 
-            if(createRentalCarRequest.getRentDate().isBefore(sortedRentalCars.get(0).getReturnDate())){
-                throw new BusinessException("This car is under rental from "+sortedRentalCars.get(0).getRentDate()+" to "+sortedRentalCars.get(0).getReturnDate());
+            if (createRentalCarRequest.getRentDate().isBefore(sortedRentalCars.get(0).getReturnDate())) {
+                throw new BusinessException("This car is under rental from " + sortedRentalCars.get(0).getRentDate() + " to " + sortedRentalCars.get(0).getReturnDate());
             }
         }
     }
@@ -193,24 +231,23 @@ public class RentalCarManager implements RentalCarService {
 
         List<CarMaintenanceListDto> carMaintenanceListDtos = this.carMaintenanceService.getAllCarMaintenancesByCarId(rentalCar.getCar().getCarId());
 
-        if(carMaintenanceListDtos != null){
+        if (carMaintenanceListDtos != null) {
 
-            for (CarMaintenanceListDto carMaintenanceListDto: carMaintenanceListDtos)
-            {
-                if(carMaintenanceListDto.getReturnDate()==null){
+            for (CarMaintenanceListDto carMaintenanceListDto : carMaintenanceListDtos) {
+                if (carMaintenanceListDto.getReturnDate() == null) {
                     throw new BusinessException("Car is under maintenance and return date is not estimated");
                 }
 
-                if(updateRentalCarRequest.getRentDate().isBefore(carMaintenanceListDto.getReturnDate()) &&
-                    updateRentalCarRequest.getReturnDate().isAfter(carMaintenanceListDto.getReturnDate())){
-                    throw new BusinessException("Rental update is not possible! This car is under maintenance until:  " +carMaintenanceListDto.getReturnDate() );
+                if (updateRentalCarRequest.getRentDate().isBefore(carMaintenanceListDto.getReturnDate()) &&
+                        updateRentalCarRequest.getReturnDate().isAfter(carMaintenanceListDto.getReturnDate())) {
+                    throw new BusinessException("Rental update is not possible! This car is under maintenance until: " + carMaintenanceListDto.getReturnDate());
                 }
             }
         }
-
     }
 
     private void checkIfRentalUpdateDatesCorrect(UpdateRentalCarRequest updateRentalCarRequest) throws BusinessException {
+
         if (updateRentalCarRequest.getReturnDate() != null) {
             if (updateRentalCarRequest.getReturnDate().isBefore(updateRentalCarRequest.getRentDate())) {
                 throw new BusinessException("Return date can not before rent date");

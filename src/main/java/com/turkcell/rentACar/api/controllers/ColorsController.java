@@ -36,7 +36,7 @@ public class ColorsController {
     }
 
     @GetMapping("/getById/{id}")
-    public DataResult<ColorDto> getById(@RequestParam(required = true) int id) throws BusinessException {
+    public DataResult<ColorDto> getById(@RequestParam int id) throws BusinessException {
         return this.colorService.getById(id);
     }
 

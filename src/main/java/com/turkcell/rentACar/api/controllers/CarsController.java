@@ -48,12 +48,12 @@ public class CarsController {
     }
 
     @GetMapping("/findByDailyPriceLessThanEqual")
-    DataResult<List<CarListDto>> findByDailyPriceLessThanEqual(double dailyPrice) throws BusinessException {
+    DataResult<List<CarListDto>> findByDailyPriceLessThanEqual(@RequestParam double dailyPrice) throws BusinessException {
         return this.carService.findByDailyPriceLessThanEqual(dailyPrice);
     }
 
     @GetMapping("/getAllPaged")
-    DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize) throws BusinessException {
+    DataResult<List<CarListDto>> getAllPaged(@RequestParam int pageNo,@RequestParam int pageSize) throws BusinessException {
         return this.carService.getAllPaged(pageNo, pageSize);
     }
 

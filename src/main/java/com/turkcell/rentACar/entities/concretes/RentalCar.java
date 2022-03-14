@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -28,13 +29,19 @@ public class RentalCar {
     @Column(name = "return_date")
     private LocalDate returnDate;
 
-    @Column(name = "rental_car_location")
-    private String location;
+    @ManyToOne
+    @JoinColumn(name = "city_id",insertable = false,updatable = false)
+    private City rentCityId;
+
+    @ManyToOne
+    @JoinColumn(name = "city_id",insertable = false,updatable = false)
+    private City returnCityId;
 
     @ManyToOne
     @JoinColumn(name = "car_id")
     private Car car;
 
-    @OneToMany(mappedBy = "rentalCar", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<OrderedAdditionalService> orderedAdditionalServices;
+    @OneToOne
+    private OrderedAdditionalService orderedAdditionalService;
+
 }

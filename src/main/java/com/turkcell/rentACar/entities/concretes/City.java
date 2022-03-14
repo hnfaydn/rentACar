@@ -6,25 +6,28 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "additional_services")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "cities")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "Lazy"})
-public class AdditionalService {
+public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "additional_service_id")
-    private int additionalServiceId;
+    @Column(name = "city_id")
+    private int cityId;
 
-    @Column(name = "additional_service_name")
-    private String additionalServiceName;
+    @Column(name = "city_name")
+    private String cityName;
 
-    @Column(name = "additional_service_dailyPrice")
-    private double additionalServiceDailyPrice;
+    @OneToMany(mappedBy = "rentCityId")
+    private List<RentalCar> rentalCarRentCity;
 
+    @OneToMany(mappedBy = "returnCityId")
+    private List<RentalCar> rentalCarReturnCity;
 
 }

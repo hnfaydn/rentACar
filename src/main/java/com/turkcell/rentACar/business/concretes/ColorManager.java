@@ -33,27 +33,25 @@ public class ColorManager implements ColorService {
 
     @Override
     public DataResult<List<ColorListDto>> getAll() throws BusinessException {
-        List<Color> colors = this.colorDao.findAll();
 
+        List<Color> colors = this.colorDao.findAll();
 
         List<ColorListDto> colorListDtos = colors.stream().map(color -> this.modelMapperService.forDto().map(color, ColorListDto.class)).collect(Collectors.toList());
 
         return new SuccessDataResult<>(colorListDtos, "Data listed");
     }
 
-
     @Override
     public Result add(CreateColorRequest createColorRequest) throws BusinessException {
 
         Color color = this.modelMapperService.forRequest().map(createColorRequest, Color.class);
 
-
         checkIfNameNotDuplicated(color.getName());
 
         this.colorDao.save(color);
+
         return new SuccessDataResult(createColorRequest, "Data added : " + color.getName());
     }
-
 
     @Override
     public DataResult<ColorDto> getById(int id) throws BusinessException {
@@ -62,57 +60,54 @@ public class ColorManager implements ColorService {
 
         Color color = this.colorDao.findById(id);
         ColorDto colorDto = this.modelMapperService.forDto().map(color, ColorDto.class);
+
         return new SuccessDataResult<>(colorDto, "Data getted");
     }
-
 
     @Override
     public Result update(int id, UpdateColorRequest updateColorRequest) throws BusinessException {
 
         checkIfIdExists(id);
 
-
         Color color = this.colorDao.getById(id);
 
-
-
         checkIfNameNotDuplicated(updateColorRequest.getName());
-
         String colorNameBeforeUpdate = this.colorDao.findById(id).getName();
-
         updateColorOperations(color, updateColorRequest);
 
         this.colorDao.save(color);
+
         return new SuccessResult(colorNameBeforeUpdate + " updated to " + updateColorRequest.getName());
     }
 
-
     @Override
     public Result delete(int id) throws BusinessException {
+
         checkIfIdExists(id);
 
-        String colorNameBeforeDeleted = this.colorDao.getById(id).getName();
+        ColorDto colorDto = this.modelMapperService.forDto().map(this.colorDao.getById(id),ColorDto.class);
         this.colorDao.deleteById(id);
-        return new SuccessResult("Data deleted : " + colorNameBeforeDeleted);
+
+        return new SuccessDataResult(colorDto,"Data deleted: ");
     }
 
 
     private void updateColorOperations(Color color, UpdateColorRequest updateColorRequest) {
+
         color.setName(updateColorRequest.getName());
     }
 
     private void checkIfNameNotDuplicated(String name) throws BusinessException {
+
         if (this.colorDao.existsByName(name)) {
             throw new BusinessException("This color is already exist in system: " + name);
         }
     }
 
     private void checkIfIdExists(int id) throws BusinessException {
+
         if (!this.colorDao.existsById(id)) {
             throw new BusinessException("There is no color with this id: " + id);
         }
     }
-
-
-
 }
