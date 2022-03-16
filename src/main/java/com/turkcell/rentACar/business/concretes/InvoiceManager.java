@@ -147,7 +147,7 @@ public class InvoiceManager implements InvoiceService {
     @Override
     public Result reGenerateInvoiceByUsingRentalCarId(int id) throws BusinessException {
 
-        checkIfRentalCarIdExists(id);
+        checkIfInvoiceIdExitst(id);
 
         Invoice invoice = this.invoiceDao.getById(id);
         RentalCarDto rentalCarDto = this.rentalCarService.getById(invoice.getRentalCar().getRentalCarId()).getData();
@@ -193,7 +193,7 @@ public class InvoiceManager implements InvoiceService {
     }
 
     private void checkIfRentalCarIdExists(int rentalCarId) throws BusinessException {
-        if(this.rentalCarService.getById(rentalCarId).getData()==null){
+        if(!this.rentalCarService.getById(rentalCarId).isSuccess()){
             throw new BusinessException("There is no rent operation with following id: "+rentalCarId);
         }
     }
