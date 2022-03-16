@@ -11,18 +11,18 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="users")
+@Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="user_id")
-	private int userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private int userId;
 
-	@Column(name="email")
-	private String email;
+    @Column(name = "email")
+    private String email;
 
-	@Column(name="password")
-	private String password;
+    @Column(name = "password")
+    private String password;
 }

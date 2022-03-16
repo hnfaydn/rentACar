@@ -42,7 +42,9 @@ public class UserManager implements UserService {
     }
 
     @Override
-    public DataResult<UserDto> getById(int id) {
+    public DataResult<UserDto> getById(int id) throws BusinessException {
+
+        checkIfUserIdExists(id);
 
         User user = this.userDao.getById(id);
 
@@ -51,8 +53,13 @@ public class UserManager implements UserService {
         return new SuccessDataResult(userDto,"Data Brought Successfully:");
     }
 
+
+
     @Override
-    public Result update(int id, UpdateUserRequest updateUserRequest) {
+    public Result update(int id, UpdateUserRequest updateUserRequest) throws BusinessException {
+
+        checkIfUserIdExists(id);
+        checkIfEmailAlreadyExists(updateUserRequest.getEmail());
 
         User user = this.userDao.getById(id);
 
@@ -64,13 +71,32 @@ public class UserManager implements UserService {
         return new SuccessDataResult(userDto,"User email and password updated successfully.");
     }
 
+    private void checkIfEmailAlreadyExists(String email) throws BusinessException {
+        if(this.userDao.existsUserByEmail(email)){
+           throw new BusinessException("This email is already using by another user: "+email);
+        }
+    }
+
     @Override
     public Result delete(int id) throws BusinessException {
+
+        checkIfUserIdExists(id);
 
         UserDto userDto = this.modelMapperService.forDto().map(this.userDao.getById(id), UserDto.class);
 
         this.userDao.deleteById(id);
 
         return new SuccessDataResult(userDto,"Data Deleted: ");
+    }
+
+    @Override
+    public boolean checkIfUserEmailAlreadyExists(String email) {
+        return this.userDao.existsUserByEmail(email);
+    }
+
+    private void checkIfUserIdExists(int id) throws BusinessException {
+        if(!this.userDao.existsById(id)){
+            throw new BusinessException("There is no user with following id: "+id);
+        }
     }
 }

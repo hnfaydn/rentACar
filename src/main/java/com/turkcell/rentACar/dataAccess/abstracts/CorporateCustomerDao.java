@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CorporateCustomerDao extends JpaRepository<CorporateCustomer, Integer> {
+
+    boolean existsCorporateCustomerByTaxNumber(String taxNumber);
 }

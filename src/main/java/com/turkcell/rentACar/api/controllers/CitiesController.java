@@ -35,17 +35,17 @@ public class CitiesController {
         return this.cityService.add(createCityRequest);
     }
 
-    @GetMapping("/getById/{id}")
+    @GetMapping("/getById")
     public DataResult<CityDto> getById(@RequestParam int id) throws BusinessException{
         return this.cityService.getById(id);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     public Result update(@RequestParam int id,@RequestBody @Valid UpdateCityRequest updateCityRequest) throws BusinessException{
         return this.cityService.update(id,updateCityRequest);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete")
     public Result delete(@RequestParam int id) throws BusinessException{
         return this.cityService.delete(id);
     }

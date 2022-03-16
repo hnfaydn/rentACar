@@ -37,7 +37,12 @@ public class CreateRentalCarRequest {
     @Min(1)
     private int carCarId;
 
+    @NotNull
+    @Min(1)
+    private int customerId;
+
     @Nullable
     private Integer orderedAdditionalServiceId;
+
 
 }

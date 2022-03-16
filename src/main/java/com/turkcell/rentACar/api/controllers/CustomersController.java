@@ -30,12 +30,12 @@ public class CustomersController {
     }
 
     @GetMapping("/getById")
-    DataResult<CustomerDto> getById(@RequestParam int id){
+    DataResult<CustomerDto> getById(@RequestParam int id) throws BusinessException {
         return this.customerService.getById(id);
     }
 
     @PutMapping("/update")
-    Result update(@RequestParam int id,@RequestBody @Valid UpdateCustomerRequest updateCustomerRequest){
+    Result update(@RequestParam int id,@RequestBody @Valid UpdateCustomerRequest updateCustomerRequest) throws BusinessException {
         return this.customerService.update(id,updateCustomerRequest);
     }
 

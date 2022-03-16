@@ -100,6 +100,11 @@ public class CityManager implements CityService {
        return this.cityDao.existsById(id);
     }
 
+    @Override
+    public City getCityById(int id) throws BusinessException {
+        return this.cityDao.getById(id);
+    }
+
     private void checkIfNameNotDuplicated(String cityName) throws BusinessException {
 
         if(this.cityDao.existsByCityName(cityName)){

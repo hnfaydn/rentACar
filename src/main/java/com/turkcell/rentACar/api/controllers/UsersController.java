@@ -30,12 +30,12 @@ public class UsersController {
     }
 
     @GetMapping("/getById")
-    DataResult<UserDto> getById(@RequestParam int id){
+    DataResult<UserDto> getById(@RequestParam int id) throws BusinessException {
         return this.userService.getById(id);
     }
 
     @PutMapping("/update")
-    Result update(@RequestParam int id, @RequestBody @Valid UpdateUserRequest updateUserRequest){
+    Result update(@RequestParam int id, @RequestBody @Valid UpdateUserRequest updateUserRequest) throws BusinessException {
         return this.userService.update(id,updateUserRequest);
     }
 

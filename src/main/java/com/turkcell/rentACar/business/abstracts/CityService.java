@@ -24,4 +24,6 @@ public interface CityService {
     Result delete(int id) throws BusinessException;
 
     boolean cityExistsById(int id) throws BusinessException;
+
+    City getCityById(int id)throws BusinessException;
 }

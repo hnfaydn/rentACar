@@ -3,6 +3,7 @@ package com.turkcell.rentACar.business.requests.rentalCarRequests;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Min;
@@ -17,9 +18,11 @@ import java.util.List;
 public class UpdateRentalCarRequest {
 
     @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate rentDate;
 
     @Nullable
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate returnDate;
 
     @NotNull
@@ -34,5 +37,13 @@ public class UpdateRentalCarRequest {
     @Min(1)
     private int carCarId;
 
-    private List<Integer> additionalServices;
+    @NotNull
+    @Min(1)
+    private int customerId;
+
+    @Nullable
+    private Integer orderedAdditionalServiceId;
+
+
+
 }

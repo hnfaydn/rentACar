@@ -35,17 +35,17 @@ public class RentalCarsController {
         return this.rentalCarService.add(createRentalCarRequest);
     }
 
-    @GetMapping("/getById/{id}")
+    @GetMapping("/getById")
     public DataResult<RentalCarDto> getById(@RequestParam int id) throws BusinessException {
         return this.rentalCarService.getById(id);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     public Result update(@RequestParam int id, @RequestBody @Valid UpdateRentalCarRequest updateRentalCarRequest) throws BusinessException {
         return this.rentalCarService.update(id, updateRentalCarRequest);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete")
     public Result delete(@RequestParam int id) throws BusinessException {
         return this.rentalCarService.delete(id);
     }

@@ -36,18 +36,18 @@ public class BrandsController {
         return this.brandService.add(createBrandRequest);
     }
 
-    @GetMapping("/getById/{id}")
+    @GetMapping("/getById")
     public DataResult<BrandDto> getById(@RequestParam int id) throws BusinessException {
 
         return this.brandService.getById(id);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     public Result update(@RequestParam int id, @RequestBody @Valid UpdateBrandRequest updateBrandRequest) throws BusinessException {
         return this.brandService.update(id, updateBrandRequest);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete")
     public Result delete(@RequestParam int id) throws BusinessException {
         return this.brandService.delete(id);
     }

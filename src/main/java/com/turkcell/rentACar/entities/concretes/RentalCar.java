@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
@@ -30,18 +29,21 @@ public class RentalCar {
     private LocalDate returnDate;
 
     @ManyToOne
-    @JoinColumn(name = "city_id",insertable = false,updatable = false)
-    private City rentCityId;
+    @JoinColumn(name = "rent_city_id")
+    private City rentCity;
 
     @ManyToOne
-    @JoinColumn(name = "city_id",insertable = false,updatable = false)
-    private City returnCityId;
+    @JoinColumn(name = "return_city_id")
+    private City returnCity;
 
     @ManyToOne
     @JoinColumn(name = "car_id")
     private Car car;
 
-    @OneToOne()
+    @OneToOne
     private OrderedAdditionalService orderedAdditionalService;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 }

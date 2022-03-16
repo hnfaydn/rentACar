@@ -13,10 +13,12 @@ public interface UserService {
 
     DataResult<List<UserListDto>> getAll();
 
-    DataResult<UserDto> getById(int id);
+    DataResult<UserDto> getById(int id) throws BusinessException;
 
-    Result update(int id, UpdateUserRequest updateUserRequest);
+    Result update(int id, UpdateUserRequest updateUserRequest) throws BusinessException;
 
     Result delete(int id) throws BusinessException;
+
+    boolean checkIfUserEmailAlreadyExists(String email);
 
 }

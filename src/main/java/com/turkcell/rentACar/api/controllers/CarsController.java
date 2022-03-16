@@ -37,12 +37,12 @@ public class CarsController {
         return this.carService.add(createCarRequest);
     }
 
-    @GetMapping("/getById/{id}")
+    @GetMapping("/getById")
     public DataResult<CarDto> getById(@RequestParam int id) throws BusinessException {
         return this.carService.getById(id);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     public Result update(@RequestParam int id, @RequestBody @Valid UpdateCarRequest updateCarRequest) throws BusinessException {
         return this.carService.update(id, updateCarRequest);
     }
@@ -62,7 +62,7 @@ public class CarsController {
         return this.carService.getAllSortedByDailyPrice(sortDirection);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete")
     public Result delete(@RequestParam int id) throws BusinessException {
         return this.carService.delete(id);
     }

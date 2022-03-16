@@ -36,17 +36,17 @@ public class CarMaintenancesController {
         return this.carMaintenanceService.add(createCarMaintenanceRequest);
     }
 
-    @GetMapping("/getById/{id}")
+    @GetMapping("/getById")
     public DataResult<CarMaintenanceDto> getById(@RequestParam int id) throws BusinessException {
         return this.carMaintenanceService.getById(id);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update")
     public Result update(@RequestParam int id, @RequestBody @Valid UpdateCarMaintenanceRequest updateCarMaintenanceRequest) throws BusinessException {
         return this.carMaintenanceService.update(id, updateCarMaintenanceRequest);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/delete")
     public Result delete(@RequestParam int id) throws BusinessException {
         return this.carMaintenanceService.delete(id);
     }
