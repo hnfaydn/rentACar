@@ -45,9 +45,9 @@ public class CarDamageManager implements CarDamageService {
     @Override
     public Result add(CreateCarDamageRequest createCarDamageRequest) throws BusinessException {
 
-        CarDamage carDamage = this.modelMapperService.forRequest().map(createCarDamageRequest,CarDamage.class);
+        checkIfCarDamageIsAlreadyExists(createCarDamageRequest.getDamageDescription());
 
-        checkIfCarDamageIsAlreadyExists(carDamage.getDamageDescription());
+        CarDamage carDamage = this.modelMapperService.forRequest().map(createCarDamageRequest,CarDamage.class);
 
         carDamage.setCarDamageId(0);
         this.carDamageDao.save(carDamage);
