@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,9 +19,9 @@ public class CarListDto {
     private int modelYear;
     private String description;
     private double kilometerInformation;
-    private String brandId;
-    private String colorId;
+    private String brandName;
+    private String colorName;
 
-    private CarDamageListDto carDamageListDto;
+    private List<CarDamageListDto> carDamageListDtos;
 
 }

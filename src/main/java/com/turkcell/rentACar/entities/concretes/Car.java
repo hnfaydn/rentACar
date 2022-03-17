@@ -49,7 +49,7 @@ public class Car {
 
 
     @ManyToMany
-    @JoinTable(name = "cars_car_damage_informations",
+    @JoinTable(name = "cars_car_damages",
             joinColumns = {@JoinColumn(name = "car_id")},
             inverseJoinColumns = {@JoinColumn(name = "car_damage_id")}
     )

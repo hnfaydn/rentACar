@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "car_damage_informations")
+@Table(name = "car_damages")
 public class CarDamage {
 
     @Id
@@ -21,5 +21,6 @@ public class CarDamage {
 
     @Column(name = "damage_description")
     private String damageDescription;
+
 
 }

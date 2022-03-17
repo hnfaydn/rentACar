@@ -4,6 +4,7 @@ import com.turkcell.rentACar.business.abstracts.BrandService;
 import com.turkcell.rentACar.business.abstracts.CarDamageService;
 import com.turkcell.rentACar.business.abstracts.CarService;
 import com.turkcell.rentACar.business.abstracts.ColorService;
+import com.turkcell.rentACar.business.dtos.carDamageDtos.CarDamageListDto;
 import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
 import com.turkcell.rentACar.business.dtos.carDtos.CarListDto;
 import com.turkcell.rentACar.business.requests.carRequests.CreateCarRequest;
@@ -57,7 +58,15 @@ public class CarManager implements CarService {
         List<Car> cars = carDao.findAll();
 
         List<CarListDto> carListDtos = cars.stream().map(car -> this.modelMapperService.forDto().map(car, CarListDto.class)).collect(Collectors.toList());
+        List<CarDamageListDto> carDamageListDto =this.carDamageService.getAll().getData();
 
+        for (int i = 0; i <carListDtos.size() ; i++) {
+            for (int j = 0; j <carDamageListDto.size() ; j++) {
+                if(i==j){
+                    carListDtos.get(i).setCarDamageListDtos(carDamageListDto);
+                }
+            }
+        }
         return new SuccessDataResult<>(carListDtos, "Data listed");
     }
 
