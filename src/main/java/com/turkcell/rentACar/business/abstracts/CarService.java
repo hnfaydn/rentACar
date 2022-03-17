@@ -28,4 +28,7 @@ public interface CarService {
     DataResult<List<CarListDto>> getAllPaged(int pageNo, int pageSize) throws BusinessException;
 
     DataResult<List<CarListDto>> getAllSortedByDailyPrice(Sort.Direction sortDirection) throws BusinessException;
+
+    void carKilometerSetOperation(int carId, double kilometer) throws BusinessException;
+
 }

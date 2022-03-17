@@ -30,6 +30,9 @@ public class Car {
     @Column(name = "car_description")
     private String description;
 
+    @Column(name = "kilometer_information")
+    private double kilometerInformation;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
     private Brand brand;
@@ -43,6 +46,14 @@ public class Car {
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RentalCar> rentalCars;
+
+
+    @ManyToMany
+    @JoinTable(name = "cars_car_damage_informations",
+            joinColumns = {@JoinColumn(name = "car_id")},
+            inverseJoinColumns = {@JoinColumn(name = "car_damage_id")}
+    )
+    private List<CarDamage> carDamages;
 
 
 }

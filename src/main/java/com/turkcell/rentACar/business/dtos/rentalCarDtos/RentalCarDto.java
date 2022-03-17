@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
 import java.time.LocalDate;
 
 @Data
@@ -21,6 +22,10 @@ public class RentalCarDto {
     private int rentCityId;
 
     private int returnCityId;
+
+    private double rentStartKilometer;
+
+    private double returnKilometer;
 
     private CarDto carDto;
 

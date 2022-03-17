@@ -1,6 +1,7 @@
 package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.BrandService;
+import com.turkcell.rentACar.business.abstracts.CarDamageService;
 import com.turkcell.rentACar.business.abstracts.CarService;
 import com.turkcell.rentACar.business.abstracts.ColorService;
 import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
@@ -13,13 +14,16 @@ import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.dataAccess.abstracts.CarDao;
+import com.turkcell.rentACar.entities.concretes.AdditionalService;
 import com.turkcell.rentACar.entities.concretes.Car;
+import com.turkcell.rentACar.entities.concretes.CarDamage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,14 +34,21 @@ public class CarManager implements CarService {
     private final BrandService brandService;
     private final ColorService colorService;
     private final ModelMapperService modelMapperService;
+    private CarDamageService carDamageService;
 
 
     @Autowired
-    public CarManager(CarDao carDao, BrandService brandService, ColorService colorService, ModelMapperService modelMapperService) {
+    public CarManager(CarDao carDao,
+                      BrandService brandService,
+                      ColorService colorService,
+                      ModelMapperService modelMapperService,
+                      CarDamageService carDamageService) {
+
         this.carDao = carDao;
         this.brandService = brandService;
         this.colorService = colorService;
         this.modelMapperService = modelMapperService;
+        this.carDamageService = carDamageService;
     }
 
     @Override
@@ -50,18 +61,36 @@ public class CarManager implements CarService {
         return new SuccessDataResult<>(carListDtos, "Data listed");
     }
 
-
     @Override
     public Result add(CreateCarRequest createCarRequest) throws BusinessException {
+
+        List<CarDamage> tempCarDamageList = new ArrayList<>();
+
+        for (Integer carDamageId : createCarRequest.getCarDamageIds()) {
+
+            checkIfCarDamageIdExists(carDamageId);
+            CarDamage carDamage = this.carDamageService.getCarDamageById(carDamageId);
+            tempCarDamageList.add(carDamage);
+        }
+
 
         Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
 
         checkIfCarCreationParametersNotNull(car);
         checkIfCarExists(car);
 
+        car.setCarId(0);
+        car.setCarDamages(tempCarDamageList);
+
         this.carDao.save(car);
 
         return new SuccessDataResult(createCarRequest, "Data added");
+    }
+
+    private void checkIfCarDamageIdExists(Integer carDamageId) throws BusinessException {
+        if(this.carDamageService.getCarDamageById(carDamageId)==null){
+            throw new BusinessException("There is no car damage with following Id: "+carDamageId);
+        }
     }
 
     @Override
@@ -135,6 +164,16 @@ public class CarManager implements CarService {
     }
 
     @Override
+    public void carKilometerSetOperation(int carId, double kilometer) throws BusinessException {
+
+        Car car = this.carDao.getById(carId);
+
+        car.setKilometerInformation(kilometer);
+
+        this.carDao.save(car);
+    }
+
+    @Override
     public DataResult<CarDto> getById(int id) throws BusinessException {
 
         checkIfIdExists(id);
@@ -144,7 +183,6 @@ public class CarManager implements CarService {
 
         return new SuccessDataResult<>(carDto, "Data getted");
     }
-
 
     private void checkIfCarExists(Car car) throws BusinessException {
 

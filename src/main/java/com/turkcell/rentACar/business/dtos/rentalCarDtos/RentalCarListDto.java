@@ -25,6 +25,10 @@ public class RentalCarListDto {
 
     private int returnCityId;
 
+    private double rentStartKilometer;
+
+    private double returnKilometer;
+
     private CarDto carDto;
 
     private CustomerDto customerDto;

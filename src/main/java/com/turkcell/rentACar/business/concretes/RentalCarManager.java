@@ -82,14 +82,19 @@ public class RentalCarManager implements RentalCarService {
 
         RentalCar rentalCar = this.modelMapperService.forRequest().map(createRentalCarRequest, RentalCar.class);
 
-        rentalCar.setRentalCarId(0);
-
         rentalCar.setCustomer(this.customerService.getCustomerById(createRentalCarRequest.getCustomerId()));
+        rentalCar.setRentStartKilometer(this.carService.getById(createRentalCarRequest.getCarCarId()).getData().getKilometerInformation());
 
+        checkIfKilometerInformationsValid(rentalCar);
+
+        this.carService.carKilometerSetOperation(rentalCar.getCar().getCarId(),rentalCar.getReturnKilometer());
+
+        rentalCar.setRentalCarId(0);
         this.rentalCarDao.save(rentalCar);
 
         return new SuccessDataResult(createRentalCarRequest, "Data added");
     }
+
 
 
     @Override
@@ -117,6 +122,12 @@ public class RentalCarManager implements RentalCarService {
         checkIfUpdateParametersOrderedAdditionalServiceIdNotValidOrZero(updateRentalCarRequest);
 
         updateRentalCarOperations(rentalCar, updateRentalCarRequest);
+
+        rentalCar.setRentStartKilometer(this.carService.getById(updateRentalCarRequest.getCarCarId()).getData().getKilometerInformation());
+
+        checkIfKilometerInformationsValid(rentalCar);
+
+        this.carService.carKilometerSetOperation(rentalCar.getCar().getCarId(),rentalCar.getReturnKilometer());
 
         RentalCarDto rentalCarDto = this.modelMapperService.forDto().map(rentalCar, RentalCarDto.class);
         rentalCar.setRentalCarId(rentalCar.getRentalCarId());
@@ -311,6 +322,13 @@ public class RentalCarManager implements RentalCarService {
     private void checkIfCustomerExists(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
         if(this.customerService.getCustomerById(createRentalCarRequest.getCustomerId())==null){
             throw new BusinessException("There is no customer with following id: "+createRentalCarRequest.getCustomerId());
+        }
+    }
+
+    private void checkIfKilometerInformationsValid(RentalCar rentalCar) throws BusinessException {
+
+        if(rentalCar.getRentStartKilometer() > rentalCar.getReturnKilometer()){
+            throw new BusinessException("Return kilometer is not valid for following car id: "+rentalCar.getCar().getCarId());
         }
     }
 }

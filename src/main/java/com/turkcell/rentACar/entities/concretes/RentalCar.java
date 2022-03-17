@@ -36,6 +36,12 @@ public class RentalCar {
     @JoinColumn(name = "return_city_id")
     private City returnCity;
 
+    @Column(name = "rent_start_kilometer")
+    private double rentStartKilometer;
+
+    @Column(name = "return_kilometer")
+    private double returnKilometer;
+
     @ManyToOne
     @JoinColumn(name = "car_id")
     private Car car;

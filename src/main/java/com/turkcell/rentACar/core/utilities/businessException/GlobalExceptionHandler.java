@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public ErrorDataResult<Object> handleBusinessExceptions(HttpMessageNotReadableException httpMessageNotReadableException) {
+    public ErrorDataResult<Object> handleHttpMessageNotReadableExceptions(HttpMessageNotReadableException httpMessageNotReadableException) {
         String businessError = "JSON message format error";
         ErrorDataResult<Object> errorDataResult = new ErrorDataResult<>(businessError, "HttpMessageNotReadableException Error");
 
