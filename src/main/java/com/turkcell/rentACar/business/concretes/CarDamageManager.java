@@ -105,6 +105,10 @@ public class CarDamageManager implements CarDamageService {
 
     @Override
     public CarDamage getCarDamageById(int id) throws BusinessException {
+
+        if(!this.carDamageDao.existsById(id)){
+            return null;
+        }
         return this.carDamageDao.getById(id);
     }
 

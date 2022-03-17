@@ -255,6 +255,7 @@ public class CarManager implements CarService {
     }
 
     private void checkIfCarDamageIdExists(Integer carDamageId) throws BusinessException {
+
         if(this.carDamageService.getCarDamageById(carDamageId)==null||carDamageId<=0){
             throw new BusinessException("There is no car damage with following Id: "+carDamageId);
         }
