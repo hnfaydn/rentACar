@@ -60,13 +60,7 @@ public class CarManager implements CarService {
         List<CarListDto> carListDtos = cars.stream().map(car -> this.modelMapperService.forDto().map(car, CarListDto.class)).collect(Collectors.toList());
         List<CarDamageListDto> carDamageListDto =this.carDamageService.getAll().getData();
 
-        for (int i = 0; i <carListDtos.size() ; i++) {
-            for (int j = 0; j <carDamageListDto.size() ; j++) {
-                if(i==j){
-                    carListDtos.get(i).setCarDamageListDtos(carDamageListDto);
-                }
-            }
-        }
+
         return new SuccessDataResult<>(carListDtos, "Data listed");
     }
 

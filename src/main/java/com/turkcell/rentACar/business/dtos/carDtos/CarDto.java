@@ -21,6 +21,6 @@ public class CarDto {
     private String brandName;
     private String colorName;
 
-    private List<CarDamageListDto> carDamageListDto;
+    private List<CarDamageListDto> carDamages;
 
 }

@@ -45,10 +45,11 @@ public class CarDamageManager implements CarDamageService {
     @Override
     public Result add(CreateCarDamageRequest createCarDamageRequest) throws BusinessException {
 
-        checkIfCarDamageIsAlreadyExists(createCarDamageRequest.getDamageDescription());
+        CarDamage carDamage = this.modelMapperService.forRequest().map(createCarDamageRequest,CarDamage.class);
 
-        CarDamage carDamage = this.modelMapperService.forDto().map(createCarDamageRequest,CarDamage.class);
+        checkIfCarDamageIsAlreadyExists(carDamage.getDamageDescription());
 
+        carDamage.setCarDamageId(0);
         this.carDamageDao.save(carDamage);
 
         return new SuccessDataResult(createCarDamageRequest,"Data Added Successfully");
@@ -64,7 +65,6 @@ public class CarDamageManager implements CarDamageService {
         CarDamage carDamage = this.carDamageDao.getById(id);
 
         CarDamageDto carDamageDto = this.modelMapperService.forDto().map(carDamage,CarDamageDto.class);
-
 
         return new SuccessDataResult(carDamageDto,"Data brought successfully");
     }
