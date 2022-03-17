@@ -65,33 +65,18 @@ public class CarManager implements CarService {
     @Override
     public Result add(CreateCarRequest createCarRequest) throws BusinessException {
 
-        List<CarDamage> tempCarDamageList = new ArrayList<>();
-
-        for (Integer carDamageId : createCarRequest.getCarDamageIds()) {
-
-            checkIfCarDamageIdExists(carDamageId);
-            CarDamage carDamage = this.carDamageService.getCarDamageById(carDamageId);
-            tempCarDamageList.add(carDamage);
-        }
-
-
         Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
 
+        checkIfCarDamageListIsNullOrEmpty(createCarRequest,car);
         checkIfCarCreationParametersNotNull(car);
         checkIfCarExists(car);
+        checkIfCarDamageListIsNullOrEmpty(createCarRequest,car);
 
         car.setCarId(0);
-        car.setCarDamages(tempCarDamageList);
 
         this.carDao.save(car);
 
         return new SuccessDataResult(createCarRequest, "Data added");
-    }
-
-    private void checkIfCarDamageIdExists(Integer carDamageId) throws BusinessException {
-        if(this.carDamageService.getCarDamageById(carDamageId)==null){
-            throw new BusinessException("There is no car damage with following Id: "+carDamageId);
-        }
     }
 
     @Override
@@ -248,6 +233,30 @@ public class CarManager implements CarService {
 
         if (dailyPrice <= 0) {
             throw new BusinessException("Daily price can not less than or equal to zero");
+        }
+    }
+
+    private void checkIfCarDamageListIsNullOrEmpty(CreateCarRequest createCarRequest, Car car) throws BusinessException {
+
+        if(createCarRequest.getCarDamageIds()==null || createCarRequest.getCarDamageIds().isEmpty())
+        {
+            car.setCarDamages(null);
+        }else{
+            List<CarDamage> tempCarDamageList = new ArrayList<>();
+
+            for (Integer carDamageId : createCarRequest.getCarDamageIds()) {
+
+                checkIfCarDamageIdExists(carDamageId);
+                CarDamage carDamage = this.carDamageService.getCarDamageById(carDamageId);
+                tempCarDamageList.add(carDamage);
+            }
+            car.setCarDamages(tempCarDamageList);
+        }
+    }
+
+    private void checkIfCarDamageIdExists(Integer carDamageId) throws BusinessException {
+        if(this.carDamageService.getCarDamageById(carDamageId)==null||carDamageId<=0){
+            throw new BusinessException("There is no car damage with following Id: "+carDamageId);
         }
     }
 }
