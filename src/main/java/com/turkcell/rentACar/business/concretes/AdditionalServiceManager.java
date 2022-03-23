@@ -1,10 +1,9 @@
 package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.AdditionalServiceService;
-import com.turkcell.rentACar.business.abstracts.OrderedAdditionalServiceService;
+import com.turkcell.rentACar.business.abstracts.RentalCarService;
 import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceDto;
 import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceListDto;
-import com.turkcell.rentACar.business.dtos.orderedAdditionalServiceDtos.OrderedAdditionalServiceListDto;
 import com.turkcell.rentACar.business.requests.additionalServiceRequests.CreateAdditionalServiceRequest;
 import com.turkcell.rentACar.business.requests.additionalServiceRequests.UpdateAdditionalServiceRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
@@ -14,7 +13,7 @@ import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.dataAccess.abstracts.AdditionalServiceDao;
 import com.turkcell.rentACar.entities.concretes.AdditionalService;
-import com.turkcell.rentACar.entities.concretes.OrderedAdditionalService;
+import com.turkcell.rentACar.entities.concretes.RentalCar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,17 +25,18 @@ import java.util.stream.Collectors;
 public class AdditionalServiceManager implements AdditionalServiceService {
 
     private AdditionalServiceDao additionalServiceDao;
-    private OrderedAdditionalServiceService orderedAdditionalServiceService;
     private ModelMapperService modelMapperService;
+    private RentalCarService rentalCarService;
 
     @Autowired
     public AdditionalServiceManager(AdditionalServiceDao additionalServiceDao,
                                     ModelMapperService modelMapperService,
-                                    OrderedAdditionalServiceService orderedAdditionalServiceService) {
+                                    RentalCarService rentalCarService
+                                    ) {
 
         this.additionalServiceDao = additionalServiceDao;
         this.modelMapperService = modelMapperService;
-        this.orderedAdditionalServiceService=orderedAdditionalServiceService;
+        this.rentalCarService = rentalCarService;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class AdditionalServiceManager implements AdditionalServiceService {
     public Result delete(int id) throws BusinessException {
 
         checkIfIdExists(id);
-        checkIfOrderedAdditionalServiceHasDeletedAdditionalServiceId(id);
+        checkIfRentalCarHasDeletedAdditionalServiceId(id);
 
         AdditionalServiceDto additionalServiceDto =
                 this.modelMapperService.forDto().map(this.additionalServiceDao.getById(id), AdditionalServiceDto.class);
@@ -105,8 +105,10 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 
     @Override
     public AdditionalService getAdditionalServiceById(int id) {
-
-        return this.additionalServiceDao.getById(id);
+        if (this.additionalServiceDao.findAdditionalServiceByAdditionalServiceId(id)==null){
+            return null;
+        }
+        return this.additionalServiceDao.findAdditionalServiceByAdditionalServiceId(id);
     }
 
 
@@ -130,20 +132,20 @@ public class AdditionalServiceManager implements AdditionalServiceService {
         additionalService.setAdditionalServiceDailyPrice(updateAdditionalServiceRequest.getAdditionalServiceDailyPrice());
     }
 
-    private void checkIfOrderedAdditionalServiceHasDeletedAdditionalServiceId(int id) throws BusinessException {
+    private void checkIfRentalCarHasDeletedAdditionalServiceId(int id) throws BusinessException {
 
-        List<OrderedAdditionalService> orderedAdditionalServices = this.orderedAdditionalServiceService.getAllOrderedAdditionalServices();
+        List<RentalCar> rentalCars = this.rentalCarService.getAllRentalCars();
 
-        List<Integer> orderedAdditionalServiceIds = new ArrayList<>();
-        for (OrderedAdditionalService orderedAdditionalService : orderedAdditionalServices
+        List<Integer> rentalCarIds = new ArrayList<>();
+        for (RentalCar rentalCar : rentalCars
              ) {
-            if (orderedAdditionalService.getAdditionalServices().contains(this.additionalServiceDao.getById(id))){
-                orderedAdditionalServiceIds.add(orderedAdditionalService.getOrderedAdditionalServiceId());
+            if (rentalCar.getAdditionalServices().contains(this.additionalServiceDao.getById(id))){
+                rentalCarIds.add(rentalCar.getRentalCarId());
             }
         }
 
-        if(!orderedAdditionalServiceIds.isEmpty()){
-            throw new BusinessException("This Additional Service is Ordered by following order Ids: "+orderedAdditionalServiceIds.toString());
+        if(!rentalCarIds.isEmpty()){
+            throw new BusinessException("This Additional Service is Ordered by following rental Ids: "+rentalCarIds.toString());
         }
     }
 }

@@ -9,4 +9,5 @@ public interface AdditionalServiceDao extends JpaRepository<AdditionalService, I
 
     boolean existsByAdditionalServiceName(String additionalServiceName);
 
+    AdditionalService findAdditionalServiceByAdditionalServiceId(int id);
 }

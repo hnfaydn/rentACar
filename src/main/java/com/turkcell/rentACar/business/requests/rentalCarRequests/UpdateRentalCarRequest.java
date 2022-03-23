@@ -1,5 +1,6 @@
 package com.turkcell.rentACar.business.requests.rentalCarRequests;
 
+import com.turkcell.rentACar.business.requests.paymentRequests.UpdatePaymentRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,11 +43,11 @@ public class UpdateRentalCarRequest {
 
     @NotNull
     @Min(1)
-    private int customerId;
+    private int userId;
 
     @Nullable
-    private Integer orderedAdditionalServiceId;
+    private List<Integer> AdditionalServiceIds;
 
-
+    private UpdatePaymentRequest paymentInformations;
 
 }

@@ -17,8 +17,6 @@ import javax.persistence.*;
 @PrimaryKeyJoinColumn(name="corporate_customer_id",referencedColumnName = "customer_id")
 public class CorporateCustomer extends Customer {
 
-	@Column(name = "corporate_customer_id", insertable = false , updatable = false)
-	private int corporateCustomerId;
 	
 	@Column(name = "company_name")
 	private String companyName;

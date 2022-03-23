@@ -1,13 +1,15 @@
 package com.turkcell.rentACar.business.dtos.rentalCarDtos;
 
+import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceDto;
+import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceListDto;
 import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
 import com.turkcell.rentACar.business.dtos.customerDtos.CustomerDto;
-import com.turkcell.rentACar.business.dtos.orderedAdditionalServiceDtos.OrderedAdditionalServiceDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Data
@@ -33,7 +35,5 @@ public class RentalCarListDto {
 
     private CustomerDto customerDto;
 
-    private Integer orderedAdditionalServiceId;
-
-    private OrderedAdditionalServiceDto orderedAdditionalServices;
+    private List<AdditionalServiceDto> additionalServices;
 }

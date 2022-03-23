@@ -46,10 +46,16 @@ public class RentalCar {
     @JoinColumn(name = "car_id")
     private Car car;
 
-    @OneToOne
-    private OrderedAdditionalService orderedAdditionalService;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
+    @ManyToMany
+    @JoinTable(name = "rental_cars_additional_services",
+            joinColumns = {@JoinColumn(name = "rental_car_id")},
+            inverseJoinColumns = {@JoinColumn(name = "additional_service_id")}
+    )
+    private List<AdditionalService> additionalServices;
+
 }

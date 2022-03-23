@@ -65,6 +65,7 @@ public class InvoiceManager implements InvoiceService {
         invoice.setRentPayment(invoiceRentPaymentCalculations(rentalCarDto));
         invoice.setRentLocationPayment(invoiceRentLocationPaymentCalculations(rentalCarDto));
         invoice.setTotalPayment(invoice.getAdditionalServiceTotalPayment()+invoice.getRentPayment()+invoice.getRentLocationPayment());
+        invoice.getCustomer().setUserId(rentalCarDto.getCustomerDto().getUserId());
 
         invoice.setInvoiceId(0);
         this.invoiceDao.save(invoice);
@@ -105,13 +106,13 @@ public class InvoiceManager implements InvoiceService {
 
         double additionalServicesTotalPayment = 0;
 
-        if(rentalCarDto.getOrderedAdditionalServices()==null||
-           rentalCarDto.getOrderedAdditionalServices().getAdditionalServices().isEmpty()){
+        if(rentalCarDto.getAdditionalServices()==null||
+           rentalCarDto.getAdditionalServices().isEmpty()){
 
             return additionalServicesTotalPayment;
         }
 
-            for (AdditionalServiceDto additionalServiceDto : rentalCarDto.getOrderedAdditionalServices().getAdditionalServices()
+            for (AdditionalServiceDto additionalServiceDto : rentalCarDto.getAdditionalServices()
             ) {
                 additionalServicesTotalPayment = additionalServicesTotalPayment+additionalServiceDto.getAdditionalServiceDailyPrice();
             }
@@ -123,9 +124,9 @@ public class InvoiceManager implements InvoiceService {
 
         RentalCarDto rentalCarDto = this.rentalCarService.getById(rentalCarID).getData();
 
-        String invoiceNumber = String.valueOf(rentalCarDto.getCustomerDto().getCustomerId())+
+        String invoiceNumber = String.valueOf(rentalCarDto.getCustomerDto().getUserId())+
                 String.valueOf(rentalCarID)+
-                String.valueOf(rentalCarDto.getRentCityId() + invoice.getInvoiceDate().getYear()) +
+                String.valueOf(invoice.getInvoiceDate().getYear()) +
                 String.valueOf(invoice.getInvoiceDate().getMonthValue()) +
                 String.valueOf(invoice.getInvoiceDate().getDayOfMonth());
 

@@ -1,6 +1,7 @@
 package com.turkcell.rentACar.business.requests.rentalCarRequests;
 
 
+import com.turkcell.rentACar.business.requests.paymentRequests.CreatePaymentRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.lang.Nullable;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Data
@@ -42,10 +44,11 @@ public class CreateRentalCarRequest {
 
     @NotNull
     @Min(1)
-    private int customerId;
+    private int userId;
 
     @Nullable
-    private Integer orderedAdditionalServiceId;
+    private List<Integer> AdditionalServiceIds;
 
+    private CreatePaymentRequest paymentInformations;
 
 }

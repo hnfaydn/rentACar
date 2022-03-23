@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,6 +60,8 @@ public class CorporateCustomerManager implements CorporateCustomerService {
         checkIfCorporateCustomerTaxNumberAlreadyExists(createCorporateCustomerRequest.getTaxNumber());
 
         CorporateCustomer corporateCustomer = this.modelMapperService.forDto().map(createCorporateCustomerRequest, CorporateCustomer.class);
+
+        corporateCustomer.setRegistrationDate(LocalDate.now());
 
         this.corporateCustomerDao.save(corporateCustomer);
 

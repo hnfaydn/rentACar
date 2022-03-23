@@ -1,6 +1,7 @@
 package com.turkcell.rentACar.api.controllers;
 
 import com.turkcell.rentACar.business.abstracts.RentalCarService;
+import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceListDto;
 import com.turkcell.rentACar.business.dtos.rentalCarDtos.RentalCarDto;
 import com.turkcell.rentACar.business.dtos.rentalCarDtos.RentalCarListDto;
 import com.turkcell.rentACar.business.requests.rentalCarRequests.CreateRentalCarRequest;
@@ -49,4 +50,10 @@ public class RentalCarsController {
     public Result delete(@RequestParam int id) throws BusinessException {
         return this.rentalCarService.delete(id);
     }
+
+    @GetMapping("/getOrderedAdditionalServicesByRentalCarId")
+    public DataResult<List<AdditionalServiceListDto>> getOrderedAdditionalServicesByRentalCarId(int rentalCarId) throws BusinessException {
+        return this.rentalCarService.getOrderedAdditionalServicesByRentalCarId(rentalCarId);
+    }
+
 }
