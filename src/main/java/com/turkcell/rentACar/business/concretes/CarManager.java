@@ -4,6 +4,7 @@ import com.turkcell.rentACar.business.abstracts.BrandService;
 import com.turkcell.rentACar.business.abstracts.CarDamageService;
 import com.turkcell.rentACar.business.abstracts.CarService;
 import com.turkcell.rentACar.business.abstracts.ColorService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.carDamageDtos.CarDamageListDto;
 import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
 import com.turkcell.rentACar.business.dtos.carDtos.CarListDto;
@@ -59,7 +60,7 @@ public class CarManager implements CarService {
 
         List<CarListDto> carListDtos = cars.stream().map(car -> this.modelMapperService.forDto().map(car, CarListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult<>(carListDtos, "Data listed");
+        return new SuccessDataResult<>(carListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -76,7 +77,7 @@ public class CarManager implements CarService {
 
         this.carDao.save(car);
 
-        return new SuccessDataResult(createCarRequest, "Data added");
+        return new SuccessDataResult(createCarRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override
@@ -93,7 +94,7 @@ public class CarManager implements CarService {
 
         this.carDao.save(car);
 
-        return new SuccessDataResult(carDto, "Data updated, new data: ");
+        return new SuccessDataResult(carDto, BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
     @Override
@@ -105,7 +106,7 @@ public class CarManager implements CarService {
 
         this.carDao.deleteById(id);
 
-        return new SuccessDataResult(carDto, "Data deleted");
+        return new SuccessDataResult(carDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
     @Override
@@ -120,7 +121,7 @@ public class CarManager implements CarService {
                 cars.stream().map(car -> this.modelMapperService.forDto()
                         .map(car, CarListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult(carListDtos, "Data listed");
+        return new SuccessDataResult(carListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -135,7 +136,7 @@ public class CarManager implements CarService {
                 cars.stream().map(car -> this.modelMapperService.forDto()
                         .map(car, CarListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult<>(carListDtos, "Data paged");
+        return new SuccessDataResult<>(carListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -146,7 +147,7 @@ public class CarManager implements CarService {
 
         List<CarListDto> carListDtos = cars.stream().map(car -> this.modelMapperService.forDto().map(car, CarListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult<>(carListDtos, "Data listed");
+        return new SuccessDataResult<>(carListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -167,7 +168,7 @@ public class CarManager implements CarService {
         Car car = this.carDao.getById(id);
         CarDto carDto = this.modelMapperService.forDto().map(car, CarDto.class);
 
-        return new SuccessDataResult<>(carDto, "Data getted");
+        return new SuccessDataResult<>(carDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
     private void checkIfCarExists(Car car) throws BusinessException {
@@ -180,7 +181,7 @@ public class CarManager implements CarService {
                 car.getDescription()
                 ))
         {
-            throw new BusinessException("This car is already exist!");
+            throw new BusinessException(BusinessMessages.CarMessages.CAR_ALREADY_EXISTS);
         }
     }
 
@@ -193,7 +194,7 @@ public class CarManager implements CarService {
     private void checkIfIdExists(int id) throws BusinessException {
 
         if (!this.carDao.existsById(id)) {
-            throw new BusinessException("There is no car with following id: " + id);
+            throw new BusinessException(BusinessMessages.CarMessages.CAR_NOT_FOUND + id);
         }
     }
 
@@ -202,29 +203,29 @@ public class CarManager implements CarService {
         if (car.getDailyPrice() == updateCarRequest.getDailyPrice() && car.getDescription().equals(updateCarRequest.getDescription())
 
         ) {
-            throw new BusinessException("Initial values are completely equal to update values, no need to update!");
+            throw new BusinessException(BusinessMessages.CarMessages.NO_CHANGES_NO_NEED_TO_UPDATE);
         }
     }
 
     private void checkIfCarCreationParametersNotNull(Car car) throws BusinessException {
 
         if (this.brandService.getById(car.getBrand().getBrandId()) == null) {
-            throw new BusinessException("There is no brand with following id: " + car.getBrand().getBrandId());
+            throw new BusinessException(BusinessMessages.CarMessages.BRAND_NOT_FOUND + car.getBrand().getBrandId());
         }
 
         if (this.colorService.getById(car.getColor().getColorId()) == null) {
-            throw new BusinessException("There is no color with following id: " + car.getColor().getColorId());
+            throw new BusinessException(BusinessMessages.CarMessages.COLOR_NOT_FOUND + car.getColor().getColorId());
         }
     }
 
     private void checkIfPageNoAndPageSizeValid(int pageNo, int pageSize) throws BusinessException {
 
         if (pageNo <= 0) {
-            throw new BusinessException("Page No can not less than or equal to zero");
+            throw new BusinessException(BusinessMessages.CarMessages.PAGE_NO_CANNOT_LESS_THAN_ZERO);
         }
 
         if (pageSize <= 0) {
-            throw new BusinessException("Page Size can not less than or equal to zero");
+            throw new BusinessException(BusinessMessages.CarMessages.PAGE_SIZE_CANNOT_LESS_THAN_ZERO);
         }
 
     }
@@ -232,7 +233,7 @@ public class CarManager implements CarService {
     private void checkIfDailyPriceValid(double dailyPrice) throws BusinessException {
 
         if (dailyPrice <= 0) {
-            throw new BusinessException("Daily price can not less than or equal to zero");
+            throw new BusinessException(BusinessMessages.CarMessages.DAILY_PRICE_CANNOT_LESS_THAN_ZERO);
         }
     }
 
@@ -257,7 +258,7 @@ public class CarManager implements CarService {
     private void checkIfCarDamageIdExists(Integer carDamageId) throws BusinessException {
 
         if(this.carDamageService.getCarDamageById(carDamageId)==null||carDamageId<=0){
-            throw new BusinessException("There is no car damage with following Id: "+carDamageId);
+            throw new BusinessException(BusinessMessages.CarMessages.CAR_DAMAGE_NOT_FOUND+carDamageId);
         }
     }
 }

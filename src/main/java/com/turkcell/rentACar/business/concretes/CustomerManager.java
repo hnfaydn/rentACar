@@ -2,6 +2,7 @@ package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.CustomerService;
 import com.turkcell.rentACar.business.abstracts.RentalCarService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.customerDtos.CustomerDto;
 import com.turkcell.rentACar.business.dtos.customerDtos.CustomerListDto;
 import com.turkcell.rentACar.business.requests.customerRequests.UpdateCustomerRequest;
@@ -42,7 +43,7 @@ public class CustomerManager implements CustomerService {
         List<CustomerListDto> customerListDtos = customers.stream()
                 .map(customer -> this.modelMapperService.forDto().map(customer, CustomerListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult(customerListDtos,"Data listed successfully");
+        return new SuccessDataResult(customerListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class CustomerManager implements CustomerService {
 
         CustomerDto customerDto = this.modelMapperService.forDto().map(customer, CustomerDto.class);
 
-        return new SuccessDataResult(customerDto,"Data Brought Successfully:");
+        return new SuccessDataResult(customerDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
 
@@ -71,7 +72,7 @@ public class CustomerManager implements CustomerService {
 
         CustomerDto customerDto = this.modelMapperService.forDto().map(customer,CustomerDto.class);
 
-        return new SuccessDataResult(customerDto,"Customer email and password updated successfully.");
+        return new SuccessDataResult(customerDto, BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
     private void customerUpdateOperations(Customer customer, UpdateCustomerRequest updateCustomerRequest) {
@@ -81,7 +82,7 @@ public class CustomerManager implements CustomerService {
 
     private void checkIfCustomerEmailAlreadyExists(String email) throws BusinessException {
         if (this.customerDao.existsCustomerByEmail(email)){
-            throw new BusinessException("This email is already using by another customer: "+email);
+            throw new BusinessException(BusinessMessages.CustomerMessages.CUSTOMER_EMAIL_ALREADY_EXISTS+email);
         }
     }
 
@@ -94,7 +95,7 @@ public class CustomerManager implements CustomerService {
 
         this.customerDao.deleteById(id);
 
-        return new SuccessDataResult(customerDto,"Data Deleted: ");
+        return new SuccessDataResult(customerDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
     @Override
@@ -107,7 +108,7 @@ public class CustomerManager implements CustomerService {
 
     private void checkIfCustomerIdExists(int id) throws BusinessException {
         if(!this.customerDao.existsById(id)){
-            throw new BusinessException("There is no customer with following id: "+id);
+            throw new BusinessException(BusinessMessages.CustomerMessages.CUSTOMER_NOT_FOUND+id);
         }
     }
 }

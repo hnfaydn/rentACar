@@ -1,6 +1,7 @@
 package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.CityService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.cityDtos.CityDto;
 import com.turkcell.rentACar.business.dtos.cityDtos.CityListDto;
 import com.turkcell.rentACar.business.requests.cityRequests.CreateCityRequest;
@@ -39,7 +40,7 @@ public class CityManager implements CityService {
         List<CityListDto> cityListDtos = cities.stream()
                 .map(city -> this.modelMapperService.forDto().map(city, CityListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult(cityListDtos, "Data Listed Successfully: ");
+        return new SuccessDataResult(cityListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class CityManager implements CityService {
 
         this.cityDao.save(city);
 
-        return new SuccessDataResult(createCityRequest,"Data added: "+createCityRequest.getCityName());
+        return new SuccessDataResult(createCityRequest,BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override
@@ -64,7 +65,7 @@ public class CityManager implements CityService {
         City city = this.cityDao.getById(id);
         CityDto cityDto = this.modelMapperService.forDto().map(city, CityDto.class);
 
-        return new SuccessDataResult(cityDto, "Data Brought Successfully by following Id: " +id);
+        return new SuccessDataResult(cityDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
     @Override
@@ -75,12 +76,13 @@ public class CityManager implements CityService {
         City city = this.cityDao.getById(id);
 
         checkIfNameNotDuplicated(updateCityRequest.getCityName());
-        String cityNameBeforeUpdate = this.cityDao.getById(id).getCityName();
         updateCityOperations(city, updateCityRequest);
+
+        CityDto cityDto = this.modelMapperService.forDto().map(city,CityDto.class);
 
         this.cityDao.save(city);
 
-        return new SuccessResult(cityNameBeforeUpdate + " Data updated, new data: " + updateCityRequest.getCityName());
+        return new SuccessDataResult(cityDto, BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
     @Override
@@ -91,7 +93,7 @@ public class CityManager implements CityService {
         CityDto cityDto = this.modelMapperService.forDto().map(this.cityDao.getById(id), CityDto.class);
         this.cityDao.deleteById(id);
 
-        return new SuccessDataResult(cityDto,"Data Deleted: ");
+        return new SuccessDataResult(cityDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
     @Override
@@ -104,21 +106,21 @@ public class CityManager implements CityService {
     private void checkIfNameNotDuplicated(String cityName) throws BusinessException {
 
         if(this.cityDao.existsByCityName(cityName)){
-            throw new BusinessException("This city name is already exists.");
+            throw new BusinessException(BusinessMessages.CityMessages.CITY_NAME_ALREADY_EXISTS+cityName);
         }
     }
 
     private void checkIfCityIdNotDuplicated(int cityId) throws BusinessException {
 
         if(this.cityDao.existsByCityId(cityId)){
-            throw new BusinessException("This city id is already exists.");
+            throw new BusinessException(BusinessMessages.CityMessages.CITY_ID_ALREADY_EXISTS+cityId);
         }
     }
 
     private void checkIfCityIdExists(int id) throws BusinessException {
 
         if(!this.cityDao.existsById(id)){
-            throw new BusinessException("There is no city with following id: "+id);
+            throw new BusinessException(BusinessMessages.CityMessages.CITY_NOT_FOUND+id);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.BrandService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.brandDtos.BrandDto;
 import com.turkcell.rentACar.business.dtos.brandDtos.BrandListDto;
 import com.turkcell.rentACar.business.requests.brandRequests.CreateBrandRequest;
@@ -39,7 +40,7 @@ public class BrandManager implements BrandService {
         List<BrandListDto> brandListDtos = brands.stream()
                 .map(brand -> this.modelMapperService.forDto().map(brand, BrandListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult<>(brandListDtos, "Data listed Successfully: ");
+        return new SuccessDataResult<>(brandListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class BrandManager implements BrandService {
 
         this.brandDao.save(brand);
 
-        return new SuccessDataResult(createBrandRequest, "Data added : " + brand.getName());
+        return new SuccessDataResult(createBrandRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override
@@ -62,7 +63,7 @@ public class BrandManager implements BrandService {
         Brand brand = this.brandDao.getById(id);
         BrandDto brandDto = this.modelMapperService.forDto().map(brand, BrandDto.class);
 
-        return new SuccessDataResult(brandDto, "Data Brought Successfully by following Id:" +id);
+        return new SuccessDataResult(brandDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
     @Override
@@ -73,12 +74,13 @@ public class BrandManager implements BrandService {
         Brand brand = this.brandDao.getById(id);
 
         checkIfNameNotDuplicated(updateBrandRequest.getName());
-        String brandNameBeforeUpdate = this.brandDao.findById(id).getName();
         updateBrandOperations(brand, updateBrandRequest);
+
+        BrandDto brandDto = this.modelMapperService.forDto().map(brand,BrandDto.class);
 
         this.brandDao.save(brand);
 
-        return new SuccessResult(brandNameBeforeUpdate + " Data updated, new data: " + updateBrandRequest.getName());
+        return new SuccessDataResult(brandDto, BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
     @Override
@@ -89,7 +91,7 @@ public class BrandManager implements BrandService {
         BrandDto brandDto = this.modelMapperService.forDto().map(this.brandDao.getById(id),BrandDto.class);
         this.brandDao.deleteById(id);
 
-        return new SuccessDataResult(brandDto,"Data deleted: ");
+        return new SuccessDataResult(brandDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
 
@@ -101,14 +103,14 @@ public class BrandManager implements BrandService {
     private void checkIfNameNotDuplicated(String name) throws BusinessException {
 
         if (this.brandDao.existsByName(name)) {
-            throw new BusinessException("This brand is already exist in system: " + name);
+            throw new BusinessException( BusinessMessages.BrandMessages.BRAND_ALREADY_EXISTS+ name);
         }
     }
 
     private void checkIfBrandExists(int id) throws BusinessException {
 
         if (!this.brandDao.existsById(id)) {
-            throw new BusinessException("There is no brand with following id : " + id);
+            throw new BusinessException(BusinessMessages.BrandMessages.BRAND_NOT_FOUND + id);
         }
     }
 

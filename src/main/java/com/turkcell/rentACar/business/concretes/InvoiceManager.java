@@ -2,6 +2,7 @@ package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.InvoiceService;
 import com.turkcell.rentACar.business.abstracts.RentalCarService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceDto;
 import com.turkcell.rentACar.business.dtos.invoiceDtos.InvoiceDto;
 import com.turkcell.rentACar.business.dtos.invoiceDtos.InvoiceListDto;
@@ -41,13 +42,14 @@ public class InvoiceManager implements InvoiceService {
 
     @Override
     public DataResult<List<InvoiceListDto>> getAll() throws BusinessException {
+
         List<Invoice> invoices = this.invoiceDao.findAll();
 
         List<InvoiceListDto> invoiceListDtos =
                 invoices.stream().map(invoice -> this.modelMapperService.forDto()
                         .map(invoice, InvoiceListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult(invoiceListDtos,"Data Listed Successfully");
+        return new SuccessDataResult(invoiceListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -70,7 +72,7 @@ public class InvoiceManager implements InvoiceService {
         invoice.setInvoiceId(0);
         this.invoiceDao.save(invoice);
 
-        return new SuccessDataResult(createInvoiceRequest,"Data Added");
+        return new SuccessDataResult(createInvoiceRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
 
@@ -142,7 +144,7 @@ public class InvoiceManager implements InvoiceService {
 
         InvoiceDto invoiceDto = this.modelMapperService.forDto().map(invoice,InvoiceDto.class);
 
-        return new SuccessDataResult(invoiceDto,"Data Brought Successfully");
+        return new SuccessDataResult(invoiceDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
     @Override
@@ -166,7 +168,7 @@ public class InvoiceManager implements InvoiceService {
 
         this.invoiceDao.save(invoice);
 
-        return new SuccessDataResult(invoiceDto,"Data Added");
+        return new SuccessDataResult(invoiceDto, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override
@@ -178,7 +180,7 @@ public class InvoiceManager implements InvoiceService {
 
         this.invoiceDao.deleteById(id);
 
-        return new SuccessDataResult(invoiceDto,"Data Deleted Successfully");
+        return new SuccessDataResult(invoiceDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
     @Override
@@ -190,18 +192,18 @@ public class InvoiceManager implements InvoiceService {
                 invoices.stream().map(invoice -> this.modelMapperService.forDto()
                         .map(invoice, InvoiceListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult(invoiceListDtos,"Data Listed Successfully");
+        return new SuccessDataResult(invoiceListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     private void checkIfRentalCarIdExists(int rentalCarId) throws BusinessException {
         if(!this.rentalCarService.getById(rentalCarId).isSuccess()){
-            throw new BusinessException("There is no rent operation with following id: "+rentalCarId);
+            throw new BusinessException(BusinessMessages.InvoiceMessages.RENTAL_CAR_NOT_FOUND+rentalCarId);
         }
     }
 
     private void checkIfInvoiceIdExitst(int id) throws BusinessException {
         if(!this.invoiceDao.existsById(id)){
-            throw new BusinessException("There is no invoice with following id: "+id);
+            throw new BusinessException(BusinessMessages.InvoiceMessages.INVOICE_NOT_FOUND+id);
         }
     }
 }

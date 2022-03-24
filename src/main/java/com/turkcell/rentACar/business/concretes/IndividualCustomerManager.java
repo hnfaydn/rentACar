@@ -1,8 +1,8 @@
 package com.turkcell.rentACar.business.concretes;
 
-import com.turkcell.rentACar.business.abstracts.CustomerService;
 import com.turkcell.rentACar.business.abstracts.IndividualCustomerService;
 import com.turkcell.rentACar.business.abstracts.UserService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.individualCustomerDtos.IndividualCustomerDto;
 import com.turkcell.rentACar.business.dtos.individualCustomerDtos.IndividualCustomerListDto;
 import com.turkcell.rentACar.business.requests.individualCustomerRequests.CreateIndividualCustomerRequest;
@@ -46,7 +46,7 @@ public class IndividualCustomerManager implements IndividualCustomerService {
                 .map(individualCustomer -> this.modelMapperService.forDto()
                         .map(individualCustomer,IndividualCustomerListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult(individualCustomerListDtos,"Data Listed Successfully.");
+        return new SuccessDataResult(individualCustomerListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -61,11 +61,8 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 
         this.individualCustomerDao.save(individualCustomer);
 
-        return new SuccessDataResult(createIndividualCustomerRequest,"Data Added Successfully.");
+        return new SuccessDataResult(createIndividualCustomerRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
-
-
-
 
     @Override
     public DataResult<IndividualCustomerDto> getById(int id) throws BusinessException {
@@ -76,10 +73,8 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 
         IndividualCustomerDto individualCustomerDto = this.modelMapperService.forDto().map(individualCustomer, IndividualCustomerDto.class);
 
-        return new SuccessDataResult(individualCustomerDto,"Data Brought Successfully.");
+        return new SuccessDataResult(individualCustomerDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
-
-
 
     @Override
     public Result delete(int id) throws BusinessException {
@@ -90,7 +85,7 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 
         this.individualCustomerDao.deleteById(id);
 
-        return new SuccessDataResult(individualCustomerDto,"Data DeletedSuccessfully");
+        return new SuccessDataResult(individualCustomerDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
     @Override
@@ -106,7 +101,7 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 
         IndividualCustomerDto individualCustomerDto = this.modelMapperService.forDto().map(individualCustomer,IndividualCustomerDto.class);
 
-        return new SuccessDataResult(individualCustomerDto,"Data updated successfully");
+        return new SuccessDataResult(individualCustomerDto, BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
     private void individualCustomerUpdateOperations(IndividualCustomer individualCustomer, UpdateIndividualCustomerRequest updateIndividualCustomerRequest) {
@@ -120,19 +115,19 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 
     private void checkIfIndividualCustomerEmailAlreadyExists(String email) throws BusinessException {
         if(this.userService.checkIfUserEmailAlreadyExists(email)){
-            throw new BusinessException("There is customer with following email: " +email);
+            throw new BusinessException(BusinessMessages.IndividualCustomerMessages.INDIVIDUAL_CUSTOMER_EMAIL_ALREADY_EXISTS +email);
         }
     }
 
     private void checkIfIndividualCustomerNationalIdentityAlreadyExists(String nationalIdentity) throws BusinessException {
         if(this.individualCustomerDao.existsIndividualCustomerByNationalIdentity(nationalIdentity)){
-            throw new BusinessException("There is individual customer with following national id: " +nationalIdentity);
+            throw new BusinessException(BusinessMessages.IndividualCustomerMessages.INDIVIDUAL_CUSTOMER_NATIONAL_IDENTITY_ALREADY_EXISTS +nationalIdentity);
         }
     }
 
     private void checkIfIndividualCustomerIdExists(int id) throws BusinessException {
         if(this.individualCustomerDao.existsById(id)){
-            throw new BusinessException("There no individual customer with following id: "+id);
+            throw new BusinessException(BusinessMessages.IndividualCustomerMessages.INDIVIDUAL_CUSTOMER_NOT_FOUND+id);
         }
     }
 }

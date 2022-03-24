@@ -1,6 +1,7 @@
 package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.UserService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.userDtos.UserDto;
 import com.turkcell.rentACar.business.dtos.userDtos.UserListDto;
 import com.turkcell.rentACar.business.requests.userRequests.UpdateUserRequest;
@@ -24,8 +25,7 @@ public class UserManager implements UserService {
     private ModelMapperService modelMapperService;
 
     @Autowired
-    public UserManager(UserDao userDao,
-                       ModelMapperService modelMapperService) {
+    public UserManager(UserDao userDao, ModelMapperService modelMapperService) {
         this.userDao = userDao;
         this.modelMapperService = modelMapperService;
     }
@@ -35,10 +35,9 @@ public class UserManager implements UserService {
 
         List<User> users = this.userDao.findAll();
 
-        List<UserListDto> userListDtos = users.stream()
-                .map(user -> this.modelMapperService.forDto().map(user,UserListDto.class)).collect(Collectors.toList());
+        List<UserListDto> userListDtos = users.stream().map(user -> this.modelMapperService.forDto().map(user, UserListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult(userListDtos,"Data listed successfully");
+        return new SuccessDataResult(userListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -50,10 +49,8 @@ public class UserManager implements UserService {
 
         UserDto userDto = this.modelMapperService.forDto().map(user, UserDto.class);
 
-        return new SuccessDataResult(userDto,"Data Brought Successfully:");
+        return new SuccessDataResult(userDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
-
-
 
     @Override
     public Result update(int id, UpdateUserRequest updateUserRequest) throws BusinessException {
@@ -66,14 +63,14 @@ public class UserManager implements UserService {
         user.setEmail(updateUserRequest.getEmail());
         user.setPassword(updateUserRequest.getPassword());
 
-        UserDto userDto = this.modelMapperService.forDto().map(user,UserDto.class);
+        UserDto userDto = this.modelMapperService.forDto().map(user, UserDto.class);
 
-        return new SuccessDataResult(userDto,"User email and password updated successfully.");
+        return new SuccessDataResult(userDto, BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
     private void checkIfEmailAlreadyExists(String email) throws BusinessException {
-        if(this.userDao.existsUserByEmail(email)){
-           throw new BusinessException("This email is already using by another user: "+email);
+        if (this.userDao.existsUserByEmail(email)) {
+            throw new BusinessException(BusinessMessages.UserMessages.USER_EMAIL_ALREADY_EXISTS + email);
         }
     }
 
@@ -86,7 +83,7 @@ public class UserManager implements UserService {
 
         this.userDao.deleteById(id);
 
-        return new SuccessDataResult(userDto,"Data Deleted: ");
+        return new SuccessDataResult(userDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
     @Override
@@ -95,8 +92,8 @@ public class UserManager implements UserService {
     }
 
     private void checkIfUserIdExists(int id) throws BusinessException {
-        if(!this.userDao.existsById(id)){
-            throw new BusinessException("There is no user with following id: "+id);
+        if (!this.userDao.existsById(id)) {
+            throw new BusinessException(BusinessMessages.UserMessages.USER_NOT_FOUND + id);
         }
     }
 }

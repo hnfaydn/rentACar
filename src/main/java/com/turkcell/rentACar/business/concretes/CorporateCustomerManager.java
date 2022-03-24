@@ -3,6 +3,7 @@ package com.turkcell.rentACar.business.concretes;
 import com.turkcell.rentACar.business.abstracts.CorporateCustomerService;
 import com.turkcell.rentACar.business.abstracts.CustomerService;
 import com.turkcell.rentACar.business.abstracts.UserService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.corporateCustomerDtos.CorporateCustomerDto;
 import com.turkcell.rentACar.business.dtos.corporateCustomerDtos.CorporateCustomerListDto;
 import com.turkcell.rentACar.business.requests.corporateCustomerRequests.CreateCorporateCustomerRequest;
@@ -50,7 +51,7 @@ public class CorporateCustomerManager implements CorporateCustomerService {
                 corporateCustomers.stream().map(corporateCustomer -> this.modelMapperService.forDto()
                         .map(corporateCustomer, CorporateCustomerListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult(corporateCustomerListDtos,"Data Listed Successfully");
+        return new SuccessDataResult(corporateCustomerListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -65,7 +66,7 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 
         this.corporateCustomerDao.save(corporateCustomer);
 
-        return new SuccessDataResult(createCorporateCustomerRequest,"Data Added Successfully.");
+        return new SuccessDataResult(createCorporateCustomerRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 
         CorporateCustomerDto corporateCustomerDto = this.modelMapperService.forDto().map(corporateCustomer,CorporateCustomerDto.class);
 
-        return new SuccessDataResult(corporateCustomerDto,"Data Brought Successfully.");
+        return new SuccessDataResult(corporateCustomerDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
 
@@ -90,7 +91,7 @@ public class CorporateCustomerManager implements CorporateCustomerService {
         CorporateCustomerDto corporateCustomerDto = this.modelMapperService.forDto().map(this.corporateCustomerDao.getById(id), CorporateCustomerDto.class);
         this.corporateCustomerDao.deleteById(id);
 
-        return new SuccessDataResult(corporateCustomerDto,"Data Deleted Successfully.");
+        return new SuccessDataResult(corporateCustomerDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
     @Override
@@ -108,7 +109,7 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 
         this.corporateCustomerDao.save(corporateCustomer);
 
-        return new SuccessDataResult(corporateCustomerDto,"Data Updated to following data Successfully");
+        return new SuccessDataResult(corporateCustomerDto, BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
     private void corporateCustomerUpdateOperations(CorporateCustomer corporateCustomer, UpdateCorporateCustomerRequest updateCorporateCustomerRequest) {
@@ -121,19 +122,19 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 
     private void checkIfCorporateCustomerIdExists(int id) throws BusinessException {
         if (!this.corporateCustomerDao.existsById(id)) {
-            throw new BusinessException("There is no corporate customer with following id: "+id);
+            throw new BusinessException(BusinessMessages.CorporateCustomerMessages.CORPORATE_CUSTOMER_NOT_FOUND+id);
         }
     }
 
     private void checkIfCorporateCustomerEmailAlreadyExists(String email) throws BusinessException {
         if(this.userService.checkIfUserEmailAlreadyExists(email)){
-            throw new BusinessException("There is customer with following email: " +email);
+            throw new BusinessException(BusinessMessages.CorporateCustomerMessages.CORPORATE_CUSTOMER_EMAIL_ALREADY_EXISTS +email);
         }
     }
 
     private void checkIfCorporateCustomerTaxNumberAlreadyExists(String taxNumber) throws BusinessException {
         if (this.corporateCustomerDao.existsCorporateCustomerByTaxNumber(taxNumber)){
-            throw new BusinessException("There is corporate customer with following tax number: " +taxNumber);
+            throw new BusinessException(BusinessMessages.CorporateCustomerMessages.CORPORATE_CUSTOMER_TAX_NUMBER_ALREADY_EXISTS +taxNumber);
         }
     }
 }

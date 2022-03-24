@@ -3,7 +3,6 @@ package com.turkcell.rentACar.business.abstracts;
 import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceListDto;
 import com.turkcell.rentACar.business.dtos.rentalCarDtos.RentalCarDto;
 import com.turkcell.rentACar.business.dtos.rentalCarDtos.RentalCarListDto;
-import com.turkcell.rentACar.business.requests.paymentRequests.CreatePaymentRequest;
 import com.turkcell.rentACar.business.requests.rentalCarRequests.CreateRentalCarRequest;
 import com.turkcell.rentACar.business.requests.rentalCarRequests.UpdateRentalCarRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
@@ -28,8 +27,6 @@ public interface RentalCarService {
     List<RentalCarListDto> getAllRentalCarsByCarId(int carId) throws BusinessException;
 
     List<RentalCar> getAllRentalCars();
-
-    void paymentAddOperation(RentalCar rentalCar, CreatePaymentRequest createPaymentRequest) throws BusinessException;
 
     DataResult<List<AdditionalServiceListDto>> getOrderedAdditionalServicesByRentalCarId(int rentalCarId);
 }

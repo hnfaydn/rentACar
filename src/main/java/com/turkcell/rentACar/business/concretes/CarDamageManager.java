@@ -1,9 +1,9 @@
 package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.CarDamageService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.carDamageDtos.CarDamageDto;
 import com.turkcell.rentACar.business.dtos.carDamageDtos.CarDamageListDto;
-import com.turkcell.rentACar.business.dtos.carMaintenanceDtos.CarMaintenanceListDto;
 import com.turkcell.rentACar.business.requests.carDamageRequests.CreateCarDamageRequest;
 import com.turkcell.rentACar.business.requests.carDamageRequests.UpdateCarDamageRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
@@ -39,7 +39,7 @@ public class CarDamageManager implements CarDamageService {
         List<CarDamageListDto> carDamageListDtos = carDamages.stream()
                 .map(carDamage -> this.modelMapperService.forDto().map(carDamage, CarDamageListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult(carDamageListDtos,"Data Listed Successfully");
+        return new SuccessDataResult(carDamageListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class CarDamageManager implements CarDamageService {
         carDamage.setCarDamageId(0);
         this.carDamageDao.save(carDamage);
 
-        return new SuccessDataResult(createCarDamageRequest,"Data Added Successfully");
+        return new SuccessDataResult(createCarDamageRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
 
@@ -66,7 +66,7 @@ public class CarDamageManager implements CarDamageService {
 
         CarDamageDto carDamageDto = this.modelMapperService.forDto().map(carDamage,CarDamageDto.class);
 
-        return new SuccessDataResult(carDamageDto,"Data brought successfully");
+        return new SuccessDataResult(carDamageDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
 
@@ -85,7 +85,7 @@ public class CarDamageManager implements CarDamageService {
 
         this.carDamageDao.save(carDamage);
 
-        return new SuccessDataResult(carDamageDto,"Data updated to following data");
+        return new SuccessDataResult(carDamageDto, BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
 
@@ -100,7 +100,7 @@ public class CarDamageManager implements CarDamageService {
 
         this.carDamageDao.deleteById(id);
 
-        return new SuccessDataResult(carDamageDto,"Data deleted successfuly");
+        return new SuccessDataResult(carDamageDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
     @Override
@@ -114,13 +114,13 @@ public class CarDamageManager implements CarDamageService {
 
     private void checkIfCarDamageIsAlreadyExists(String damageDescription) throws BusinessException {
         if(this.carDamageDao.existsByDamageDescription(damageDescription)){
-            throw new BusinessException("This car damage description is already exists: "+damageDescription);
+            throw new BusinessException(BusinessMessages.CarDamageMessages.CAR_DAMAGE_ALREADY_EXISTS+damageDescription);
         }
     }
 
     private void chechIfCarDamageIdExists(int id) throws BusinessException {
         if(!this.carDamageDao.existsById(id)){
-            throw new BusinessException("There is no car damage with following id: " +id);
+            throw new BusinessException(BusinessMessages.CarDamageMessages.CAR_DAMAGE_NOT_FOUND +id);
         }
     }
     private void carDamageUpdateOperations(CarDamage carDamage, UpdateCarDamageRequest updateCarDamageRequest) {

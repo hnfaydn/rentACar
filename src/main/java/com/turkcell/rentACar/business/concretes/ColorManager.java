@@ -1,6 +1,7 @@
 package com.turkcell.rentACar.business.concretes;
 
 import com.turkcell.rentACar.business.abstracts.ColorService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.colorDtos.ColorDto;
 import com.turkcell.rentACar.business.dtos.colorDtos.ColorListDto;
 import com.turkcell.rentACar.business.requests.colorRequests.CreateColorRequest;
@@ -38,7 +39,7 @@ public class ColorManager implements ColorService {
 
         List<ColorListDto> colorListDtos = colors.stream().map(color -> this.modelMapperService.forDto().map(color, ColorListDto.class)).collect(Collectors.toList());
 
-        return new SuccessDataResult<>(colorListDtos, "Data listed");
+        return new SuccessDataResult<>(colorListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class ColorManager implements ColorService {
 
         this.colorDao.save(color);
 
-        return new SuccessDataResult(createColorRequest, "Data added : " + color.getName());
+        return new SuccessDataResult(createColorRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override
@@ -61,7 +62,7 @@ public class ColorManager implements ColorService {
         Color color = this.colorDao.findById(id);
         ColorDto colorDto = this.modelMapperService.forDto().map(color, ColorDto.class);
 
-        return new SuccessDataResult<>(colorDto, "Data getted");
+        return new SuccessDataResult<>(colorDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
     @Override
@@ -72,12 +73,13 @@ public class ColorManager implements ColorService {
         Color color = this.colorDao.getById(id);
 
         checkIfNameNotDuplicated(updateColorRequest.getName());
-        String colorNameBeforeUpdate = this.colorDao.findById(id).getName();
         updateColorOperations(color, updateColorRequest);
+
+        ColorDto colorDto = this.modelMapperService.forDto().map(color,ColorDto.class);
 
         this.colorDao.save(color);
 
-        return new SuccessResult(colorNameBeforeUpdate + " updated to " + updateColorRequest.getName());
+        return new SuccessDataResult(colorDto,BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
     @Override
@@ -88,7 +90,7 @@ public class ColorManager implements ColorService {
         ColorDto colorDto = this.modelMapperService.forDto().map(this.colorDao.getById(id),ColorDto.class);
         this.colorDao.deleteById(id);
 
-        return new SuccessDataResult(colorDto,"Data deleted: ");
+        return new SuccessDataResult(colorDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
 
@@ -100,14 +102,14 @@ public class ColorManager implements ColorService {
     private void checkIfNameNotDuplicated(String name) throws BusinessException {
 
         if (this.colorDao.existsByName(name)) {
-            throw new BusinessException("This color is already exist in system: " + name);
+            throw new BusinessException(BusinessMessages.ColorMessages.COLOR_ALREADY_EXISTS + name);
         }
     }
 
     private void checkIfIdExists(int id) throws BusinessException {
 
         if (!this.colorDao.existsById(id)) {
-            throw new BusinessException("There is no color with this id: " + id);
+            throw new BusinessException(BusinessMessages.ColorMessages.COLOR_NOT_FOUND + id);
         }
     }
 }
