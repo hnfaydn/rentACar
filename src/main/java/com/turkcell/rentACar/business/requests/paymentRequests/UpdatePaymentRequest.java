@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Data
@@ -13,10 +14,10 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class UpdatePaymentRequest {
 
-    @Size(min = 16,max = 16)
+    @Pattern(regexp="^[0-9]{16}",message="length must be 16 and all digits have to be an integer")
     private String cardNo;
 
-    @Size(min = 2,max = 50)
+    @Pattern(regexp="^[a-zA-Z]{5,50}",message="Card holder input have to consist of letters and size have to between 5 and 50! ")
     private String cardHolder;
 
     @Min(1)
