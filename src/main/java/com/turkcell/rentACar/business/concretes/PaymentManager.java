@@ -69,7 +69,7 @@ public class PaymentManager implements PaymentService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
+    @Transactional(propagation = Propagation.REQUIRED)
     public void paymentSuccessor(CreatePaymentModel createPaymentModel) throws BusinessException {
 
         RentalCar rentalCar = this.rentalCarService.add(createPaymentModel.getCreateRentalCarRequest()).getData();
