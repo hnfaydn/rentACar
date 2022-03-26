@@ -1,0 +1,101 @@
+package com.turkcell.rentACar.business.concretes;
+
+import com.turkcell.rentACar.business.abstracts.UserCardInformationService;
+import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
+import com.turkcell.rentACar.business.dtos.userCardInformationDto.UserCardInformationDto;
+import com.turkcell.rentACar.business.dtos.userCardInformationDto.UserCardInformationListDto;
+import com.turkcell.rentACar.business.requests.userCardInformationRequests.CreateUserCardInformationRequest;
+import com.turkcell.rentACar.business.requests.userCardInformationRequests.UpdateUserCardInformationRequest;
+import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
+import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
+import com.turkcell.rentACar.core.utilities.results.DataResult;
+import com.turkcell.rentACar.core.utilities.results.Result;
+import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
+import com.turkcell.rentACar.dataAccess.abstracts.UserCardInformationDao;
+import com.turkcell.rentACar.entities.concretes.UserCardInformation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class UserCardInformationManager implements UserCardInformationService {
+
+    private UserCardInformationDao userCardInformationDao;
+    private ModelMapperService modelMapperService;
+
+    @Autowired
+    public UserCardInformationManager(UserCardInformationDao userCardInformationDao,
+                                      ModelMapperService modelMapperService) {
+        this.userCardInformationDao = userCardInformationDao;
+        this.modelMapperService = modelMapperService;
+    }
+
+    @Override
+    public DataResult<List<UserCardInformationListDto>> getAll() throws BusinessException {
+
+        List<UserCardInformation> userCardInformations = this.userCardInformationDao.findAll();
+
+        List<UserCardInformationListDto> userCardInformationListDtos = userCardInformations.stream()
+                .map(userCardInformation ->this.modelMapperService.forDto()
+                        .map(userCardInformation,UserCardInformationListDto.class)).collect(Collectors.toList());
+        return new SuccessDataResult(userCardInformationListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
+    }
+
+    @Override
+    public Result add(CreateUserCardInformationRequest createUserCardInformationRequest) throws BusinessException {
+
+        UserCardInformation userCardInformation = this.modelMapperService.forRequest().map(createUserCardInformationRequest,UserCardInformation.class);
+
+        userCardInformation.setUserCardInformationId(0);
+        this.userCardInformationDao.save(userCardInformation);
+
+        return new SuccessDataResult(createUserCardInformationRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
+    }
+
+    @Override
+    public DataResult<UserCardInformationDto> getById(int id) throws BusinessException {
+
+        UserCardInformation userCardInformation = this.userCardInformationDao.getById(id);
+
+        UserCardInformationDto userCardInformationDto = this.modelMapperService.forDto().map(userCardInformation,UserCardInformationDto.class);
+
+
+        return new SuccessDataResult<>(userCardInformationDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
+    }
+
+    @Override
+    public Result update(int id, UpdateUserCardInformationRequest updateUserCardInformationRequest) throws BusinessException {
+
+        UserCardInformation userCardInformation = this.userCardInformationDao.getById(id);
+
+        updateUserCardInformationOperations(userCardInformation,updateUserCardInformationRequest);
+
+        UserCardInformationDto userCardInformationDto = this.modelMapperService.forDto().map(userCardInformation,UserCardInformationDto.class);
+
+        return new SuccessDataResult(userCardInformationDto,BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
+    }
+
+    private void updateUserCardInformationOperations(UserCardInformation userCardInformation, UpdateUserCardInformationRequest updateUserCardInformationRequest) {
+        userCardInformation.setCardNo(updateUserCardInformationRequest.getPaymentInformations().getCardNo());
+        userCardInformation.setCardHolder(updateUserCardInformationRequest.getPaymentInformations().getCardHolder());
+        userCardInformation.setExpirationYear(updateUserCardInformationRequest.getPaymentInformations().getExpirationYear());
+        userCardInformation.setExpirationMonth(updateUserCardInformationRequest.getPaymentInformations().getExpirationMonth());
+        userCardInformation.setCvv(updateUserCardInformationRequest.getPaymentInformations().getCvv());
+        userCardInformation.getCustomer().setUserId(updateUserCardInformationRequest.getCustomerId());
+
+    }
+
+    @Override
+    public Result delete(int id) throws BusinessException {
+
+        UserCardInformation userCardInformation = this.userCardInformationDao.getById(id);
+
+        UserCardInformationDto userCardInformationDto = this.modelMapperService.forDto().map(userCardInformation,UserCardInformationDto.class);
+
+        this.userCardInformationDao.deleteById(id);
+
+        return new SuccessDataResult(userCardInformationDto,BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
+    }
+}

@@ -103,7 +103,7 @@ public class BrandManager implements BrandService {
     private void checkIfNameNotDuplicated(String name) throws BusinessException {
 
         if (this.brandDao.existsByName(name)) {
-            throw new BusinessException( BusinessMessages.BrandMessages.BRAND_ALREADY_EXISTS+ name);
+            throw new BusinessException( BusinessMessages.BrandMessages.BRAND_ALREADY_EXISTS + name);
         }
     }
 

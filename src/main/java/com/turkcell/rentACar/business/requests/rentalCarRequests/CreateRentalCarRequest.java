@@ -1,7 +1,6 @@
 package com.turkcell.rentACar.business.requests.rentalCarRequests;
 
 
-import com.turkcell.rentACar.business.requests.paymentRequests.CreatePaymentRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -49,6 +48,5 @@ public class CreateRentalCarRequest {
     @Nullable
     private List<Integer> AdditionalServiceIds;
 
-    private CreatePaymentRequest paymentInformations;
 
 }

@@ -8,6 +8,7 @@ import com.turkcell.rentACar.business.requests.rentalCarRequests.UpdateRentalCar
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
+import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.entities.concretes.RentalCar;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface RentalCarService {
 
     DataResult<List<RentalCarListDto>> getAll() throws BusinessException;
 
-    Result add(CreateRentalCarRequest createRentalCarRequest) throws BusinessException;
+    SuccessDataResult<RentalCar> add(CreateRentalCarRequest createRentalCarRequest) throws BusinessException;
 
     DataResult<RentalCarDto> getById(int id) throws BusinessException;
 

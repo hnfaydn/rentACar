@@ -7,6 +7,8 @@ import com.turkcell.rentACar.business.requests.invoiceRequests.UpdateInvoiceRequ
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
+import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
+import com.turkcell.rentACar.entities.concretes.Invoice;
 
 import java.util.List;
 
@@ -14,7 +16,7 @@ public interface InvoiceService {
 
     DataResult<List<InvoiceListDto>> getAll() throws BusinessException;
 
-    Result add(CreateInvoiceRequest createInvoiceRequest) throws BusinessException;
+    SuccessDataResult<Invoice> add(CreateInvoiceRequest createInvoiceRequest) throws BusinessException;
 
     DataResult<InvoiceDto> getById(int id) throws BusinessException;
 

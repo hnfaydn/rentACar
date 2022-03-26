@@ -124,4 +124,10 @@ public class BusinessMessages {
         public static final String USER_EMAIL_ALREADY_EXISTS = "Following Email is already exists: ";
     }
 
+    public class PaymentMessages{
+
+        public static final String INVALID_PAYMENT = "Invalid payment operation!";
+
+    }
+
 }

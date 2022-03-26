@@ -30,7 +30,6 @@ public class BrandsController {
         return this.brandService.getAll();
     }
 
-
     @PostMapping("/add")
     public Result add(@RequestBody @Valid CreateBrandRequest createBrandRequest) throws BusinessException {
         return this.brandService.add(createBrandRequest);

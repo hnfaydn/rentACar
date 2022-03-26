@@ -46,10 +46,12 @@ public class RentalCar {
     @JoinColumn(name = "car_id")
     private Car car;
 
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
     private Customer customer;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Payment> payments;
 
     @ManyToMany
     @JoinTable(name = "rental_cars_additional_services",

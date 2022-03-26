@@ -31,8 +31,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public ErrorDataResult<Object> handleBusinessExceptions(BusinessException businessException) {
-        String businessError = businessException.getMessage();
-        ErrorDataResult<Object> errorDataResult = new ErrorDataResult<>(businessError, "Business Error");
+
+        ErrorDataResult<Object> errorDataResult = new ErrorDataResult<>(businessException.getMessage(), "Business Error");
 
         return errorDataResult;
     }

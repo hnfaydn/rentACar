@@ -53,7 +53,7 @@ public class InvoiceManager implements InvoiceService {
     }
 
     @Override
-    public Result add(CreateInvoiceRequest createInvoiceRequest) throws BusinessException {
+    public SuccessDataResult add(CreateInvoiceRequest createInvoiceRequest) throws BusinessException {
 
         checkIfRentalCarIdExists(createInvoiceRequest.getRentalCarId());
 
@@ -70,9 +70,9 @@ public class InvoiceManager implements InvoiceService {
         invoice.getCustomer().setUserId(rentalCarDto.getCustomerDto().getUserId());
 
         invoice.setInvoiceId(0);
-        this.invoiceDao.save(invoice);
+        this.invoiceDao.saveAndFlush(invoice);
 
-        return new SuccessDataResult(createInvoiceRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
+        return new SuccessDataResult(invoice, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
 

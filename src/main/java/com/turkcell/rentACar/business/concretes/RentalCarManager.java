@@ -14,7 +14,6 @@ import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
-import com.turkcell.rentACar.core.utilities.results.SuccessResult;
 import com.turkcell.rentACar.dataAccess.abstracts.RentalCarDao;
 import com.turkcell.rentACar.entities.concretes.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class RentalCarManager implements RentalCarService {
 
     private final RentalCarDao rentalCarDao;
@@ -74,8 +72,7 @@ public class RentalCarManager implements RentalCarService {
     }
 
     @Override
-    @Transactional
-    public Result add(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
+    public SuccessDataResult add(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
 
         checkIfCarIsExists(createRentalCarRequest.getCarCarId());
         checkIfRentalDatesCorrect(createRentalCarRequest);
@@ -96,9 +93,9 @@ public class RentalCarManager implements RentalCarService {
         this.carService.carKilometerSetOperation(rentalCar.getCar().getCarId(),rentalCar.getReturnKilometer());
 
         rentalCar.setRentalCarId(0);
-        this.rentalCarDao.save(rentalCar);
+        this.rentalCarDao.saveAndFlush(rentalCar);
 
-        return new SuccessDataResult(createRentalCarRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
+        return new SuccessDataResult(rentalCar, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
 
