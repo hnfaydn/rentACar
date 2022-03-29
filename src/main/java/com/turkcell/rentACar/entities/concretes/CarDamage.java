@@ -19,7 +19,7 @@ public class CarDamage {
     @Column(name = "car_damage_id")
     private Integer carDamageId;
 
-    @Column(name = "car_damage_description")
+    @Column(name = "car_damage_description",unique = true)
     private String damageDescription;
 
 

@@ -41,7 +41,8 @@ public class CustomerManager implements CustomerService {
         List<Customer> customers = this.customerDao.findAll();
 
         List<CustomerListDto> customerListDtos = customers.stream()
-                .map(customer -> this.modelMapperService.forDto().map(customer, CustomerListDto.class)).collect(Collectors.toList());
+                .map(customer -> this.modelMapperService.forDto().map(customer, CustomerListDto.class))
+                .collect(Collectors.toList());
 
         return new SuccessDataResult(customerListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
@@ -57,8 +58,6 @@ public class CustomerManager implements CustomerService {
 
         return new SuccessDataResult(customerDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
-
-
 
     @Override
     public Result update(int id, UpdateCustomerRequest updateCustomerRequest) throws BusinessException {

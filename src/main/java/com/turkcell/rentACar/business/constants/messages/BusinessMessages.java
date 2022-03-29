@@ -127,7 +127,77 @@ public class BusinessMessages {
     public class PaymentMessages{
 
         public static final String INVALID_PAYMENT = "Invalid payment operation!";
+        public static final String INVALID_RENTAL_CAR_INFORMATION = "Invalid rental car information!";
+        public static final String PAYMENT_NOT_FOUND = "There is no Payment with following id: ";
+        public static final String DELAYED_RETURN_DATE_IS_NOT_VALID = "Delayed return date can not before original return date.";
+        public static final String DELAYED_RETURN_KILOMETER_IS_NOT_VALID = "Delayed return Kilometer can not before original return Kilometer.";
+        public static final String RENTAL_CAR_NOT_FOUND = "There is no Rental Car with following id: ";
 
+    }
+
+    public class UserCardInformationMessages{
+
+        public static final String CARD_NO_ALREADY_EXISTS = "This card no is already exists.";
+        public static final String USER_CARD_INFORMATION_ID_NOT_FOUND = "There is no User Card Information with following id: ";
+        public static final String CUSTOMER_NOT_FOUND = "There is no Customer with following id: ";
+
+    }
+
+    public class PaymentRequestsMessages {
+
+        public static final String CARD_NO_REGEX_MESSAGE = "length must be 16 and all digits have to be an integer";
+        public static final String CARD_HOLDER_REGEX_MESSAGE = "Card holder input have to consist of letters and size have to between 5 and 50!";
+        public static final String EXPIRATION_MONTH_REGEX_MESSAGE = "Expiration month have to between 1 and 12.";
+        public static final String EXPIRATION_YEAR_REGEX_MESSAGE = "Expiration year have to between 2022 and 2032.";
+        public static final String CVV_REGEX_MESSAGE = "CVV number have to between 100 and 999.";
+    }
+
+    public class IndividualCustomerRequestsMessages {
+
+        public static final String FIRST_NAME_REGEX_MESSAGE = "First Name input have to consist of letters and size have to between 5 and 50!";
+        public static final String LAST_NAME_REGEX_MESSAGE = "Last Name input have to consist of letters and size have to between 5 and 50!";
+        public static final String NATIONAL_IDENTITY_REGEX_MESSAGE = "National Identity length must be 11 and all digits have to be an integer";
+    }
+
+    public class CorporateCustomerRequestsMessages {
+
+        public static final String COMPANY_NAME_REGEX_MESSAGE = "Company Name input have to consist of letters, numbers and size have to between 5 and 50!";
+        public static final String TAX_NUMBER_REGEX_MESSAGE = "Tax Number length must be 10 and all digits have to be an integer";
+    }
+
+    public class ColorRequestsMessages {
+
+        public static final String COLOR_NAME_REGEX_MESSAGE = "Color Name input have to consist of letters, numbers and size have to between 5 and 50!";
+    }
+
+    public class CityRequestsMessages {
+
+        public static final String COLOR_NAME_REGEX_MESSAGE = "City Name input have to consist of letters and size have to between 2 and 50!";
+    }
+
+    public class CarRequestsMessages {
+
+        public static final String CAR_DESCRIPTION_REGEX_MESSAGE = "Car Description input have to consist of letters, numbers and size have to between 2 and 100!";
+    }
+
+    public class CarMaintenanceRequestsMessages {
+
+        public static final String CAR_MAINTENANCE_DESCRIPTION_REGEX_MESSAGE = "Car Maintenance Description input have to consist of letters, numbers and size have to between 2 and 100!";
+    }
+
+    public class CarDamageRequestsMessages {
+
+        public static final String CAR_DAMAGE_DESCRIPTION_REGEX_MESSAGE = "Car Damage Description input have to consist of letters, numbers and size have to between 2 and 100!";
+    }
+
+    public class BrandRequestsMessages {
+
+        public static final String BRAND_NAME_REGEX_MESSAGE = "Brand Name input have to consist of letters, numbers and size have to between 2 and 50!";
+    }
+
+    public class AdditionalServiceRequestsMessages {
+
+        public static final String ADDITIONAL_SERVICE_NAME_REGEX_MESSAGE = "Additional Service Name input have to consist of letters, numbers and size have to between 2 and 50!";
     }
 
 }

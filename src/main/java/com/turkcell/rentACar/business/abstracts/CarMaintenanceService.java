@@ -23,6 +23,4 @@ public interface CarMaintenanceService {
     Result delete(int id) throws BusinessException;
 
     List<CarMaintenanceListDto> getAllCarMaintenancesByCarId(int carId) throws BusinessException;
-
-
 }

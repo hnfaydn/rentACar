@@ -47,9 +47,9 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 
         List<CorporateCustomer> corporateCustomers = this.corporateCustomerDao.findAll();
 
-        List<CorporateCustomerListDto> corporateCustomerListDtos =
-                corporateCustomers.stream().map(corporateCustomer -> this.modelMapperService.forDto()
-                        .map(corporateCustomer, CorporateCustomerListDto.class)).collect(Collectors.toList());
+        List<CorporateCustomerListDto> corporateCustomerListDtos = corporateCustomers.stream()
+                .map(corporateCustomer -> this.modelMapperService.forDto().map(corporateCustomer, CorporateCustomerListDto.class))
+                .collect(Collectors.toList());
 
         return new SuccessDataResult(corporateCustomerListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }

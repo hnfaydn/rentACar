@@ -35,7 +35,9 @@ public class UserManager implements UserService {
 
         List<User> users = this.userDao.findAll();
 
-        List<UserListDto> userListDtos = users.stream().map(user -> this.modelMapperService.forDto().map(user, UserListDto.class)).collect(Collectors.toList());
+        List<UserListDto> userListDtos = users.stream()
+                .map(user -> this.modelMapperService.forDto().map(user, UserListDto.class))
+                .collect(Collectors.toList());
 
         return new SuccessDataResult(userListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
@@ -68,12 +70,6 @@ public class UserManager implements UserService {
         return new SuccessDataResult(userDto, BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
-    private void checkIfEmailAlreadyExists(String email) throws BusinessException {
-        if (this.userDao.existsUserByEmail(email)) {
-            throw new BusinessException(BusinessMessages.UserMessages.USER_EMAIL_ALREADY_EXISTS + email);
-        }
-    }
-
     @Override
     public Result delete(int id) throws BusinessException {
 
@@ -94,6 +90,13 @@ public class UserManager implements UserService {
     private void checkIfUserIdExists(int id) throws BusinessException {
         if (!this.userDao.existsById(id)) {
             throw new BusinessException(BusinessMessages.UserMessages.USER_NOT_FOUND + id);
+        }
+    }
+
+    private void checkIfEmailAlreadyExists(String email) throws BusinessException {
+
+        if (this.userDao.existsUserByEmail(email)) {
+            throw new BusinessException(BusinessMessages.UserMessages.USER_EMAIL_ALREADY_EXISTS + email);
         }
     }
 }

@@ -21,6 +21,4 @@ public interface CustomerService {
     Result delete(int id) throws BusinessException;
 
     Customer getCustomerById(int id);
-
-
 }

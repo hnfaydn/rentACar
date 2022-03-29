@@ -11,7 +11,6 @@ import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
-import com.turkcell.rentACar.core.utilities.results.SuccessResult;
 import com.turkcell.rentACar.dataAccess.abstracts.CityDao;
 import com.turkcell.rentACar.entities.concretes.City;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,8 @@ public class CityManager implements CityService {
     private ModelMapperService modelMapperService;
 
     @Autowired
-    public CityManager(CityDao cityDao, ModelMapperService modelMapperService) {
+    public CityManager(CityDao cityDao,
+                       ModelMapperService modelMapperService) {
         this.cityDao = cityDao;
         this.modelMapperService = modelMapperService;
     }
@@ -38,7 +38,8 @@ public class CityManager implements CityService {
         List<City> cities = this.cityDao.findAll();
 
         List<CityListDto> cityListDtos = cities.stream()
-                .map(city -> this.modelMapperService.forDto().map(city, CityListDto.class)).collect(Collectors.toList());
+                .map(city -> this.modelMapperService.forDto().map(city, CityListDto.class))
+                .collect(Collectors.toList());
 
         return new SuccessDataResult(cityListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
@@ -100,6 +101,15 @@ public class CityManager implements CityService {
     public boolean cityExistsById(int id) {
 
        return this.cityDao.existsById(id);
+    }
+
+    @Override
+    public City getCityById(int id) {
+
+        if(!this.cityDao.existsById(id)){
+        return null;}
+
+        return this.cityDao.getById(id);
     }
 
 

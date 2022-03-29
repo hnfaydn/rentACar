@@ -1,7 +1,6 @@
 package com.turkcell.rentACar.business.dtos.rentalCarDtos;
 
 import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceDto;
-import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceListDto;
 import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
 import com.turkcell.rentACar.business.dtos.customerDtos.CustomerDto;
 import lombok.AllArgsConstructor;

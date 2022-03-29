@@ -24,7 +24,4 @@ public interface AdditionalServiceService {
     Result delete(int id) throws BusinessException;
 
     AdditionalService getAdditionalServiceById(int id);
-
-
-
 }

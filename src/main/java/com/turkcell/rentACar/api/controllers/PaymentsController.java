@@ -1,5 +1,6 @@
 package com.turkcell.rentACar.api.controllers;
 
+import com.turkcell.rentACar.api.models.CreateDelayedPaymentModel;
 import com.turkcell.rentACar.api.models.CreatePaymentModel;
 import com.turkcell.rentACar.business.abstracts.PaymentService;
 import com.turkcell.rentACar.business.dtos.paymentDtos.PaymentDto;
@@ -34,12 +35,18 @@ public class PaymentsController {
     }
 
     @DeleteMapping("/delete")
-    Result delete(@RequestParam int id){
+    Result delete(@RequestParam int id) throws BusinessException {
         return this.paymentService.delete(id);
     }
 
     @GetMapping("/getById")
-    DataResult<PaymentDto> getById(@RequestParam int id){
+    DataResult<PaymentDto> getById(@RequestParam int id) throws BusinessException {
         return this.paymentService.getById(id);
     }
+
+    @PostMapping("/additionalPaymentForDelaying")
+    Result additionalPaymentForDelaying(@RequestBody @Valid CreateDelayedPaymentModel createDelayedPaymentModel) throws BusinessException{
+        return this.paymentService.additionalPaymentForDelaying(createDelayedPaymentModel);
+    }
+
 }

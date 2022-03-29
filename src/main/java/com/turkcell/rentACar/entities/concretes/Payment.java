@@ -19,7 +19,7 @@ public class Payment {
     @Column(name = "payment_id")
     private int paymentInformationId;
 
-    @Column(name = "card_no")
+    @Column(name = "card_no",unique = true,length = 16)
     private String cardNo;
 
     @Column(name = "card_holder")

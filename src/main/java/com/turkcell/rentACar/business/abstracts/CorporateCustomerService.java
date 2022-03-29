@@ -21,5 +21,4 @@ public interface CorporateCustomerService {
     Result delete(int id) throws BusinessException;
 
     Result update(int id, UpdateCorporateCustomerRequest updateCorporateCustomerRequest) throws BusinessException;
-
 }

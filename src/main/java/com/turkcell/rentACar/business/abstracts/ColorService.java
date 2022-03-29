@@ -21,5 +21,4 @@ public interface ColorService {
     Result update(int id, UpdateColorRequest updateColorRequest) throws BusinessException;
 
     Result delete(int id) throws BusinessException;
-
 }

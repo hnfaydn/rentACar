@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 
 @Data
@@ -12,6 +13,7 @@ import javax.validation.constraints.Min;
 @NoArgsConstructor
 public class CreateUserCardInformationRequest {
 
+    @Valid
     private CreatePaymentRequest paymentInformations;
 
     @Min(1)

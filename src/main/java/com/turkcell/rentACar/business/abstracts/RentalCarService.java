@@ -11,6 +11,7 @@ import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.entities.concretes.RentalCar;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface RentalCarService {
@@ -30,4 +31,10 @@ public interface RentalCarService {
     List<RentalCar> getAllRentalCars();
 
     DataResult<List<AdditionalServiceListDto>> getOrderedAdditionalServicesByRentalCarId(int rentalCarId);
+
+    Result prePaymentControlOfRentalCar(CreateRentalCarRequest createRentalCarRequest) throws BusinessException;
+
+    RentalCar getRentalCarById(int id);
+
+    void setDelayedReturnDate(int rentalCarId, LocalDate delayedReturnDate);
 }

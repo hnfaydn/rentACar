@@ -11,9 +11,6 @@ import javax.validation.constraints.Email;
 @NoArgsConstructor
 public class UpdateCustomerRequest {
 
-
-    private int customerId;
-
     @Email
     private String email;
 

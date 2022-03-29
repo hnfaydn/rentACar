@@ -50,5 +50,4 @@ public class BrandsController {
     public Result delete(@RequestParam int id) throws BusinessException {
         return this.brandService.delete(id);
     }
-
 }

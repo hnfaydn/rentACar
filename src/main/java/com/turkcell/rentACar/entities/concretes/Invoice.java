@@ -19,7 +19,7 @@ public class Invoice {
     @Column(name = "invoice_id")
     private Integer invoiceId;
 
-    @Column(name = "invoice_number")
+    @Column(name = "invoice_number",unique = true)
     private Integer invoiceNumber;
 
     @Column(name = "invoice_date")

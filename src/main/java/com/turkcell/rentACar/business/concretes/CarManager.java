@@ -5,7 +5,6 @@ import com.turkcell.rentACar.business.abstracts.CarDamageService;
 import com.turkcell.rentACar.business.abstracts.CarService;
 import com.turkcell.rentACar.business.abstracts.ColorService;
 import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
-import com.turkcell.rentACar.business.dtos.carDamageDtos.CarDamageListDto;
 import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
 import com.turkcell.rentACar.business.dtos.carDtos.CarListDto;
 import com.turkcell.rentACar.business.requests.carRequests.CreateCarRequest;
@@ -16,7 +15,6 @@ import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.dataAccess.abstracts.CarDao;
-import com.turkcell.rentACar.entities.concretes.AdditionalService;
 import com.turkcell.rentACar.entities.concretes.Car;
 import com.turkcell.rentACar.entities.concretes.CarDamage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +43,6 @@ public class CarManager implements CarService {
                       ColorService colorService,
                       ModelMapperService modelMapperService,
                       CarDamageService carDamageService) {
-
         this.carDao = carDao;
         this.brandService = brandService;
         this.colorService = colorService;
@@ -116,9 +113,8 @@ public class CarManager implements CarService {
 
         List<Car> cars = this.carDao.findByDailyPriceLessThanEqual(dailyPrice);
 
-
-        List<CarListDto> carListDtos =
-                cars.stream().map(car -> this.modelMapperService.forDto()
+        List<CarListDto> carListDtos = cars.stream()
+                .map(car -> this.modelMapperService.forDto()
                         .map(car, CarListDto.class)).collect(Collectors.toList());
 
         return new SuccessDataResult(carListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
@@ -130,28 +126,32 @@ public class CarManager implements CarService {
         checkIfPageNoAndPageSizeValid(pageNo, pageSize);
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+
         List<Car> cars = this.carDao.findAll(pageable).getContent();
 
-        List<CarListDto> carListDtos =
-                cars.stream().map(car -> this.modelMapperService.forDto()
-                        .map(car, CarListDto.class)).collect(Collectors.toList());
+        List<CarListDto> carListDtos = cars.stream()
+                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
+                .collect(Collectors.toList());
 
         return new SuccessDataResult<>(carListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
-    public DataResult<List<CarListDto>> getAllSortedByDailyPrice(Sort.Direction sortDirection) throws BusinessException {
+    public DataResult<List<CarListDto>> getAllSortedByDailyPrice(Sort.Direction sortDirection) {
 
         Sort sort = Sort.by(sortDirection, "dailyPrice");
+
         List<Car> cars = this.carDao.findAll(sort);
 
-        List<CarListDto> carListDtos = cars.stream().map(car -> this.modelMapperService.forDto().map(car, CarListDto.class)).collect(Collectors.toList());
+        List<CarListDto> carListDtos = cars.stream()
+                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
+                .collect(Collectors.toList());
 
         return new SuccessDataResult<>(carListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
-    public void carKilometerSetOperation(int carId, double kilometer) throws BusinessException {
+    public void carKilometerSetOperation(int carId, double kilometer){
 
         Car car = this.carDao.getById(carId);
 

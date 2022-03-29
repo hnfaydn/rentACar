@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface IndividualCustomerDao extends JpaRepository<IndividualCustomer, Integer> {
 
     boolean existsIndividualCustomerByNationalIdentity(String nationalIdentity);
-
 }

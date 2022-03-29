@@ -8,7 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface BrandDao extends JpaRepository<Brand, Integer> {
 
     boolean existsByName(String name);
-
-    Brand findById(int id);
-
 }

@@ -50,5 +50,4 @@ public class CarMaintenancesController {
     public Result delete(@RequestParam int id) throws BusinessException {
         return this.carMaintenanceService.delete(id);
     }
-
 }

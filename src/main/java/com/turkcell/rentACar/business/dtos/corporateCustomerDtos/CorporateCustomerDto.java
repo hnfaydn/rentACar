@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CorporateCustomerDto {
 
+    private int customerId;
+
     private String email;
 
     private String password;

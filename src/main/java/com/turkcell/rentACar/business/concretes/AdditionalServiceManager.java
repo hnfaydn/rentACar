@@ -33,7 +33,7 @@ public class AdditionalServiceManager implements AdditionalServiceService {
     public AdditionalServiceManager(AdditionalServiceDao additionalServiceDao,
                                     ModelMapperService modelMapperService,
                                     RentalCarService rentalCarService
-                                    ) {
+    ) {
 
         this.additionalServiceDao = additionalServiceDao;
         this.modelMapperService = modelMapperService;
@@ -71,7 +71,7 @@ public class AdditionalServiceManager implements AdditionalServiceService {
         AdditionalService additionalService = this.additionalServiceDao.getById(id);
         AdditionalServiceDto additionalServiceDto = this.modelMapperService.forDto().map(additionalService, AdditionalServiceDto.class);
 
-        return new SuccessDataResult(additionalServiceDto,BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY );
+        return new SuccessDataResult(additionalServiceDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
     @Override
@@ -84,11 +84,11 @@ public class AdditionalServiceManager implements AdditionalServiceService {
         checkIfAdditionalServiceNameAlreadyExists(updateAdditionalServiceRequest.getAdditionalServiceName());
         additionalServiceUpdateOperations(additionalService, updateAdditionalServiceRequest);
 
-        AdditionalServiceDto additionalServiceDto = this.modelMapperService.forDto().map(additionalService,AdditionalServiceDto.class);
+        AdditionalServiceDto additionalServiceDto = this.modelMapperService.forDto().map(additionalService, AdditionalServiceDto.class);
 
         this.additionalServiceDao.save(additionalService);
 
-        return new SuccessDataResult(additionalServiceDto,BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
+        return new SuccessDataResult(additionalServiceDto, BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
     @Override
@@ -102,12 +102,13 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 
         this.additionalServiceDao.deleteById(id);
 
-        return new SuccessDataResult(additionalServiceDto,BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
+        return new SuccessDataResult(additionalServiceDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
     }
 
     @Override
     public AdditionalService getAdditionalServiceById(int id) {
-        if (this.additionalServiceDao.findAdditionalServiceByAdditionalServiceId(id)==null){
+
+        if (this.additionalServiceDao.findAdditionalServiceByAdditionalServiceId(id) == null) {
             return null;
         }
         return this.additionalServiceDao.findAdditionalServiceByAdditionalServiceId(id);
@@ -140,14 +141,14 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 
         List<Integer> rentalCarIds = new ArrayList<>();
         for (RentalCar rentalCar : rentalCars
-             ) {
-            if (rentalCar.getAdditionalServices().contains(this.additionalServiceDao.getById(id))){
+        ) {
+            if (rentalCar.getAdditionalServices().contains(this.additionalServiceDao.getById(id))) {
                 rentalCarIds.add(rentalCar.getRentalCarId());
             }
         }
 
-        if(!rentalCarIds.isEmpty()){
-            throw new BusinessException(BusinessMessages.AdditionalServiceMessages.ADDITIONAL_SERVICE_ORDERED_BY_RENTAL_CARS+rentalCarIds);
+        if (!rentalCarIds.isEmpty()) {
+            throw new BusinessException(BusinessMessages.AdditionalServiceMessages.ADDITIONAL_SERVICE_ORDERED_BY_RENTAL_CARS + rentalCarIds);
         }
     }
 }

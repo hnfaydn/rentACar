@@ -31,11 +31,6 @@ public class RentalCarsController {
         return this.rentalCarService.getAll();
     }
 
-    @PostMapping("/add")
-    public Result add(@RequestBody @Valid CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
-        return this.rentalCarService.add(createRentalCarRequest);
-    }
-
     @GetMapping("/getById")
     public DataResult<RentalCarDto> getById(@RequestParam int id) throws BusinessException {
         return this.rentalCarService.getById(id);
@@ -55,5 +50,4 @@ public class RentalCarsController {
     public DataResult<List<AdditionalServiceListDto>> getOrderedAdditionalServicesByRentalCarId(int rentalCarId) throws BusinessException {
         return this.rentalCarService.getOrderedAdditionalServicesByRentalCarId(rentalCarId);
     }
-
 }

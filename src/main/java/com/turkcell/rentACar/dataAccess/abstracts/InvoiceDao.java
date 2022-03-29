@@ -11,4 +11,5 @@ public interface InvoiceDao extends JpaRepository<Invoice, Integer> {
 
     List<Invoice> findInvoicesByRentalCar_RentalCarId(int id);
 
+    Invoice findInvoiceByInvoiceNumber(int invoiceNumber);
 }

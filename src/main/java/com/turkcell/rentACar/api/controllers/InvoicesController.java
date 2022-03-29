@@ -34,25 +34,19 @@ public class InvoicesController {
         return this.invoiceService.getAll();
     }
 
-    @PostMapping("/add")
-    Result add(@RequestBody @Valid CreateInvoiceRequest createInvoiceRequest) throws BusinessException{
-        return this.invoiceService.add(createInvoiceRequest);
+    @GetMapping("/getAllInvoicesByRentalCarId")
+    DataResult<List<InvoiceListDto>> getAllInvoicesByRentalCarId(@RequestParam int id) throws BusinessException{
+        return this.invoiceService.getAllInvoicesByRentalCarId(id);
     }
+
 
     @GetMapping("/getById")
     DataResult<InvoiceDto> getById(@RequestParam int id) throws BusinessException{
         return this.invoiceService.getById(id);
     }
 
-    @PutMapping("/reGenerateInvoiceByUsingId")
-    Result update(@RequestParam int id) throws BusinessException{
-        return this.invoiceService.reGenerateInvoiceByUsingRentalCarId(id);
-    }
-
     @DeleteMapping("/delete")
     Result delete(@RequestParam int id) throws BusinessException{
         return this.invoiceService.delete(id);
     }
-
-
 }

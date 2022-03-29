@@ -37,7 +37,8 @@ public class CarDamageManager implements CarDamageService {
         List<CarDamage> carDamages = this.carDamageDao.findAll();
 
         List<CarDamageListDto> carDamageListDtos = carDamages.stream()
-                .map(carDamage -> this.modelMapperService.forDto().map(carDamage, CarDamageListDto.class)).collect(Collectors.toList());
+                .map(carDamage -> this.modelMapperService.forDto().map(carDamage, CarDamageListDto.class))
+                .collect(Collectors.toList());
 
         return new SuccessDataResult(carDamageListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
@@ -47,7 +48,7 @@ public class CarDamageManager implements CarDamageService {
 
         checkIfCarDamageIsAlreadyExists(createCarDamageRequest.getDamageDescription());
 
-        CarDamage carDamage = this.modelMapperService.forRequest().map(createCarDamageRequest,CarDamage.class);
+        CarDamage carDamage = this.modelMapperService.forRequest().map(createCarDamageRequest, CarDamage.class);
 
         carDamage.setCarDamageId(0);
         this.carDamageDao.save(carDamage);
@@ -55,48 +56,42 @@ public class CarDamageManager implements CarDamageService {
         return new SuccessDataResult(createCarDamageRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
-
-
     @Override
     public DataResult<CarDamageDto> getById(int id) throws BusinessException {
 
-        chechIfCarDamageIdExists(id);
+        checkIfCarDamageIdExists(id);
 
         CarDamage carDamage = this.carDamageDao.getById(id);
 
-        CarDamageDto carDamageDto = this.modelMapperService.forDto().map(carDamage,CarDamageDto.class);
+        CarDamageDto carDamageDto = this.modelMapperService.forDto().map(carDamage, CarDamageDto.class);
 
         return new SuccessDataResult(carDamageDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
-
-
     @Override
     public Result update(int id, UpdateCarDamageRequest updateCarDamageRequest) throws BusinessException {
 
-        chechIfCarDamageIdExists(id);
+        checkIfCarDamageIdExists(id);
         checkIfCarDamageIsAlreadyExists(updateCarDamageRequest.getDamageDescription());
 
         CarDamage carDamage = this.carDamageDao.getById(id);
 
-        carDamageUpdateOperations(carDamage,updateCarDamageRequest);
+        carDamageUpdateOperations(carDamage, updateCarDamageRequest);
 
-        CarDamageDto carDamageDto = this.modelMapperService.forDto().map(carDamage,CarDamageDto.class);
+        CarDamageDto carDamageDto = this.modelMapperService.forDto().map(carDamage, CarDamageDto.class);
 
         this.carDamageDao.save(carDamage);
 
         return new SuccessDataResult(carDamageDto, BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
-
-
     @Override
     public Result delete(int id) throws BusinessException {
 
-        chechIfCarDamageIdExists(id);
+        checkIfCarDamageIdExists(id);
 
         CarDamage carDamage = this.carDamageDao.getById(id);
-        CarDamageDto carDamageDto = this.modelMapperService.forDto().map(carDamage,CarDamageDto.class);
+        CarDamageDto carDamageDto = this.modelMapperService.forDto().map(carDamage, CarDamageDto.class);
 
         this.carDamageDao.deleteById(id);
 
@@ -106,24 +101,29 @@ public class CarDamageManager implements CarDamageService {
     @Override
     public CarDamage getCarDamageById(int id) throws BusinessException {
 
-        if(!this.carDamageDao.existsById(id)){
+        if (!this.carDamageDao.existsById(id)) {
             return null;
         }
+
         return this.carDamageDao.getById(id);
     }
 
     private void checkIfCarDamageIsAlreadyExists(String damageDescription) throws BusinessException {
-        if(this.carDamageDao.existsByDamageDescription(damageDescription)){
-            throw new BusinessException(BusinessMessages.CarDamageMessages.CAR_DAMAGE_ALREADY_EXISTS+damageDescription);
+
+        if (this.carDamageDao.existsByDamageDescription(damageDescription)) {
+            throw new BusinessException(BusinessMessages.CarDamageMessages.CAR_DAMAGE_ALREADY_EXISTS + damageDescription);
         }
     }
 
-    private void chechIfCarDamageIdExists(int id) throws BusinessException {
-        if(!this.carDamageDao.existsById(id)){
-            throw new BusinessException(BusinessMessages.CarDamageMessages.CAR_DAMAGE_NOT_FOUND +id);
+    private void checkIfCarDamageIdExists(int id) throws BusinessException {
+
+        if (!this.carDamageDao.existsById(id)) {
+            throw new BusinessException(BusinessMessages.CarDamageMessages.CAR_DAMAGE_NOT_FOUND + id);
         }
     }
+
     private void carDamageUpdateOperations(CarDamage carDamage, UpdateCarDamageRequest updateCarDamageRequest) {
+
         carDamage.setDamageDescription(updateCarDamageRequest.getDamageDescription());
     }
 }

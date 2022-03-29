@@ -49,6 +49,4 @@ public class ColorsController {
     public Result delete(@RequestParam int id) throws BusinessException {
         return this.colorService.delete(id);
     }
-
-
 }

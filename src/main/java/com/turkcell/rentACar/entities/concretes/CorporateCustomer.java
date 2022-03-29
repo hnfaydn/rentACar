@@ -21,7 +21,7 @@ public class CorporateCustomer extends Customer {
 	@Column(name = "company_name")
 	private String companyName;
 
-	@Column(name = "tax_number")
+	@Column(name = "tax_number",unique = true,length = 10)
 	private String taxNumber;
 
 }

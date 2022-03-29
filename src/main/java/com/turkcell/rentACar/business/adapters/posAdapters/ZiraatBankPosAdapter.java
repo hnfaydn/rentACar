@@ -6,7 +6,6 @@ import com.turkcell.rentACar.business.requests.paymentRequests.CreatePaymentRequ
 import com.turkcell.rentACar.core.utilities.results.ErrorResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessResult;
-import com.turkcell.rentACar.entities.concretes.Payment;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,7 +24,6 @@ public class ZiraatBankPosAdapter implements PosService {
                         createPaymentRequest.getExpirationMonth(),
                         createPaymentRequest.getExpirationYear(),
                         createPaymentRequest.getCvv());
-
 
         if (makePaymentResult){
             return new SuccessResult();

@@ -18,7 +18,7 @@ public class UserCardInformation {
     @Column(name = "user_card_information_id")
     private int userCardInformationId;
 
-    @Column(name = "card_no")
+    @Column(name = "card_no",unique = true,length = 16)
     private String cardNo;
 
     @Column(name = "card_holder")

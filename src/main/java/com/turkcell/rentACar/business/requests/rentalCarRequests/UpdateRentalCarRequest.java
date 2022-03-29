@@ -42,7 +42,7 @@ public class UpdateRentalCarRequest {
 
     @NotNull
     @Min(1)
-    private int userId;
+    private int customerId;
 
     @Nullable
     private List<Integer> AdditionalServiceIds;

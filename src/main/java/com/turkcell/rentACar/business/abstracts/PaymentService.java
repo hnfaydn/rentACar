@@ -1,5 +1,6 @@
 package com.turkcell.rentACar.business.abstracts;
 
+import com.turkcell.rentACar.api.models.CreateDelayedPaymentModel;
 import com.turkcell.rentACar.api.models.CreatePaymentModel;
 import com.turkcell.rentACar.business.dtos.paymentDtos.PaymentDto;
 import com.turkcell.rentACar.business.dtos.paymentDtos.PaymentListDto;
@@ -12,8 +13,16 @@ import java.util.List;
 public interface PaymentService {
 
     DataResult<List<PaymentListDto>> getAll();
+
     Result add(CreatePaymentModel createPaymentModel) throws BusinessException;
+
     void paymentSuccessor(CreatePaymentModel createPaymentModel) throws BusinessException;
-    Result delete(int id);
-    DataResult<PaymentDto> getById(int id);
+
+    void delayedPaymentSuccessor(CreateDelayedPaymentModel createDelayedPaymentModel) throws BusinessException;
+
+    Result delete(int id) throws BusinessException;
+
+    DataResult<PaymentDto> getById(int id) throws BusinessException;
+
+    Result additionalPaymentForDelaying(CreateDelayedPaymentModel createDelayedPaymentModel) throws BusinessException;
 }

@@ -1,5 +1,6 @@
 package com.turkcell.rentACar.business.concretes;
 
+import com.turkcell.rentACar.business.abstracts.CustomerService;
 import com.turkcell.rentACar.business.abstracts.UserCardInformationService;
 import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.userCardInformationDto.UserCardInformationDto;
@@ -24,12 +25,15 @@ public class UserCardInformationManager implements UserCardInformationService {
 
     private UserCardInformationDao userCardInformationDao;
     private ModelMapperService modelMapperService;
+    private CustomerService customerService;
 
     @Autowired
     public UserCardInformationManager(UserCardInformationDao userCardInformationDao,
-                                      ModelMapperService modelMapperService) {
+                                      ModelMapperService modelMapperService,
+                                      CustomerService customerService) {
         this.userCardInformationDao = userCardInformationDao;
         this.modelMapperService = modelMapperService;
+        this.customerService = customerService;
     }
 
     @Override
@@ -38,13 +42,17 @@ public class UserCardInformationManager implements UserCardInformationService {
         List<UserCardInformation> userCardInformations = this.userCardInformationDao.findAll();
 
         List<UserCardInformationListDto> userCardInformationListDtos = userCardInformations.stream()
-                .map(userCardInformation ->this.modelMapperService.forDto()
-                        .map(userCardInformation,UserCardInformationListDto.class)).collect(Collectors.toList());
+                .map(userCardInformation ->this.modelMapperService.forDto().map(userCardInformation,UserCardInformationListDto.class))
+                .collect(Collectors.toList());
+
         return new SuccessDataResult(userCardInformationListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
 
     @Override
     public Result add(CreateUserCardInformationRequest createUserCardInformationRequest) throws BusinessException {
+
+        checkIfCardNoAlreadyExists(createUserCardInformationRequest.getPaymentInformations().getCardNo());
+        checkIfCustomerIdExists(createUserCardInformationRequest.getCustomerId());
 
         UserCardInformation userCardInformation = this.modelMapperService.forRequest().map(createUserCardInformationRequest,UserCardInformation.class);
 
@@ -57,16 +65,21 @@ public class UserCardInformationManager implements UserCardInformationService {
     @Override
     public DataResult<UserCardInformationDto> getById(int id) throws BusinessException {
 
+        checkIfUserCardInformationIdAExists(id);
+
         UserCardInformation userCardInformation = this.userCardInformationDao.getById(id);
 
         UserCardInformationDto userCardInformationDto = this.modelMapperService.forDto().map(userCardInformation,UserCardInformationDto.class);
-
 
         return new SuccessDataResult<>(userCardInformationDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
     @Override
     public Result update(int id, UpdateUserCardInformationRequest updateUserCardInformationRequest) throws BusinessException {
+
+        checkIfUserCardInformationIdAExists(id);
+        checkIfCardNoAlreadyExists(updateUserCardInformationRequest.getPaymentInformations().getCardNo());
+        checkIfCustomerIdExists(updateUserCardInformationRequest.getCustomerId());
 
         UserCardInformation userCardInformation = this.userCardInformationDao.getById(id);
 
@@ -77,18 +90,10 @@ public class UserCardInformationManager implements UserCardInformationService {
         return new SuccessDataResult(userCardInformationDto,BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
     }
 
-    private void updateUserCardInformationOperations(UserCardInformation userCardInformation, UpdateUserCardInformationRequest updateUserCardInformationRequest) {
-        userCardInformation.setCardNo(updateUserCardInformationRequest.getPaymentInformations().getCardNo());
-        userCardInformation.setCardHolder(updateUserCardInformationRequest.getPaymentInformations().getCardHolder());
-        userCardInformation.setExpirationYear(updateUserCardInformationRequest.getPaymentInformations().getExpirationYear());
-        userCardInformation.setExpirationMonth(updateUserCardInformationRequest.getPaymentInformations().getExpirationMonth());
-        userCardInformation.setCvv(updateUserCardInformationRequest.getPaymentInformations().getCvv());
-        userCardInformation.getCustomer().setUserId(updateUserCardInformationRequest.getCustomerId());
-
-    }
-
     @Override
     public Result delete(int id) throws BusinessException {
+
+        checkIfUserCardInformationIdAExists(id);
 
         UserCardInformation userCardInformation = this.userCardInformationDao.getById(id);
 
@@ -97,5 +102,36 @@ public class UserCardInformationManager implements UserCardInformationService {
         this.userCardInformationDao.deleteById(id);
 
         return new SuccessDataResult(userCardInformationDto,BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
+    }
+
+    private void checkIfCardNoAlreadyExists(String cardNo) throws BusinessException {
+
+        if(this.userCardInformationDao.existsUserCardInformationByUserCardInformationId(cardNo)){
+            throw new BusinessException(BusinessMessages.UserCardInformationMessages.CARD_NO_ALREADY_EXISTS);
+        }
+    }
+
+    private void checkIfCustomerIdExists(int customerId) throws BusinessException {
+
+        if(this.customerService.getCustomerById(customerId)==null){
+            throw new BusinessException(BusinessMessages.CustomerMessages.CUSTOMER_NOT_FOUND);
+        }
+    }
+
+    private void checkIfUserCardInformationIdAExists(int id) throws BusinessException {
+
+        if(!this.userCardInformationDao.existsById(id)){
+            throw new BusinessException(BusinessMessages.UserCardInformationMessages.USER_CARD_INFORMATION_ID_NOT_FOUND);
+        }
+    }
+
+    private void updateUserCardInformationOperations(UserCardInformation userCardInformation, UpdateUserCardInformationRequest updateUserCardInformationRequest) {
+
+        userCardInformation.setCardNo(updateUserCardInformationRequest.getPaymentInformations().getCardNo());
+        userCardInformation.setCardHolder(updateUserCardInformationRequest.getPaymentInformations().getCardHolder());
+        userCardInformation.setExpirationYear(updateUserCardInformationRequest.getPaymentInformations().getExpirationYear());
+        userCardInformation.setExpirationMonth(updateUserCardInformationRequest.getPaymentInformations().getExpirationMonth());
+        userCardInformation.setCvv(updateUserCardInformationRequest.getPaymentInformations().getCvv());
+        userCardInformation.getCustomer().setUserId(updateUserCardInformationRequest.getCustomerId());
     }
 }

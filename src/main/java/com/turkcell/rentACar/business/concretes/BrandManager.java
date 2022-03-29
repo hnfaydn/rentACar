@@ -11,7 +11,6 @@ import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
-import com.turkcell.rentACar.core.utilities.results.SuccessResult;
 import com.turkcell.rentACar.dataAccess.abstracts.BrandDao;
 import com.turkcell.rentACar.entities.concretes.Brand;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,8 @@ public class BrandManager implements BrandService {
     private final ModelMapperService modelMapperService;
 
     @Autowired
-    public BrandManager(BrandDao brandDao, ModelMapperService modelMapperService) {
+    public BrandManager(BrandDao brandDao,
+                        ModelMapperService modelMapperService) {
         this.brandDao = brandDao;
         this.modelMapperService = modelMapperService;
     }
@@ -38,7 +38,8 @@ public class BrandManager implements BrandService {
         List<Brand> brands = this.brandDao.findAll();
 
         List<BrandListDto> brandListDtos = brands.stream()
-                .map(brand -> this.modelMapperService.forDto().map(brand, BrandListDto.class)).collect(Collectors.toList());
+                .map(brand -> this.modelMapperService.forDto().map(brand, BrandListDto.class))
+                .collect(Collectors.toList());
 
         return new SuccessDataResult<>(brandListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
@@ -113,6 +114,5 @@ public class BrandManager implements BrandService {
             throw new BusinessException(BusinessMessages.BrandMessages.BRAND_NOT_FOUND + id);
         }
     }
-
 }
 

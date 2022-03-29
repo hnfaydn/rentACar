@@ -37,7 +37,9 @@ public class ColorManager implements ColorService {
 
         List<Color> colors = this.colorDao.findAll();
 
-        List<ColorListDto> colorListDtos = colors.stream().map(color -> this.modelMapperService.forDto().map(color, ColorListDto.class)).collect(Collectors.toList());
+        List<ColorListDto> colorListDtos = colors.stream()
+                .map(color -> this.modelMapperService.forDto().map(color, ColorListDto.class))
+                .collect(Collectors.toList());
 
         return new SuccessDataResult<>(colorListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }

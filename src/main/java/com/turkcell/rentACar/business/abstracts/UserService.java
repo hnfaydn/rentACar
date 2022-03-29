@@ -20,5 +20,4 @@ public interface UserService {
     Result delete(int id) throws BusinessException;
 
     boolean checkIfUserEmailAlreadyExists(String email);
-
 }

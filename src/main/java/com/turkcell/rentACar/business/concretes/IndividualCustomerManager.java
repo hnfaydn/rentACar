@@ -43,8 +43,8 @@ public class IndividualCustomerManager implements IndividualCustomerService {
         List<IndividualCustomer> individualCustomers = this.individualCustomerDao.findAll();
 
         List<IndividualCustomerListDto> individualCustomerListDtos = individualCustomers.stream()
-                .map(individualCustomer -> this.modelMapperService.forDto()
-                        .map(individualCustomer,IndividualCustomerListDto.class)).collect(Collectors.toList());
+                .map(individualCustomer -> this.modelMapperService.forDto().map(individualCustomer,IndividualCustomerListDto.class))
+                .collect(Collectors.toList());
 
         return new SuccessDataResult(individualCustomerListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }

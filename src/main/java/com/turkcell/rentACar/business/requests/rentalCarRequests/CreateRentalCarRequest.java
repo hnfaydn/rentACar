@@ -19,11 +19,11 @@ import java.util.List;
 public class CreateRentalCarRequest {
 
     @NotNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE,pattern = "dd-MM-yyyy")
     private LocalDate rentDate;
 
     @Nullable
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE,pattern = "dd-MM-yyyy")
     private LocalDate returnDate;
 
     @NotNull
@@ -43,7 +43,7 @@ public class CreateRentalCarRequest {
 
     @NotNull
     @Min(1)
-    private int userId;
+    private int customerId;
 
     @Nullable
     private List<Integer> AdditionalServiceIds;
