@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/rentalCars")
+@CrossOrigin
 public class RentalCarsController {
 
     private final RentalCarService rentalCarService;

@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/userCardInformationsController")
+@CrossOrigin
 public class UserCardInformationsController {
 
     private UserCardInformationService userCardInformationService;

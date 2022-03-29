@@ -1,14 +1,9 @@
 package com.turkcell.rentACar.api.controllers;
 
 
-import com.turkcell.rentACar.business.abstracts.BrandService;
 import com.turkcell.rentACar.business.abstracts.CarDamageService;
-import com.turkcell.rentACar.business.dtos.brandDtos.BrandDto;
-import com.turkcell.rentACar.business.dtos.brandDtos.BrandListDto;
 import com.turkcell.rentACar.business.dtos.carDamageDtos.CarDamageDto;
 import com.turkcell.rentACar.business.dtos.carDamageDtos.CarDamageListDto;
-import com.turkcell.rentACar.business.requests.brandRequests.CreateBrandRequest;
-import com.turkcell.rentACar.business.requests.brandRequests.UpdateBrandRequest;
 import com.turkcell.rentACar.business.requests.carDamageRequests.CreateCarDamageRequest;
 import com.turkcell.rentACar.business.requests.carDamageRequests.UpdateCarDamageRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
@@ -22,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/carDamagesController")
+@CrossOrigin
 public class CarDamagesController {
 
     private CarDamageService carDamageService;

@@ -16,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/additionalServicesController")
+@CrossOrigin
 public class AdditionalServicesController {
 
     private AdditionalServiceService additionalServiceService;
