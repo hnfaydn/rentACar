@@ -172,6 +172,8 @@ public class InvoiceManager implements InvoiceService {
     @Override
     public DataResult<InvoiceDto> reGenerateInvoiceForUpdatedRentalCar(RentalCar rentalCar) throws BusinessException {
 
+        checkIfInvoiceNumberExists(rentalCar);
+
         Invoice invoice = this.invoiceDao.findInvoiceByInvoiceNumber(invoiceNumberCreator(rentalCar.getRentalCarId()));
 
         invoice.setRentalCar(rentalCar);
@@ -194,6 +196,12 @@ public class InvoiceManager implements InvoiceService {
         this.invoiceDao.save(invoice);
 
         return new SuccessDataResult(this.modelMapperService.forDto().map(invoice,InvoiceDto.class),BusinessMessages.GlobalMessages.DATA_UPDATED_TO_NEW_DATA);
+    }
+
+    private void checkIfInvoiceNumberExists(RentalCar rentalCar) throws BusinessException {
+        if(this.invoiceDao.findInvoiceByInvoiceNumber(invoiceNumberCreator(rentalCar.getRentalCarId()))==null){
+            throw new BusinessException(BusinessMessages.InvoiceMessages.INVOICE_NUMBER_NOT_FOUND+invoiceNumberCreator(rentalCar.getRentalCarId()));
+        }
     }
 
     private void checkIfRentalCarIdExists(int rentalCarId) throws BusinessException {

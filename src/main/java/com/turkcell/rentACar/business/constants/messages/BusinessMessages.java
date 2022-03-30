@@ -96,6 +96,7 @@ public class BusinessMessages {
 
         public static final String RENTAL_CAR_NOT_FOUND = "There is no Rental Car with following id: ";
         public static final String INVOICE_NOT_FOUND = "There is no Invoice with following id: ";
+        public static final String INVOICE_NUMBER_NOT_FOUND = "There is no Invoice Number with following id: ";
     }
 
     public class RentalCarMessages{
