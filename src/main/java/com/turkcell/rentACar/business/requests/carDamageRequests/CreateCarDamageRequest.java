@@ -14,6 +14,6 @@ import javax.validation.constraints.Pattern;
 public class CreateCarDamageRequest {
 
     @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9]{2,100}", message = BusinessMessages.CarDamageRequestsMessages.CAR_DAMAGE_DESCRIPTION_REGEX_MESSAGE)
+    @Pattern(regexp = "^[a-zA-Zıİ0-9]{2,100}", message = BusinessMessages.CarDamageRequestsMessages.CAR_DAMAGE_DESCRIPTION_REGEX_MESSAGE)
     private String damageDescription;
 }

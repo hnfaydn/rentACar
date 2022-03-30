@@ -23,7 +23,7 @@ public class CreateCorporateCustomerRequest {
     private String password;
 
     @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9]{2,50}", message = BusinessMessages.CorporateCustomerRequestsMessages.COMPANY_NAME_REGEX_MESSAGE)
+    @Pattern(regexp = "^[a-zA-Zıİ0-9]{2,50}", message = BusinessMessages.CorporateCustomerRequestsMessages.COMPANY_NAME_REGEX_MESSAGE)
     private String companyName;
 
     @NotNull

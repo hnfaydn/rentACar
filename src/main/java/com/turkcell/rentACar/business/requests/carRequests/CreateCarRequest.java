@@ -26,7 +26,7 @@ public class CreateCarRequest {
     private int modelYear;
 
     @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9]{2,100}", message = BusinessMessages.CarRequestsMessages.CAR_DESCRIPTION_REGEX_MESSAGE)
+    @Pattern(regexp = "^[a-zA-Zıİ0-9]{2,100}", message = BusinessMessages.CarRequestsMessages.CAR_DESCRIPTION_REGEX_MESSAGE)
     private String description;
 
     @NotNull

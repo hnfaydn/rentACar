@@ -22,11 +22,11 @@ public class CreateIndividualCustomerRequest {
     private String password;
 
     @NotNull
-    @Pattern(regexp = "^[a-zA-Z]{5,50}", message = BusinessMessages.IndividualCustomerRequestsMessages.FIRST_NAME_REGEX_MESSAGE)
+    @Pattern(regexp = "^[a-zA-Zıİ]{5,50}", message = BusinessMessages.IndividualCustomerRequestsMessages.FIRST_NAME_REGEX_MESSAGE)
     private String firstName;
 
     @NotNull
-    @Pattern(regexp = "^[a-zA-Z]{5,50}", message = BusinessMessages.IndividualCustomerRequestsMessages.LAST_NAME_REGEX_MESSAGE)
+    @Pattern(regexp = "^[a-zA-Zıİ]{5,50}", message = BusinessMessages.IndividualCustomerRequestsMessages.LAST_NAME_REGEX_MESSAGE)
     private String lastName;
 
     @NotNull
