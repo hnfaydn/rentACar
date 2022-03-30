@@ -27,7 +27,7 @@ public class Car {
     @Column(name = "car_model_year")
     private int modelYear;
 
-    @Column(name = "car_description",unique = true)
+    @Column(name = "car_description")
     private String description;
 
     @Column(name = "kilometer_information")

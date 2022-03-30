@@ -20,7 +20,7 @@ public class User {
     @Column(name = "user_id")
     private int userId;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     private String email;
 
     @Column(name = "password")

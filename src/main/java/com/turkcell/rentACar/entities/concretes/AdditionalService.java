@@ -20,7 +20,7 @@ public class AdditionalService {
     @Column(name = "additional_service_id")
     private int additionalServiceId;
 
-    @Column(name = "additional_service_name",unique = true)
+    @Column(name = "additional_service_name")
     private String additionalServiceName;
 
     @Column(name = "additional_service_dailyPrice")

@@ -6,6 +6,7 @@ import com.turkcell.rentACar.business.abstracts.*;
 import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.paymentDtos.PaymentDto;
 import com.turkcell.rentACar.business.dtos.paymentDtos.PaymentListDto;
+import com.turkcell.rentACar.business.dtos.rentalCarDtos.RentalCarDto;
 import com.turkcell.rentACar.business.requests.invoiceRequests.CreateInvoiceRequest;
 import com.turkcell.rentACar.business.requests.paymentRequests.CreatePaymentRequest;
 import com.turkcell.rentACar.business.requests.rentalCarRequests.CreateRentalCarRequest;
@@ -71,9 +72,7 @@ public class PaymentManager implements PaymentService {
         checkIfPaymentDone(preInvoiceCalculator(createPaymentModel.getCreateRentalCarRequest()),createPaymentModel.getCreatePaymentRequest());
         paymentSuccessor(createPaymentModel);
 
-        PaymentDto paymentDto = this.modelMapperService.forDto().map(createPaymentModel, PaymentDto.class);
-
-        return new SuccessDataResult(paymentDto, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
+        return new SuccessDataResult(createPaymentModel, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override

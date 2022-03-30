@@ -21,7 +21,7 @@ public class Color {
     @Column(name = "color_id")
     private int colorId;
 
-    @Column(name = "color_name",unique = true)
+    @Column(name = "color_name")
     private String name;
 
     @OneToMany(mappedBy = "color", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

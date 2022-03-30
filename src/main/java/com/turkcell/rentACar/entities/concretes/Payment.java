@@ -19,7 +19,7 @@ public class Payment {
     @Column(name = "payment_id")
     private int paymentInformationId;
 
-    @Column(name = "card_no",unique = true,length = 16)
+    @Column(name = "card_no",length = 16)
     private String cardNo;
 
     @Column(name = "card_holder")
@@ -35,7 +35,7 @@ public class Payment {
     private int cvv;
 
     @Column(name = "payment_amount")
-    private double paymentAmount;
+    private Double paymentAmount;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
