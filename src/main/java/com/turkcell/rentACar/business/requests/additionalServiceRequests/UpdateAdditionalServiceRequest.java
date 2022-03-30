@@ -16,7 +16,7 @@ import javax.validation.constraints.Size;
 public class UpdateAdditionalServiceRequest {
 
     @NotNull
-    @Pattern(regexp = "^[a-zA-Zıİ0-9]{2,50}", message = BusinessMessages.AdditionalServiceRequestsMessages.ADDITIONAL_SERVICE_NAME_REGEX_MESSAGE)
+    @Pattern(regexp = "^[abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ 0-9]{2,50}", message = BusinessMessages.AdditionalServiceRequestsMessages.ADDITIONAL_SERVICE_NAME_REGEX_MESSAGE)
     private String additionalServiceName;
 
     @NotNull

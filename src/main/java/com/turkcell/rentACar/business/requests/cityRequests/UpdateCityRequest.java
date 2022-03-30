@@ -18,6 +18,6 @@ public class UpdateCityRequest {
     private int cityId;
 
     @NotNull
-    @Pattern(regexp = "^[a-zA-Zıİ]{2,50}", message = BusinessMessages.CityRequestsMessages.COLOR_NAME_REGEX_MESSAGE)
+    @Pattern(regexp = "^[abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ]{2,50}", message = BusinessMessages.CityRequestsMessages.COLOR_NAME_REGEX_MESSAGE)
     private String cityName;
 }

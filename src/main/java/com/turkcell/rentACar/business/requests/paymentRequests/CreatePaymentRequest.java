@@ -17,7 +17,7 @@ public class CreatePaymentRequest {
     @Pattern(regexp = "^[0-9]{16}", message = BusinessMessages.PaymentRequestsMessages.CARD_NO_REGEX_MESSAGE)
     private String cardNo;
 
-    @Pattern(regexp = "^[a-zA-Zıİ]{5,50}", message = BusinessMessages.PaymentRequestsMessages.CARD_HOLDER_REGEX_MESSAGE)
+    @Pattern(regexp = "^[abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ ]{5,50}", message = BusinessMessages.PaymentRequestsMessages.CARD_HOLDER_REGEX_MESSAGE)
     private String cardHolder;
 
     @Range(min = 1, max = 12, message = BusinessMessages.PaymentRequestsMessages.EXPIRATION_MONTH_REGEX_MESSAGE)
