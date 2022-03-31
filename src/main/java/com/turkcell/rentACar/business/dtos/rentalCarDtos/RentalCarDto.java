@@ -20,9 +20,9 @@ public class RentalCarDto {
 
     private LocalDate returnDate;
 
-    private CityDto rentCityId;
+    private CityDto rentCity;
 
-    private CityDto returnCityId;
+    private CityDto returnCity;
 
     private double rentStartKilometer;
 
