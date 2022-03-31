@@ -65,7 +65,7 @@ public class PaymentManager implements PaymentService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
     public Result add(CreatePaymentModel createPaymentModel) throws BusinessException {
 
         rentalCarPaymentPreControlOperation(createPaymentModel.getCreateRentalCarRequest());
@@ -120,7 +120,7 @@ public class PaymentManager implements PaymentService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
     public Result additionalPaymentForDelaying(CreateDelayedPaymentModel createDelayedPaymentModel) throws BusinessException {
 
         checkIfRentalCarIdExists(createDelayedPaymentModel.getRentalCarId());
@@ -143,7 +143,7 @@ public class PaymentManager implements PaymentService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
     public void delayedPaymentSuccessor(CreateDelayedPaymentModel createDelayedPaymentModel) throws BusinessException {
 
         RentalCar rentalCar = this.rentalCarService.getRentalCarById(createDelayedPaymentModel.getRentalCarId());

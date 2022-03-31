@@ -2,6 +2,7 @@ package com.turkcell.rentACar.business.dtos.rentalCarDtos;
 
 import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceDto;
 import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
+import com.turkcell.rentACar.business.dtos.cityDtos.CityDto;
 import com.turkcell.rentACar.business.dtos.customerDtos.CustomerDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,9 +20,9 @@ public class RentalCarDto {
 
     private LocalDate returnDate;
 
-    private int rentCityId;
+    private CityDto rentCityId;
 
-    private int returnCityId;
+    private CityDto returnCityId;
 
     private double rentStartKilometer;
 
