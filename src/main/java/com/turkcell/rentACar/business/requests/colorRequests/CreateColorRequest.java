@@ -15,6 +15,6 @@ import javax.validation.constraints.Pattern;
 public class CreateColorRequest {
 
     @NotNull
-    @Pattern(regexp = "^[abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ 0-9]{2,50}", message = BusinessMessages.ColorRequestsMessages.COLOR_NAME_REGEX_MESSAGE)
+    @Pattern(regexp = "^[abcçdefgğhıijklmnoöprsştuüvwqyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVWQYZ 0-9]{2,50}", message = BusinessMessages.ColorRequestsMessages.COLOR_NAME_REGEX_MESSAGE)
     private String name;
 }

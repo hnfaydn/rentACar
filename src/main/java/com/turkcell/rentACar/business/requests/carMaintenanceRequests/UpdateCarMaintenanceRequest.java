@@ -19,7 +19,7 @@ import java.time.LocalDate;
 public class UpdateCarMaintenanceRequest {
 
     @NotNull
-    @Pattern(regexp = "^[abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ 0-9]{2,100}", message = BusinessMessages.CarMaintenanceRequestsMessages.CAR_MAINTENANCE_DESCRIPTION_REGEX_MESSAGE)
+    @Pattern(regexp = "^[abcçdefgğhıijklmnoöprsştuüvwqyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVWQYZ 0-9]{2,100}", message = BusinessMessages.CarMaintenanceRequestsMessages.CAR_MAINTENANCE_DESCRIPTION_REGEX_MESSAGE)
     private String carMaintenanceDescription;
 
     @Nullable

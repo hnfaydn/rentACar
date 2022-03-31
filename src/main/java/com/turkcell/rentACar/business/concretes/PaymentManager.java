@@ -6,7 +6,6 @@ import com.turkcell.rentACar.business.abstracts.*;
 import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.paymentDtos.PaymentDto;
 import com.turkcell.rentACar.business.dtos.paymentDtos.PaymentListDto;
-import com.turkcell.rentACar.business.dtos.rentalCarDtos.RentalCarDto;
 import com.turkcell.rentACar.business.requests.invoiceRequests.CreateInvoiceRequest;
 import com.turkcell.rentACar.business.requests.paymentRequests.CreatePaymentRequest;
 import com.turkcell.rentACar.business.requests.rentalCarRequests.CreateRentalCarRequest;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

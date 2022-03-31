@@ -15,6 +15,6 @@ import javax.validation.constraints.Size;
 public class UpdateBrandRequest {
 
     @NotNull
-    @Pattern(regexp = "^[abcçdefgğhıijklmnoöprsştuüvyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ 0-9]{2,50}", message = BusinessMessages.BrandRequestsMessages.BRAND_NAME_REGEX_MESSAGE)
+    @Pattern(regexp = "^[abcçdefgğhıijklmnoöprsştuüvwqyzABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVWQYZ 0-9]{2,50}", message = BusinessMessages.BrandRequestsMessages.BRAND_NAME_REGEX_MESSAGE)
     private String name;
 }
