@@ -18,6 +18,7 @@ public class CreateDelayedPaymentModel {
     private int rentalCarId;
 
     private LocalDate delayedReturnDate;
+
     @Min(0)
     private double carDelayedKilometerInformation;
 

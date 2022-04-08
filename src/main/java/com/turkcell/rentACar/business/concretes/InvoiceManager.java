@@ -54,9 +54,8 @@ public class InvoiceManager implements InvoiceService {
     @Override
     public DataResult<List<InvoiceListDto>> getAll() throws BusinessException {
 
-        List<Invoice> invoices = this.invoiceDao.findAll();
-
-        List<InvoiceListDto> invoiceListDtos = invoices.stream()
+        List<InvoiceListDto> invoiceListDtos =
+                this.invoiceDao.findAll().stream()
                 .map(invoice -> this.modelMapperService.forDto().map(invoice, InvoiceListDto.class))
                 .collect(Collectors.toList());
 
@@ -95,9 +94,8 @@ public class InvoiceManager implements InvoiceService {
 
         checkIfInvoiceIdExists(id);
 
-        Invoice invoice = this.invoiceDao.getById(id);
-
-        InvoiceDto invoiceDto = this.modelMapperService.forDto().map(invoice,InvoiceDto.class);
+        InvoiceDto invoiceDto = this.modelMapperService.forDto()
+                .map(this.invoiceDao.getById(id),InvoiceDto.class);
 
         return new SuccessDataResult(invoiceDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -107,7 +105,8 @@ public class InvoiceManager implements InvoiceService {
 
         checkIfInvoiceIdExists(id);
 
-        InvoiceDto invoiceDto = this.modelMapperService.forDto().map(this.invoiceDao.getById(id),InvoiceDto.class);
+        InvoiceDto invoiceDto = this.modelMapperService.forDto()
+                .map(this.invoiceDao.getById(id),InvoiceDto.class);
 
         this.invoiceDao.deleteById(id);
 

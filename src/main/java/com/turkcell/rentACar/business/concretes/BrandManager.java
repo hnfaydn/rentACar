@@ -35,9 +35,8 @@ public class BrandManager implements BrandService {
     @Override
     public DataResult<List<BrandListDto>> getAll() throws BusinessException {
 
-        List<Brand> brands = this.brandDao.findAll();
-
-        List<BrandListDto> brandListDtos = brands.stream()
+        List<BrandListDto> brandListDtos =
+                this.brandDao.findAll().stream()
                 .map(brand -> this.modelMapperService.forDto().map(brand, BrandListDto.class))
                 .collect(Collectors.toList());
 
@@ -61,8 +60,8 @@ public class BrandManager implements BrandService {
 
         checkIfBrandExists(id);
 
-        Brand brand = this.brandDao.getById(id);
-        BrandDto brandDto = this.modelMapperService.forDto().map(brand, BrandDto.class);
+        BrandDto brandDto = this.modelMapperService.forDto()
+                .map(this.brandDao.getById(id), BrandDto.class);
 
         return new SuccessDataResult(brandDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -89,7 +88,9 @@ public class BrandManager implements BrandService {
 
         checkIfBrandExists(id);
 
-        BrandDto brandDto = this.modelMapperService.forDto().map(this.brandDao.getById(id),BrandDto.class);
+        BrandDto brandDto = this.modelMapperService.forDto()
+                .map(this.brandDao.getById(id),BrandDto.class);
+
         this.brandDao.deleteById(id);
 
         return new SuccessDataResult(brandDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);

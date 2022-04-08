@@ -18,7 +18,10 @@ public interface RentalCarService {
 
     DataResult<List<RentalCarListDto>> getAll() throws BusinessException;
 
-    SuccessDataResult<RentalCar> add(CreateRentalCarRequest createRentalCarRequest) throws BusinessException;
+
+    SuccessDataResult<RentalCar> rentForCorporateCustomers(CreateRentalCarRequest createRentalCarRequest) throws BusinessException;
+
+    SuccessDataResult<RentalCar> rentForIndividualCustomers(CreateRentalCarRequest createRentalCarRequest) throws BusinessException;
 
     DataResult<RentalCarDto> getById(int id) throws BusinessException;
 
@@ -26,15 +29,13 @@ public interface RentalCarService {
 
     Result delete(int id) throws BusinessException;
 
-    List<RentalCarListDto> getAllRentalCarsByCarId(int carId) throws BusinessException;
+    DataResult<List<RentalCarListDto>> getAllRentalCarsByCarId(int carId) throws BusinessException;
 
-    List<RentalCar> getAllRentalCars();
+    DataResult<List<RentalCar>> getAllRentalCars();
 
     DataResult<List<AdditionalServiceListDto>> getOrderedAdditionalServicesByRentalCarId(int rentalCarId);
 
-    Result prePaymentControlOfRentalCar(CreateRentalCarRequest createRentalCarRequest) throws BusinessException;
-
-    RentalCar getRentalCarById(int id);
+    DataResult<RentalCar> getRentalCarById(int id);
 
     void setDelayedReturnDate(int rentalCarId, LocalDate delayedReturnDate);
 }

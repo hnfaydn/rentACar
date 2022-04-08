@@ -14,9 +14,13 @@ public interface PaymentService {
 
     DataResult<List<PaymentListDto>> getAll();
 
-    Result add(CreatePaymentModel createPaymentModel) throws BusinessException;
+    Result paymentForIndividualCustomer(CreatePaymentModel createPaymentModel) throws BusinessException;
 
-    void paymentSuccessor(CreatePaymentModel createPaymentModel) throws BusinessException;
+    Result paymentForCorporateCustomer(CreatePaymentModel createPaymentModel) throws BusinessException;
+
+    void paymentSuccessorForIndividualCustomer(CreatePaymentModel createPaymentModel) throws BusinessException;
+
+    void paymentSuccessorForCorporateCustomer(CreatePaymentModel createPaymentModel) throws BusinessException;
 
     void delayedPaymentSuccessor(CreateDelayedPaymentModel createDelayedPaymentModel) throws BusinessException;
 

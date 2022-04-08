@@ -35,9 +35,8 @@ public class ColorManager implements ColorService {
     @Override
     public DataResult<List<ColorListDto>> getAll() throws BusinessException {
 
-        List<Color> colors = this.colorDao.findAll();
-
-        List<ColorListDto> colorListDtos = colors.stream()
+        List<ColorListDto> colorListDtos =
+                this.colorDao.findAll().stream()
                 .map(color -> this.modelMapperService.forDto().map(color, ColorListDto.class))
                 .collect(Collectors.toList());
 
@@ -61,8 +60,8 @@ public class ColorManager implements ColorService {
 
         checkIfIdExists(id);
 
-        Color color = this.colorDao.findById(id);
-        ColorDto colorDto = this.modelMapperService.forDto().map(color, ColorDto.class);
+        ColorDto colorDto = this.modelMapperService.forDto()
+                .map(this.colorDao.findById(id), ColorDto.class);
 
         return new SuccessDataResult<>(colorDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -89,7 +88,9 @@ public class ColorManager implements ColorService {
 
         checkIfIdExists(id);
 
-        ColorDto colorDto = this.modelMapperService.forDto().map(this.colorDao.getById(id),ColorDto.class);
+        ColorDto colorDto = this.modelMapperService.forDto()
+                .map(this.colorDao.getById(id),ColorDto.class);
+
         this.colorDao.deleteById(id);
 
         return new SuccessDataResult(colorDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);

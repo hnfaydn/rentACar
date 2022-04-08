@@ -23,5 +23,5 @@ public interface CarDamageService {
 
     Result delete(int id) throws BusinessException;
 
-    CarDamage getCarDamageById(int id) throws BusinessException;
+    DataResult<CarDamage> getCarDamageById(int id) throws BusinessException;
 }

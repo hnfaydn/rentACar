@@ -25,5 +25,5 @@ public interface CityService {
 
     boolean cityExistsById(int id) throws BusinessException;
 
-    City getCityById(int id) throws BusinessException;
+    DataResult<City> getCityById(int id) throws BusinessException;
 }

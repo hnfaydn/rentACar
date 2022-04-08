@@ -45,9 +45,8 @@ public class CorporateCustomerManager implements CorporateCustomerService {
     @Override
     public DataResult<List<CorporateCustomerListDto>> getAll() {
 
-        List<CorporateCustomer> corporateCustomers = this.corporateCustomerDao.findAll();
-
-        List<CorporateCustomerListDto> corporateCustomerListDtos = corporateCustomers.stream()
+        List<CorporateCustomerListDto> corporateCustomerListDtos =
+                this.corporateCustomerDao.findAll().stream()
                 .map(corporateCustomer -> this.modelMapperService.forDto().map(corporateCustomer, CorporateCustomerListDto.class))
                 .collect(Collectors.toList());
 
@@ -74,21 +73,20 @@ public class CorporateCustomerManager implements CorporateCustomerService {
 
         checkIfCorporateCustomerIdExists(id);
 
-        CorporateCustomer corporateCustomer = this.corporateCustomerDao.getById(id);
-
-        CorporateCustomerDto corporateCustomerDto = this.modelMapperService.forDto().map(corporateCustomer,CorporateCustomerDto.class);
+        CorporateCustomerDto corporateCustomerDto = this.modelMapperService.forDto()
+                .map(this.corporateCustomerDao.getById(id),CorporateCustomerDto.class);
 
         return new SuccessDataResult(corporateCustomerDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
-
-
 
     @Override
     public Result delete(int id) throws BusinessException {
 
         checkIfCorporateCustomerIdExists(id);
 
-        CorporateCustomerDto corporateCustomerDto = this.modelMapperService.forDto().map(this.corporateCustomerDao.getById(id), CorporateCustomerDto.class);
+        CorporateCustomerDto corporateCustomerDto = this.modelMapperService.forDto()
+                .map(this.corporateCustomerDao.getById(id), CorporateCustomerDto.class);
+
         this.corporateCustomerDao.deleteById(id);
 
         return new SuccessDataResult(corporateCustomerDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);

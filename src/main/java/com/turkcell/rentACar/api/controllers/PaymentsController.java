@@ -30,9 +30,14 @@ public class PaymentsController {
         return this.paymentService.getAll();
     }
 
-    @PostMapping("/add")
-    Result add(@RequestBody @Valid CreatePaymentModel createPaymentModel) throws BusinessException {
-        return this.paymentService.add(createPaymentModel);
+    @PostMapping("/paymentForIndividualCustomer")
+    Result paymentForIndividualCustomer(@RequestBody @Valid CreatePaymentModel createPaymentModel) throws BusinessException {
+        return this.paymentService.paymentForIndividualCustomer(createPaymentModel);
+    }
+
+    @PostMapping("/paymentForCorporateCustomer")
+    Result paymentForCorporateCustomer(@RequestBody @Valid CreatePaymentModel createPaymentModel) throws BusinessException {
+        return this.paymentService.paymentForCorporateCustomer(createPaymentModel);
     }
 
     @DeleteMapping("/delete")

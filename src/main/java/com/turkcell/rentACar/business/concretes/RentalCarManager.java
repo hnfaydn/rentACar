@@ -4,7 +4,6 @@ import com.turkcell.rentACar.api.models.UpdatedRentalCarAndInvoiceDto;
 import com.turkcell.rentACar.business.abstracts.*;
 import com.turkcell.rentACar.business.constants.messages.BusinessMessages;
 import com.turkcell.rentACar.business.dtos.additionalServiceDtos.AdditionalServiceListDto;
-import com.turkcell.rentACar.business.dtos.carDtos.CarDto;
 import com.turkcell.rentACar.business.dtos.carMaintenanceDtos.CarMaintenanceListDto;
 import com.turkcell.rentACar.business.dtos.invoiceDtos.InvoiceDto;
 import com.turkcell.rentACar.business.dtos.rentalCarDtos.RentalCarDto;
@@ -13,10 +12,7 @@ import com.turkcell.rentACar.business.requests.rentalCarRequests.CreateRentalCar
 import com.turkcell.rentACar.business.requests.rentalCarRequests.UpdateRentalCarRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
-import com.turkcell.rentACar.core.utilities.results.DataResult;
-import com.turkcell.rentACar.core.utilities.results.Result;
-import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
-import com.turkcell.rentACar.core.utilities.results.SuccessResult;
+import com.turkcell.rentACar.core.utilities.results.*;
 import com.turkcell.rentACar.dataAccess.abstracts.RentalCarDao;
 import com.turkcell.rentACar.entities.concretes.AdditionalService;
 import com.turkcell.rentACar.entities.concretes.RentalCar;
@@ -43,7 +39,8 @@ public class RentalCarManager implements RentalCarService {
     private CityService cityService;
     private InvoiceService invoiceService;
     private AdditionalServiceService additionalServiceService;
-
+    private IndividualCustomerService individualCustomerService;
+    private CorporateCustomerService corporateCustomerService;
 
     @Autowired
     public RentalCarManager(RentalCarDao rentalCarDao,
@@ -53,7 +50,9 @@ public class RentalCarManager implements RentalCarService {
                             CityService cityService,
                             @Lazy CustomerService customerService,
                             @Lazy InvoiceService invoiceService,
-                            @Lazy AdditionalServiceService additionalServiceService
+                            @Lazy AdditionalServiceService additionalServiceService,
+                            IndividualCustomerService individualCustomerService,
+                            CorporateCustomerService corporateCustomerService
 
     ) {
         this.rentalCarDao = rentalCarDao;
@@ -64,15 +63,16 @@ public class RentalCarManager implements RentalCarService {
         this.customerService = customerService;
         this.invoiceService = invoiceService;
         this.additionalServiceService = additionalServiceService;
+        this.individualCustomerService = individualCustomerService;
+        this.corporateCustomerService = corporateCustomerService;
 
     }
 
     @Override
     public DataResult<List<RentalCarListDto>> getAll() throws BusinessException {
 
-        List<RentalCar> rentalCars = this.rentalCarDao.findAll();
-
-        List<RentalCarListDto> rentalCarListDtos = rentalCars.stream()
+        List<RentalCarListDto> rentalCarListDtos =
+                this.rentalCarDao.findAll().stream()
                 .map(rentalCar -> this.modelMapperService.forDto().map(rentalCar, RentalCarListDto.class))
                 .collect(Collectors.toList());
 
@@ -80,14 +80,24 @@ public class RentalCarManager implements RentalCarService {
     }
 
     @Override
-    public SuccessDataResult add(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
+    public SuccessDataResult<RentalCar> rentForCorporateCustomers(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
 
         RentalCar rentalCar = this.modelMapperService.forRequest().map(createRentalCarRequest, RentalCar.class);
 
-        rentalCarInformationCheckOperations(rentalCar, createRentalCarRequest);
+        checkIfCarIsExists(createRentalCarRequest.getCarCarId());
+        checkIfRentalDatesCorrect(createRentalCarRequest);
+        checkIfRentalCarCityIdsExists(createRentalCarRequest.getRentCityId(), createRentalCarRequest.getReturnCityId());
+        checkIfCorporateCustomerExists(createRentalCarRequest);
+        checkIfCarInMaintenance(createRentalCarRequest);
+        checkIfCarUnderRental(createRentalCarRequest);
+        checkIfAdditionalServiceListIsNullOrEmpty(rentalCar, createRentalCarRequest.getAdditionalServiceIds());
+
+        rentalCar.setRentStartKilometer(this.carService.getById(createRentalCarRequest.getCarCarId()).getData().getKilometerInformation());
+
+        checkIfKilometerInformationsValid(rentalCar);
 
         this.carService.carKilometerSetOperation(rentalCar.getCar().getCarId(), rentalCar.getReturnKilometer());
-        rentalCar.setCustomer(this.customerService.getCustomerById(createRentalCarRequest.getCustomerId()));
+        rentalCar.setCustomer(this.customerService.getCustomerById(createRentalCarRequest.getCustomerId()).getData());
 
         rentalCar.setRentalCarId(0);
         this.rentalCarDao.save(rentalCar);
@@ -96,14 +106,29 @@ public class RentalCarManager implements RentalCarService {
     }
 
     @Override
-    public Result prePaymentControlOfRentalCar(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
+    public SuccessDataResult<RentalCar> rentForIndividualCustomers(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
 
         RentalCar rentalCar = this.modelMapperService.forRequest().map(createRentalCarRequest, RentalCar.class);
 
-        checkIfAdditionalServiceListIsNullOrEmpty(rentalCar, createRentalCarRequest);
-        rentalCarInformationCheckOperations(rentalCar, createRentalCarRequest);
+        checkIfCarIsExists(createRentalCarRequest.getCarCarId());
+        checkIfRentalDatesCorrect(createRentalCarRequest);
+        checkIfRentalCarCityIdsExists(createRentalCarRequest.getRentCityId(), createRentalCarRequest.getReturnCityId());
+        checkIfIndividualCustomerExists(createRentalCarRequest);
+        checkIfCarInMaintenance(createRentalCarRequest);
+        checkIfCarUnderRental(createRentalCarRequest);
+        checkIfAdditionalServiceListIsNullOrEmpty(rentalCar, createRentalCarRequest.getAdditionalServiceIds());
 
-        return new SuccessResult();
+        rentalCar.setRentStartKilometer(this.carService.getById(createRentalCarRequest.getCarCarId()).getData().getKilometerInformation());
+
+        checkIfKilometerInformationsValid(rentalCar);
+
+        this.carService.carKilometerSetOperation(rentalCar.getCar().getCarId(), rentalCar.getReturnKilometer());
+        rentalCar.setCustomer(this.customerService.getCustomerById(createRentalCarRequest.getCustomerId()).getData());
+
+        rentalCar.setRentalCarId(0);
+        this.rentalCarDao.save(rentalCar);
+
+        return new SuccessDataResult(rentalCar, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override
@@ -125,14 +150,14 @@ public class RentalCarManager implements RentalCarService {
 
         checkIfIdExists(id);
 
-        RentalCar rentalCar = this.rentalCarDao.getById(id);
-        RentalCarDto rentalCarDto = this.modelMapperService.forDto().map(rentalCar, RentalCarDto.class);
+        RentalCarDto rentalCarDto = this.modelMapperService.forDto()
+                .map(this.rentalCarDao.getById(id), RentalCarDto.class);
 
         return new SuccessDataResult(rentalCarDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
     public Result update(int id, UpdateRentalCarRequest updateRentalCarRequest) throws BusinessException {
 
         checkIfIdExists(id);
@@ -172,7 +197,8 @@ public class RentalCarManager implements RentalCarService {
 
         checkIfIdExists(id);
 
-        RentalCarDto rentalCarDto = this.modelMapperService.forDto().map(this.rentalCarDao.getById(id), RentalCarDto.class);
+        RentalCarDto rentalCarDto = this.modelMapperService.forDto()
+                .map(this.rentalCarDao.getById(id), RentalCarDto.class);
 
         this.rentalCarDao.deleteById(id);
 
@@ -180,35 +206,39 @@ public class RentalCarManager implements RentalCarService {
     }
 
     @Override
-    public List<RentalCarListDto> getAllRentalCarsByCarId(int carId) throws BusinessException {
+    public DataResult<List<RentalCarListDto>> getAllRentalCarsByCarId(int carId) {
 
         List<RentalCar> rentalCars = this.rentalCarDao.getByCar_CarId(carId);
 
         if (rentalCars.isEmpty()) {
-            return null;
+            return new ErrorDataResult(null);
         }
 
         List<RentalCarListDto> rentalCarListDtos = rentalCars.stream()
                 .map(rentalCar -> this.modelMapperService.forDto().map(rentalCar, RentalCarListDto.class))
                 .collect(Collectors.toList());
 
-        return rentalCarListDtos;
+        return new SuccessDataResult(rentalCarListDtos);
     }
 
     @Override
-    public List<RentalCar> getAllRentalCars() {
+    public DataResult<List<RentalCar>> getAllRentalCars() {
 
-        return this.rentalCarDao.findAll();
-    }
-
-    @Override
-    public RentalCar getRentalCarById(int id) {
-
-        if (this.rentalCarDao.getById(id) == null) {
-            return null;
+        if(this.rentalCarDao.findAll().isEmpty()){
+            return new ErrorDataResult(null);
         }
 
-        return this.rentalCarDao.getById(id);
+        return new SuccessDataResult(this.rentalCarDao.findAll());
+    }
+
+    @Override
+    public DataResult<RentalCar> getRentalCarById(int id) {
+
+        if (this.rentalCarDao.getById(id) == null) {
+            return new ErrorDataResult(null);
+        }
+
+        return new SuccessDataResult(this.rentalCarDao.getById(id));
     }
 
     @Override
@@ -218,21 +248,6 @@ public class RentalCarManager implements RentalCarService {
         rentalCar.setReturnDate(delayedReturnDate);
 
         this.rentalCarDao.save(rentalCar);
-    }
-
-    private void rentalCarInformationCheckOperations(RentalCar rentalCar, CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
-
-        checkIfCarIsExists(createRentalCarRequest.getCarCarId());
-        checkIfRentalDatesCorrect(createRentalCarRequest);
-        checkIfRentalCarCityIdsExists(createRentalCarRequest.getRentCityId(), createRentalCarRequest.getReturnCityId());
-        checkIfCustomerExists(createRentalCarRequest);
-        checkIfCarInMaintenance(createRentalCarRequest);
-        checkIfCarUnderRental(createRentalCarRequest);
-        checkIfAdditionalServiceListIsNullOrEmpty(rentalCar, createRentalCarRequest);
-
-        rentalCar.setRentStartKilometer(this.carService.getById(createRentalCarRequest.getCarCarId()).getData().getKilometerInformation());
-
-        checkIfKilometerInformationsValid(rentalCar);
     }
 
     private void checkIfCarInMaintenance(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
@@ -262,9 +277,7 @@ public class RentalCarManager implements RentalCarService {
 
     private void checkIfCarIsExists(int carId) throws BusinessException {
 
-        DataResult<CarDto> carDtoDataResult = this.carService.getById(carId);
-
-        if (carDtoDataResult == null) {
+        if (this.carService.getById(carId).getData() == null) {
             throw new BusinessException(BusinessMessages.RentalCarMessages.CAR_NOT_FOUND + carId);
         }
     }
@@ -290,7 +303,8 @@ public class RentalCarManager implements RentalCarService {
         List<AdditionalService> additionalServices = new ArrayList<>();
 
         for (Integer ids : updateRentalCarRequest.getAdditionalServiceIds()) {
-            additionalServices.add(this.additionalServiceService.getAdditionalServiceById(ids));
+            checkIfAdditionalServiceIdExists(ids);
+            additionalServices.add(this.additionalServiceService.getAdditionalServiceById(ids).getData());
         }
 
         if (updateRentalCarRequest.getRentDate().isEqual(rentalCar.getRentDate()) &&
@@ -368,9 +382,16 @@ public class RentalCarManager implements RentalCarService {
         }
     }
 
-    private void checkIfCustomerExists(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
+    private void checkIfCorporateCustomerExists(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
 
-        if (this.customerService.getById(createRentalCarRequest.getCustomerId()).getData() == null) {
+        if (this.corporateCustomerService.getById(createRentalCarRequest.getCustomerId()).getData() == null) {
+            throw new BusinessException(BusinessMessages.RentalCarMessages.CUSTOMER_NOT_FOUND + createRentalCarRequest.getCustomerId());
+        }
+    }
+
+    private void checkIfIndividualCustomerExists(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
+
+        if (this.individualCustomerService.getById(createRentalCarRequest.getCustomerId()).getData() == null) {
             throw new BusinessException(BusinessMessages.RentalCarMessages.CUSTOMER_NOT_FOUND + createRentalCarRequest.getCustomerId());
         }
     }
@@ -382,18 +403,18 @@ public class RentalCarManager implements RentalCarService {
         }
     }
 
-    private void checkIfAdditionalServiceListIsNullOrEmpty(RentalCar rentalCar, CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
+    private void checkIfAdditionalServiceListIsNullOrEmpty(RentalCar rentalCar, List<Integer> additionalServiceIds) throws BusinessException {
 
-        if (createRentalCarRequest.getAdditionalServiceIds() == null || createRentalCarRequest.getAdditionalServiceIds().isEmpty()) {
+        if (additionalServiceIds == null || additionalServiceIds.isEmpty()) {
             rentalCar.setAdditionalServices(null);
         } else {
             List<AdditionalService> tempAdditionalServiceList = new ArrayList<>();
 
-            for (Integer additionalServiceId : createRentalCarRequest.getAdditionalServiceIds()) {
+            for (Integer additionalServiceId : additionalServiceIds) {
 
                 checkIfAdditionalServiceIdExists(additionalServiceId);
 
-                AdditionalService additionalService = this.additionalServiceService.getAdditionalServiceById(additionalServiceId);
+                AdditionalService additionalService = this.additionalServiceService.getAdditionalServiceById(additionalServiceId).getData();
                 tempAdditionalServiceList.add(additionalService);
             }
             rentalCar.setAdditionalServices(tempAdditionalServiceList);
@@ -421,8 +442,8 @@ public class RentalCarManager implements RentalCarService {
 
         rentalCar.setRentDate(updateRentalCarRequest.getRentDate());
         rentalCar.setReturnDate(updateRentalCarRequest.getReturnDate());
-        rentalCar.setRentCity(this.cityService.getCityById(updateRentalCarRequest.getRentCityId()));
-        rentalCar.setReturnCity(this.cityService.getCityById(updateRentalCarRequest.getReturnCityId()));
+        rentalCar.setRentCity(this.cityService.getCityById(updateRentalCarRequest.getRentCityId()).getData());
+        rentalCar.setReturnCity(this.cityService.getCityById(updateRentalCarRequest.getReturnCityId()).getData());
         rentalCar.setRentStartKilometer(this.carService.getById(updateRentalCarRequest.getCarCarId()).getData().getKilometerInformation());
         rentalCar.setReturnKilometer(updateRentalCarRequest.getReturnKilometer());
         rentalCar.getCustomer().setUserId(updateRentalCarRequest.getCustomerId());
@@ -430,24 +451,7 @@ public class RentalCarManager implements RentalCarService {
         if (rentalCar.getRentStartKilometer() > rentalCar.getReturnKilometer()) {
             throw new BusinessException(BusinessMessages.RentalCarMessages.RENT_AND_RETURN_KILOMETER_NOT_VALID);
         }
-        updateRentalCarAdditionalServices(rentalCar, updateRentalCarRequest);
+        checkIfAdditionalServiceListIsNullOrEmpty(rentalCar, updateRentalCarRequest.getAdditionalServiceIds());
     }
 
-    private void updateRentalCarAdditionalServices(RentalCar rentalCar, UpdateRentalCarRequest updateRentalCarRequest) throws BusinessException {
-
-        if (updateRentalCarRequest.getAdditionalServiceIds() == null || updateRentalCarRequest.getAdditionalServiceIds().isEmpty()) {
-            rentalCar.setAdditionalServices(null);
-        } else {
-            List<AdditionalService> tempAdditionalServiceList = new ArrayList<>();
-
-            for (Integer additionalServiceId : updateRentalCarRequest.getAdditionalServiceIds()) {
-
-                checkIfAdditionalServiceIdExists(additionalServiceId);
-
-                AdditionalService additionalService = this.additionalServiceService.getAdditionalServiceById(additionalServiceId);
-                tempAdditionalServiceList.add(additionalService);
-            }
-            rentalCar.setAdditionalServices(tempAdditionalServiceList);
-        }
-    }
 }

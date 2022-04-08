@@ -9,6 +9,7 @@ import com.turkcell.rentACar.business.requests.carDamageRequests.UpdateCarDamage
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
+import com.turkcell.rentACar.core.utilities.results.ErrorDataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.dataAccess.abstracts.CarDamageDao;
@@ -34,9 +35,9 @@ public class CarDamageManager implements CarDamageService {
 
     @Override
     public DataResult<List<CarDamageListDto>> getAll() throws BusinessException {
-        List<CarDamage> carDamages = this.carDamageDao.findAll();
 
-        List<CarDamageListDto> carDamageListDtos = carDamages.stream()
+        List<CarDamageListDto> carDamageListDtos =
+                this.carDamageDao.findAll().stream()
                 .map(carDamage -> this.modelMapperService.forDto().map(carDamage, CarDamageListDto.class))
                 .collect(Collectors.toList());
 
@@ -61,9 +62,8 @@ public class CarDamageManager implements CarDamageService {
 
         checkIfCarDamageIdExists(id);
 
-        CarDamage carDamage = this.carDamageDao.getById(id);
-
-        CarDamageDto carDamageDto = this.modelMapperService.forDto().map(carDamage, CarDamageDto.class);
+        CarDamageDto carDamageDto = this.modelMapperService.forDto()
+                .map(this.carDamageDao.getById(id), CarDamageDto.class);
 
         return new SuccessDataResult(carDamageDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -90,8 +90,8 @@ public class CarDamageManager implements CarDamageService {
 
         checkIfCarDamageIdExists(id);
 
-        CarDamage carDamage = this.carDamageDao.getById(id);
-        CarDamageDto carDamageDto = this.modelMapperService.forDto().map(carDamage, CarDamageDto.class);
+        CarDamageDto carDamageDto = this.modelMapperService.forDto()
+                .map(this.carDamageDao.getById(id), CarDamageDto.class);
 
         this.carDamageDao.deleteById(id);
 
@@ -99,13 +99,13 @@ public class CarDamageManager implements CarDamageService {
     }
 
     @Override
-    public CarDamage getCarDamageById(int id) throws BusinessException {
+    public DataResult<CarDamage> getCarDamageById(int id) {
 
         if (!this.carDamageDao.existsById(id)) {
-            return null;
+            return new ErrorDataResult(null);
         }
 
-        return this.carDamageDao.getById(id);
+        return new SuccessDataResult(this.carDamageDao.getById(id));
     }
 
     private void checkIfCarDamageIsAlreadyExists(String damageDescription) throws BusinessException {

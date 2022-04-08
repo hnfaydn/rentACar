@@ -33,9 +33,8 @@ public class UserManager implements UserService {
     @Override
     public DataResult<List<UserListDto>> getAll() {
 
-        List<User> users = this.userDao.findAll();
-
-        List<UserListDto> userListDtos = users.stream()
+        List<UserListDto> userListDtos =
+                this.userDao.findAll().stream()
                 .map(user -> this.modelMapperService.forDto().map(user, UserListDto.class))
                 .collect(Collectors.toList());
 
@@ -47,9 +46,8 @@ public class UserManager implements UserService {
 
         checkIfUserIdExists(id);
 
-        User user = this.userDao.getById(id);
-
-        UserDto userDto = this.modelMapperService.forDto().map(user, UserDto.class);
+        UserDto userDto = this.modelMapperService.forDto()
+                .map(this.userDao.getById(id), UserDto.class);
 
         return new SuccessDataResult(userDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -75,7 +73,8 @@ public class UserManager implements UserService {
 
         checkIfUserIdExists(id);
 
-        UserDto userDto = this.modelMapperService.forDto().map(this.userDao.getById(id), UserDto.class);
+        UserDto userDto = this.modelMapperService.forDto()
+                .map(this.userDao.getById(id), UserDto.class);
 
         this.userDao.deleteById(id);
 

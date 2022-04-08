@@ -51,4 +51,6 @@ public class RentalCarsController {
     public DataResult<List<AdditionalServiceListDto>> getOrderedAdditionalServicesByRentalCarId(int rentalCarId) throws BusinessException {
         return this.rentalCarService.getOrderedAdditionalServicesByRentalCarId(rentalCarId);
     }
+
+
 }

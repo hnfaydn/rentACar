@@ -39,9 +39,8 @@ public class UserCardInformationManager implements UserCardInformationService {
     @Override
     public DataResult<List<UserCardInformationListDto>> getAll() throws BusinessException {
 
-        List<UserCardInformation> userCardInformations = this.userCardInformationDao.findAll();
-
-        List<UserCardInformationListDto> userCardInformationListDtos = userCardInformations.stream()
+        List<UserCardInformationListDto> userCardInformationListDtos =
+                this.userCardInformationDao.findAll().stream()
                 .map(userCardInformation ->this.modelMapperService.forDto().map(userCardInformation,UserCardInformationListDto.class))
                 .collect(Collectors.toList());
 
@@ -67,9 +66,7 @@ public class UserCardInformationManager implements UserCardInformationService {
 
         checkIfUserCardInformationIdAExists(id);
 
-        UserCardInformation userCardInformation = this.userCardInformationDao.getById(id);
-
-        UserCardInformationDto userCardInformationDto = this.modelMapperService.forDto().map(userCardInformation,UserCardInformationDto.class);
+        UserCardInformationDto userCardInformationDto = this.modelMapperService.forDto().map(this.userCardInformationDao.getById(id),UserCardInformationDto.class);
 
         return new SuccessDataResult<>(userCardInformationDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -95,9 +92,8 @@ public class UserCardInformationManager implements UserCardInformationService {
 
         checkIfUserCardInformationIdAExists(id);
 
-        UserCardInformation userCardInformation = this.userCardInformationDao.getById(id);
-
-        UserCardInformationDto userCardInformationDto = this.modelMapperService.forDto().map(userCardInformation,UserCardInformationDto.class);
+        UserCardInformationDto userCardInformationDto = this.modelMapperService.forDto()
+                .map(this.userCardInformationDao.getById(id),UserCardInformationDto.class);
 
         this.userCardInformationDao.deleteById(id);
 

@@ -116,7 +116,6 @@ public class BusinessMessages {
         public static final String CAR_UNDER_MAINTENANCE_RENT_NOT_POSSIBLE_UNTIL = "Rental update is not possible! This car is under maintenance until: ";
         public static final String CUSTOMER_NOT_FOUND = "There is no Customer with following id: ";
         public static final String RETURN_KILOMETER_NOT_VALID_FOR_CAR = "Return kilometer is not valid for following car id: ";
-
     }
 
     public class UserMessages{
@@ -133,7 +132,6 @@ public class BusinessMessages {
         public static final String DELAYED_RETURN_DATE_IS_NOT_VALID = "Delayed return date can not before original return date.";
         public static final String DELAYED_RETURN_KILOMETER_IS_NOT_VALID = "Delayed return Kilometer can not before original return Kilometer.";
         public static final String RENTAL_CAR_NOT_FOUND = "There is no Rental Car with following id: ";
-
     }
 
     public class UserCardInformationMessages{
@@ -141,7 +139,6 @@ public class BusinessMessages {
         public static final String CARD_NO_ALREADY_EXISTS = "This card no is already exists.";
         public static final String USER_CARD_INFORMATION_ID_NOT_FOUND = "There is no User Card Information with following id: ";
         public static final String CUSTOMER_NOT_FOUND = "There is no Customer with following id: ";
-
     }
 
     public class PaymentRequestsMessages {

@@ -40,9 +40,8 @@ public class IndividualCustomerManager implements IndividualCustomerService {
     @Override
     public DataResult<List<IndividualCustomerListDto>> getAll() {
 
-        List<IndividualCustomer> individualCustomers = this.individualCustomerDao.findAll();
-
-        List<IndividualCustomerListDto> individualCustomerListDtos = individualCustomers.stream()
+        List<IndividualCustomerListDto> individualCustomerListDtos =
+                this.individualCustomerDao.findAll().stream()
                 .map(individualCustomer -> this.modelMapperService.forDto().map(individualCustomer,IndividualCustomerListDto.class))
                 .collect(Collectors.toList());
 
@@ -69,9 +68,8 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 
         checkIfIndividualCustomerIdExists(id);
 
-        IndividualCustomer individualCustomer = this.individualCustomerDao.getById(id);
-
-        IndividualCustomerDto individualCustomerDto = this.modelMapperService.forDto().map(individualCustomer, IndividualCustomerDto.class);
+        IndividualCustomerDto individualCustomerDto = this.modelMapperService.forDto()
+                .map(this.individualCustomerDao.getById(id), IndividualCustomerDto.class);
 
         return new SuccessDataResult(individualCustomerDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -81,7 +79,8 @@ public class IndividualCustomerManager implements IndividualCustomerService {
 
         checkIfIndividualCustomerIdExists(id);
 
-        IndividualCustomerDto individualCustomerDto = this.modelMapperService.forDto().map(this.individualCustomerDao.getById(id),IndividualCustomerDto.class);
+        IndividualCustomerDto individualCustomerDto = this.modelMapperService.forDto()
+                .map(this.individualCustomerDao.getById(id),IndividualCustomerDto.class);
 
         this.individualCustomerDao.deleteById(id);
 
@@ -126,7 +125,7 @@ public class IndividualCustomerManager implements IndividualCustomerService {
     }
 
     private void checkIfIndividualCustomerIdExists(int id) throws BusinessException {
-        if(this.individualCustomerDao.existsById(id)){
+        if(!this.individualCustomerDao.existsById(id)){
             throw new BusinessException(BusinessMessages.IndividualCustomerMessages.INDIVIDUAL_CUSTOMER_NOT_FOUND+id);
         }
     }

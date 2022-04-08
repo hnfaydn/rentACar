@@ -53,9 +53,8 @@ public class PaymentManager implements PaymentService {
     @Override
     public DataResult<List<PaymentListDto>> getAll() {
 
-        List<Payment> payments = this.paymentDao.findAll();
-
-        List<PaymentListDto> paymentListDtos = payments.stream()
+        List<PaymentListDto> paymentListDtos =
+                this.paymentDao.findAll().stream()
                 .map(payment -> this.modelMapperService.forDto().map(payment, PaymentListDto.class))
                 .collect(Collectors.toList());
 
@@ -64,20 +63,45 @@ public class PaymentManager implements PaymentService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
-    public Result add(CreatePaymentModel createPaymentModel) throws BusinessException {
+    public Result paymentForIndividualCustomer(CreatePaymentModel createPaymentModel) throws BusinessException {
 
-        rentalCarPaymentPreControlOperation(createPaymentModel.getCreateRentalCarRequest());
         checkIfPaymentDone(preInvoiceCalculator(createPaymentModel.getCreateRentalCarRequest()),createPaymentModel.getCreatePaymentRequest());
-        paymentSuccessor(createPaymentModel);
+        paymentSuccessorForIndividualCustomer(createPaymentModel);
 
         return new SuccessDataResult(createPaymentModel, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
-    public void paymentSuccessor(CreatePaymentModel createPaymentModel) throws BusinessException {
+    public void paymentSuccessorForIndividualCustomer(CreatePaymentModel createPaymentModel) throws BusinessException {
+        RentalCar rentalCar = this.rentalCarService.rentForIndividualCustomers(createPaymentModel.getCreateRentalCarRequest()).getData();
 
-        RentalCar rentalCar = this.rentalCarService.add(createPaymentModel.getCreateRentalCarRequest()).getData();
+        CreateInvoiceRequest createInvoiceRequest = new CreateInvoiceRequest();
+        createInvoiceRequest.setRentalCarId(rentalCar.getRentalCarId());
+        Invoice invoice = this.invoiceService.add(createInvoiceRequest).getData();
+
+        Payment payment = this.modelMapperService.forRequest().map(createPaymentModel.getCreatePaymentRequest(), Payment.class);
+        payment.setCustomer(rentalCar.getCustomer());
+        payment.setPaymentAmount(invoice.getTotalPayment());
+        payment.setRentalCar(rentalCar);
+
+        this.paymentDao.save(payment);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
+    public Result paymentForCorporateCustomer(CreatePaymentModel createPaymentModel) throws BusinessException {
+
+        checkIfPaymentDone(preInvoiceCalculator(createPaymentModel.getCreateRentalCarRequest()),createPaymentModel.getCreatePaymentRequest());
+        paymentSuccessorForCorporateCustomer(createPaymentModel);
+
+        return new SuccessDataResult(createPaymentModel, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
+    public void paymentSuccessorForCorporateCustomer(CreatePaymentModel createPaymentModel) throws BusinessException {
+        RentalCar rentalCar = this.rentalCarService.rentForCorporateCustomers(createPaymentModel.getCreateRentalCarRequest()).getData();
 
         CreateInvoiceRequest createInvoiceRequest = new CreateInvoiceRequest();
         createInvoiceRequest.setRentalCarId(rentalCar.getRentalCarId());
@@ -96,9 +120,8 @@ public class PaymentManager implements PaymentService {
 
         checkIfPaymentIdExists(id);
 
-        Payment payment = this.paymentDao.getById(id);
-
-        PaymentDto paymentDto = this.modelMapperService.forRequest().map(payment, PaymentDto.class);
+        PaymentDto paymentDto = this.modelMapperService.forRequest()
+                .map(this.paymentDao.getById(id), PaymentDto.class);
 
         this.paymentDao.deleteById(id);
 
@@ -110,9 +133,8 @@ public class PaymentManager implements PaymentService {
 
         checkIfPaymentIdExists(id);
 
-        Payment payment = this.paymentDao.getById(id);
-
-        PaymentDto paymentDto = this.modelMapperService.forRequest().map(payment, PaymentDto.class);
+        PaymentDto paymentDto = this.modelMapperService.forRequest()
+                .map(this.paymentDao.getById(id), PaymentDto.class);
 
         return new SuccessDataResult(paymentDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -123,7 +145,7 @@ public class PaymentManager implements PaymentService {
 
         checkIfRentalCarIdExists(createDelayedPaymentModel.getRentalCarId());
 
-        RentalCar rentalCar = this.rentalCarService.getRentalCarById(createDelayedPaymentModel.getRentalCarId());
+        RentalCar rentalCar = this.rentalCarService.getRentalCarById(createDelayedPaymentModel.getRentalCarId()).getData();
         CreateRentalCarRequest createRentalCarRequest = this.modelMapperService.forRequest().map(rentalCar,CreateRentalCarRequest.class);
 
         checkIfDelayedDateIsCorrect(createRentalCarRequest,createDelayedPaymentModel);
@@ -144,7 +166,7 @@ public class PaymentManager implements PaymentService {
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = BusinessException.class)
     public void delayedPaymentSuccessor(CreateDelayedPaymentModel createDelayedPaymentModel) throws BusinessException {
 
-        RentalCar rentalCar = this.rentalCarService.getRentalCarById(createDelayedPaymentModel.getRentalCarId());
+        RentalCar rentalCar = this.rentalCarService.getRentalCarById(createDelayedPaymentModel.getRentalCarId()).getData();
 
         this.rentalCarService.setDelayedReturnDate(createDelayedPaymentModel.getRentalCarId(),createDelayedPaymentModel.getDelayedReturnDate());
         this.carService.carKilometerSetOperation(rentalCar.getCar().getCarId(),createDelayedPaymentModel.getCarDelayedKilometerInformation());
@@ -157,13 +179,6 @@ public class PaymentManager implements PaymentService {
         payment.setRentalCar(rentalCar);
 
         paymentDao.save(payment);
-    }
-
-    private void rentalCarPaymentPreControlOperation(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
-
-        if(!this.rentalCarService.prePaymentControlOfRentalCar(createRentalCarRequest).isSuccess()){
-            throw new BusinessException(BusinessMessages.PaymentMessages.INVALID_RENTAL_CAR_INFORMATION);
-        }
     }
 
     private Double preInvoiceCalculator(CreateRentalCarRequest createRentalCarRequest) throws BusinessException {
@@ -187,7 +202,7 @@ public class PaymentManager implements PaymentService {
 
     private void checkIfRentalCarIdExists(int rentalCarId) throws BusinessException {
 
-        if(this.rentalCarService.getRentalCarById(rentalCarId)==null){
+        if(this.rentalCarService.getById(rentalCarId).getData()==null){
             throw new BusinessException(BusinessMessages.PaymentMessages.RENTAL_CAR_NOT_FOUND+rentalCarId);
         }
     }

@@ -53,9 +53,10 @@ public class CarManager implements CarService {
     @Override
     public DataResult<List<CarListDto>> getAll() throws BusinessException {
 
-        List<Car> cars = carDao.findAll();
-
-        List<CarListDto> carListDtos = cars.stream().map(car -> this.modelMapperService.forDto().map(car, CarListDto.class)).collect(Collectors.toList());
+        List<CarListDto> carListDtos =
+                this.carDao.findAll().stream()
+                .map(car -> this.modelMapperService.forDto().map(car, CarListDto.class))
+                .collect(Collectors.toList());
 
         return new SuccessDataResult<>(carListDtos, BusinessMessages.GlobalMessages.DATA_LISTED_SUCCESSFULLY);
     }
@@ -65,10 +66,9 @@ public class CarManager implements CarService {
 
         Car car = this.modelMapperService.forRequest().map(createCarRequest, Car.class);
 
-        checkIfCarDamageListIsNullOrEmpty(createCarRequest,car);
         checkIfCarCreationParametersNotNull(car);
         checkIfCarExists(car);
-        checkIfCarDamageListIsNullOrEmpty(createCarRequest,car);
+        checkIfCarDamageListIsNullOrEmpty(createCarRequest.getCarDamageIds(),car);
 
         car.setCarId(0);
 
@@ -99,7 +99,8 @@ public class CarManager implements CarService {
 
         checkIfIdExists(id);
 
-        CarDto carDto = this.modelMapperService.forDto().map(this.carDao.getById(id), CarDto.class);
+        CarDto carDto = this.modelMapperService.forDto()
+                .map(this.carDao.getById(id), CarDto.class);
 
         this.carDao.deleteById(id);
 
@@ -165,8 +166,8 @@ public class CarManager implements CarService {
 
         checkIfIdExists(id);
 
-        Car car = this.carDao.getById(id);
-        CarDto carDto = this.modelMapperService.forDto().map(car, CarDto.class);
+        CarDto carDto = this.modelMapperService.forDto()
+                .map(this.carDao.getById(id), CarDto.class);
 
         return new SuccessDataResult<>(carDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -185,10 +186,11 @@ public class CarManager implements CarService {
         }
     }
 
-    private void updateCarOperations(Car car, UpdateCarRequest updateCarRequest) {
+    private void updateCarOperations(Car car, UpdateCarRequest updateCarRequest) throws BusinessException {
 
         car.setDailyPrice(updateCarRequest.getDailyPrice());
         car.setDescription(updateCarRequest.getDescription());
+        checkIfCarDamageListIsNullOrEmpty(updateCarRequest.getCarDamageIds(),car);
     }
 
     private void checkIfIdExists(int id) throws BusinessException {
@@ -200,8 +202,18 @@ public class CarManager implements CarService {
 
     private void checkIfCarAndUpdateParameterIsNotEqual(Car car, UpdateCarRequest updateCarRequest) throws BusinessException {
 
-        if (car.getDailyPrice() == updateCarRequest.getDailyPrice() && car.getDescription().equals(updateCarRequest.getDescription())
+        List<CarDamage> tempCarDamageList = new ArrayList<>();
 
+        for (Integer carDamageId : updateCarRequest.getCarDamageIds()) {
+
+            checkIfCarDamageIdExists(carDamageId);
+            CarDamage carDamage = this.carDamageService.getCarDamageById(carDamageId).getData();
+            tempCarDamageList.add(carDamage);
+        }
+
+        if (car.getDailyPrice() == updateCarRequest.getDailyPrice() &&
+                car.getDescription().equals(updateCarRequest.getDescription()) &&
+                car.getCarDamages() == tempCarDamageList
         ) {
             throw new BusinessException(BusinessMessages.CarMessages.NO_CHANGES_NO_NEED_TO_UPDATE);
         }
@@ -232,23 +244,23 @@ public class CarManager implements CarService {
 
     private void checkIfDailyPriceValid(double dailyPrice) throws BusinessException {
 
-        if (dailyPrice <= 0) {
+        if (dailyPrice < 0) {
             throw new BusinessException(BusinessMessages.CarMessages.DAILY_PRICE_CANNOT_LESS_THAN_ZERO);
         }
     }
 
-    private void checkIfCarDamageListIsNullOrEmpty(CreateCarRequest createCarRequest, Car car) throws BusinessException {
+    private void checkIfCarDamageListIsNullOrEmpty(List<Integer> carDamageIds, Car car) throws BusinessException {
 
-        if(createCarRequest.getCarDamageIds()==null || createCarRequest.getCarDamageIds().isEmpty())
+        if(carDamageIds == null || carDamageIds.isEmpty())
         {
             car.setCarDamages(null);
         }else{
             List<CarDamage> tempCarDamageList = new ArrayList<>();
 
-            for (Integer carDamageId : createCarRequest.getCarDamageIds()) {
+            for (Integer carDamageId : carDamageIds) {
 
                 checkIfCarDamageIdExists(carDamageId);
-                CarDamage carDamage = this.carDamageService.getCarDamageById(carDamageId);
+                CarDamage carDamage = this.carDamageService.getCarDamageById(carDamageId).getData();
                 tempCarDamageList.add(carDamage);
             }
             car.setCarDamages(tempCarDamageList);
@@ -257,7 +269,7 @@ public class CarManager implements CarService {
 
     private void checkIfCarDamageIdExists(Integer carDamageId) throws BusinessException {
 
-        if(this.carDamageService.getCarDamageById(carDamageId)==null||carDamageId<=0){
+        if(this.carDamageService.getById(carDamageId).getData() == null||carDamageId<=0){
             throw new BusinessException(BusinessMessages.CarMessages.CAR_DAMAGE_NOT_FOUND+carDamageId);
         }
     }

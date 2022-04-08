@@ -9,6 +9,7 @@ import com.turkcell.rentACar.business.requests.cityRequests.UpdateCityRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
+import com.turkcell.rentACar.core.utilities.results.ErrorDataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.dataAccess.abstracts.CityDao;
@@ -35,9 +36,8 @@ public class CityManager implements CityService {
     @Override
     public DataResult<List<CityListDto>> getAll() throws BusinessException {
 
-        List<City> cities = this.cityDao.findAll();
-
-        List<CityListDto> cityListDtos = cities.stream()
+        List<CityListDto> cityListDtos =
+                this.cityDao.findAll().stream()
                 .map(city -> this.modelMapperService.forDto().map(city, CityListDto.class))
                 .collect(Collectors.toList());
 
@@ -52,7 +52,6 @@ public class CityManager implements CityService {
         checkIfCityIdNotDuplicated(city.getCityId());
         checkIfNameNotDuplicated(city.getCityName());
 
-
         this.cityDao.save(city);
 
         return new SuccessDataResult(createCityRequest,BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
@@ -63,8 +62,8 @@ public class CityManager implements CityService {
 
         checkIfCityIdExists(id);
 
-        City city = this.cityDao.getById(id);
-        CityDto cityDto = this.modelMapperService.forDto().map(city, CityDto.class);
+        CityDto cityDto = this.modelMapperService.forDto()
+                .map(this.cityDao.getById(id), CityDto.class);
 
         return new SuccessDataResult(cityDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -91,7 +90,9 @@ public class CityManager implements CityService {
 
         checkIfCityIdExists(id);
 
-        CityDto cityDto = this.modelMapperService.forDto().map(this.cityDao.getById(id), CityDto.class);
+        CityDto cityDto = this.modelMapperService.forDto()
+                .map(this.cityDao.getById(id), CityDto.class);
+
         this.cityDao.deleteById(id);
 
         return new SuccessDataResult(cityDto, BusinessMessages.GlobalMessages.DATA_DELETED_SUCCESSFULLY);
@@ -104,12 +105,12 @@ public class CityManager implements CityService {
     }
 
     @Override
-    public City getCityById(int id) {
+    public DataResult<City> getCityById(int id) {
 
         if(!this.cityDao.existsById(id)){
-        return null;}
+        return new ErrorDataResult(null);}
 
-        return this.cityDao.getById(id);
+        return new SuccessDataResult(this.cityDao.getById(id));
     }
 
 

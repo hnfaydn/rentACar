@@ -10,6 +10,7 @@ import com.turkcell.rentACar.business.requests.additionalServiceRequests.UpdateA
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
+import com.turkcell.rentACar.core.utilities.results.ErrorDataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.dataAccess.abstracts.AdditionalServiceDao;
@@ -43,9 +44,8 @@ public class AdditionalServiceManager implements AdditionalServiceService {
     @Override
     public DataResult<List<AdditionalServiceListDto>> getAll() throws BusinessException {
 
-        List<AdditionalService> additionalServices = this.additionalServiceDao.findAll();
-
-        List<AdditionalServiceListDto> additionalServiceListDtos = additionalServices.stream()
+        List<AdditionalServiceListDto> additionalServiceListDtos =
+                this.additionalServiceDao.findAll().stream()
                 .map(additionalServiceListDto -> this.modelMapperService.forDto().map(additionalServiceListDto, AdditionalServiceListDto.class))
                 .collect(Collectors.toList());
 
@@ -60,6 +60,7 @@ public class AdditionalServiceManager implements AdditionalServiceService {
         checkIfAdditionalServiceNameAlreadyExists(createAdditionalServiceRequest.getAdditionalServiceName());
 
         this.additionalServiceDao.save(additionalService);
+
         return new SuccessDataResult(createAdditionalServiceRequest, BusinessMessages.GlobalMessages.DATA_ADDED_SUCCESSFULLY);
     }
 
@@ -68,8 +69,8 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 
         checkIfIdExists(id);
 
-        AdditionalService additionalService = this.additionalServiceDao.getById(id);
-        AdditionalServiceDto additionalServiceDto = this.modelMapperService.forDto().map(additionalService, AdditionalServiceDto.class);
+        AdditionalServiceDto additionalServiceDto = this.modelMapperService.forDto()
+                .map(this.additionalServiceDao.getById(id), AdditionalServiceDto.class);
 
         return new SuccessDataResult(additionalServiceDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -97,8 +98,8 @@ public class AdditionalServiceManager implements AdditionalServiceService {
         checkIfIdExists(id);
         checkIfRentalCarHasDeletedAdditionalServiceId(id);
 
-        AdditionalServiceDto additionalServiceDto =
-                this.modelMapperService.forDto().map(this.additionalServiceDao.getById(id), AdditionalServiceDto.class);
+        AdditionalServiceDto additionalServiceDto = this.modelMapperService.forDto()
+                .map(this.additionalServiceDao.getById(id), AdditionalServiceDto.class);
 
         this.additionalServiceDao.deleteById(id);
 
@@ -106,12 +107,13 @@ public class AdditionalServiceManager implements AdditionalServiceService {
     }
 
     @Override
-    public AdditionalService getAdditionalServiceById(int id) {
+    public DataResult<AdditionalService> getAdditionalServiceById(int id) {
 
         if (this.additionalServiceDao.findAdditionalServiceByAdditionalServiceId(id) == null) {
-            return null;
+            return new ErrorDataResult(null);
         }
-        return this.additionalServiceDao.findAdditionalServiceByAdditionalServiceId(id);
+
+        return new SuccessDataResult(this.additionalServiceDao.findAdditionalServiceByAdditionalServiceId(id));
     }
 
 
@@ -137,7 +139,7 @@ public class AdditionalServiceManager implements AdditionalServiceService {
 
     private void checkIfRentalCarHasDeletedAdditionalServiceId(int id) throws BusinessException {
 
-        List<RentalCar> rentalCars = this.rentalCarService.getAllRentalCars();
+        List<RentalCar> rentalCars = this.rentalCarService.getAllRentalCars().getData();
 
         List<Integer> rentalCarIds = new ArrayList<>();
         for (RentalCar rentalCar : rentalCars

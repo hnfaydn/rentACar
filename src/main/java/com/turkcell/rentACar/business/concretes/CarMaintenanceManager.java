@@ -48,9 +48,8 @@ public class CarMaintenanceManager implements CarMaintenanceService {
     @Override
     public DataResult<List<CarMaintenanceListDto>> getAll() throws BusinessException {
 
-        List<CarMaintenance> carMaintenances = carMaintenanceDao.findAll();
-
-        List<CarMaintenanceListDto> carMaintenanceListDtos = carMaintenances.stream()
+        List<CarMaintenanceListDto> carMaintenanceListDtos =
+                this.carMaintenanceDao.findAll().stream()
                 .map(carMaintenance -> this.modelMapperService.forDto().map(carMaintenance, CarMaintenanceListDto.class))
                 .collect(Collectors.toList());
 
@@ -77,9 +76,8 @@ public class CarMaintenanceManager implements CarMaintenanceService {
 
         checkIfIdExists(id);
 
-        CarMaintenance carMaintenance = this.carMaintenanceDao.getById(id);
-
-        CarMaintenanceDto carMaintenanceDto = this.modelMapperService.forDto().map(carMaintenance, CarMaintenanceDto.class);
+        CarMaintenanceDto carMaintenanceDto = this.modelMapperService.forDto()
+                .map(this.carMaintenanceDao.getById(id), CarMaintenanceDto.class);
 
         return new SuccessDataResult(carMaintenanceDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -108,7 +106,8 @@ public class CarMaintenanceManager implements CarMaintenanceService {
 
         checkIfIdExists(id);
 
-        CarMaintenanceDto carMaintenanceDto = this.modelMapperService.forDto().map(this.carMaintenanceDao.getById(id), CarMaintenanceDto.class);
+        CarMaintenanceDto carMaintenanceDto = this.modelMapperService.forDto()
+                .map(this.carMaintenanceDao.getById(id), CarMaintenanceDto.class);
 
         this.carMaintenanceDao.deleteById(id);
 
@@ -148,7 +147,7 @@ public class CarMaintenanceManager implements CarMaintenanceService {
 
     private void checkIfCarIsRented(CreateCarMaintenanceRequest createCarMaintenanceRequest) throws BusinessException {
 
-        List<RentalCarListDto> rentalCarListDtos = this.rentalCarService.getAllRentalCarsByCarId(createCarMaintenanceRequest.getCarCarId());
+        List<RentalCarListDto> rentalCarListDtos = this.rentalCarService.getAllRentalCarsByCarId(createCarMaintenanceRequest.getCarCarId()).getData();
 
         if (rentalCarListDtos != null) {
             if (rentalCarListDtos.isEmpty()) {
@@ -221,7 +220,7 @@ public class CarMaintenanceManager implements CarMaintenanceService {
 
     private void checkIfMaintenanceUpdateDateAndRentDateValid(CarMaintenance carMaintenance, UpdateCarMaintenanceRequest updateCarMaintenanceRequest) throws BusinessException {
 
-        List<RentalCarListDto> rentalCarListDtos = this.rentalCarService.getAllRentalCarsByCarId(carMaintenance.getCar().getCarId());
+        List<RentalCarListDto> rentalCarListDtos = this.rentalCarService.getAllRentalCarsByCarId(carMaintenance.getCar().getCarId()).getData();
 
         if (rentalCarListDtos != null) {
 

@@ -9,6 +9,7 @@ import com.turkcell.rentACar.business.requests.customerRequests.UpdateCustomerRe
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
 import com.turkcell.rentACar.core.utilities.results.DataResult;
+import com.turkcell.rentACar.core.utilities.results.ErrorDataResult;
 import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.dataAccess.abstracts.CustomerDao;
@@ -38,9 +39,9 @@ public class CustomerManager implements CustomerService {
 
     @Override
     public DataResult<List<CustomerListDto>> getAll() {
-        List<Customer> customers = this.customerDao.findAll();
 
-        List<CustomerListDto> customerListDtos = customers.stream()
+        List<CustomerListDto> customerListDtos =
+                this.customerDao.findAll().stream()
                 .map(customer -> this.modelMapperService.forDto().map(customer, CustomerListDto.class))
                 .collect(Collectors.toList());
 
@@ -52,9 +53,8 @@ public class CustomerManager implements CustomerService {
 
         checkIfCustomerIdExists(id);
 
-        Customer customer = this.customerDao.getById(id);
-
-        CustomerDto customerDto = this.modelMapperService.forDto().map(customer, CustomerDto.class);
+        CustomerDto customerDto = this.modelMapperService.forDto()
+                .map(this.customerDao.getById(id), CustomerDto.class);
 
         return new SuccessDataResult(customerDto, BusinessMessages.GlobalMessages.DATA_BROUGHT_SUCCESSFULLY);
     }
@@ -90,7 +90,8 @@ public class CustomerManager implements CustomerService {
 
         checkIfCustomerIdExists(id);
 
-        CustomerDto customerDto = this.modelMapperService.forDto().map(this.customerDao.getById(id), CustomerDto.class);
+        CustomerDto customerDto = this.modelMapperService.forDto()
+                .map(this.customerDao.getById(id), CustomerDto.class);
 
         this.customerDao.deleteById(id);
 
@@ -98,11 +99,11 @@ public class CustomerManager implements CustomerService {
     }
 
     @Override
-    public Customer getCustomerById(int id) {
+    public DataResult<Customer> getCustomerById(int id) {
         if (this.customerDao.getById(id)==null){
-            return null;
+            return new ErrorDataResult(null);
         }
-        return this.customerDao.getById(id);
+        return new SuccessDataResult(this.customerDao.getById(id));
     }
 
     private void checkIfCustomerIdExists(int id) throws BusinessException {
