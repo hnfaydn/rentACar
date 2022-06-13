@@ -8,27 +8,20 @@ import com.turkcell.rentACar.business.dtos.colorDtos.ColorDto;
 import com.turkcell.rentACar.business.requests.carRequests.CreateCarRequest;
 import com.turkcell.rentACar.core.utilities.businessException.BusinessException;
 import com.turkcell.rentACar.core.utilities.mapping.ModelMapperManager;
-import com.turkcell.rentACar.core.utilities.mapping.ModelMapperService;
-import com.turkcell.rentACar.core.utilities.results.DataResult;
-import com.turkcell.rentACar.core.utilities.results.Result;
 import com.turkcell.rentACar.core.utilities.results.SuccessDataResult;
 import com.turkcell.rentACar.dataAccess.abstracts.CarDao;
-import com.turkcell.rentACar.entities.concretes.Brand;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +46,8 @@ class CarManagerTest {
     }
 
     @Test
-    void add() throws BusinessException {
+    @DisplayName("Car add successfully without any error")
+    public void car_add_successfully() throws BusinessException {
 
         BrandDto brandDto= new BrandDto();
         ColorDto colorDto = new ColorDto();
